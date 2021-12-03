@@ -1,7 +1,7 @@
 ARG node_version=latest
 FROM node:${node_version}-alpine
 
-WORKDIR /home/app/node
+WORKDIR /home/node/app
 
 RUN apk --no-cache add git
 RUN apk --no-cache add zip
