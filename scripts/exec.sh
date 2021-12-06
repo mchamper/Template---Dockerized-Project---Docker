@@ -2,5 +2,5 @@
 
 docker-compose \
     -f ../compose.dev.yml \
-    run --no-deps --rm $1 \
+    exec $1 \
     /bin/sh -c "$2"
