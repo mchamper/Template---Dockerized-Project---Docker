@@ -1,9 +1,5 @@
 version: '3.9'
 
-networks:
-  network-a:
-    driver: bridge
-
 services:
 
   web:
@@ -13,12 +9,11 @@ services:
         node_version: 16
         npm_version: 8
         angular_version: 13
+    command: npm run start
     ports:
       - ${PORT_PREFIX}01:4200
     volumes:
       - ${SRC_WEB}:/home/node/app
-    command:
-      - npm run start
     networks:
       - network-a
     restart: unless-stopped
@@ -30,12 +25,11 @@ services:
         node_version: 16
         npm_version: 8
         angular_version: 13
+    command: npm run start
     ports:
       - ${PORT_PREFIX}02:4200
     volumes:
       - ${SRC_BACKOFFICE}:/home/node/app
-    command:
-      - npm run start
     networks:
       - network-a
     restart: unless-stopped
@@ -49,7 +43,7 @@ services:
       - backend-php
       - database
     ports:
-      - ${PORT_PREFIX}05:80
+      - ${PORT_PREFIX}11:80
     volumes:
       - ./docker/nginx/php.default.conf:/etc/nginx/conf.d/default.conf
       - ${SRC_BACKEND}:/var/www/html
@@ -63,7 +57,7 @@ services:
       args:
         php_version: 8.0.13-fpm
     ports:
-      - ${PORT_PREFIX}06:9000
+      - ${PORT_PREFIX}12:9000
     volumes:
       - ./docker/php/php.ini:/usr/local/etc/php/php.ini
       - ${SRC_BACKEND}:/var/www/html
@@ -81,9 +75,32 @@ services:
       POSTGRES_PASSWORD: ${DB_PASS}
       POSTGRES_DB: ${DB_NAME}
     ports:
-      - ${PORT_PREFIX}10:5432
+      - ${PORT_PREFIX}21:5432
     volumes:
       - ./docker/_data/postgres:/var/lib/postgresql/data
     networks:
       - network-a
     restart: unless-stopped
+
+  database-pgadmin:
+    build:
+      context: ./docker/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASS}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - ${PORT_PREFIX}22:80
+    volumes:
+      - database-pgadmin:/var/lib/pgadmin
+    networks:
+      - network-a
+    restart: unless-stopped
+
+networks:
+  network-a:
+    driver: bridge
+
+volumes:
+  database:
+  database-pgadmin:

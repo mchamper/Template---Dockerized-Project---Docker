@@ -2,4 +2,4 @@
 
 docker-compose \
     -f ../compose.dev.yml \
-    up $1 -d
+    up -d $1
