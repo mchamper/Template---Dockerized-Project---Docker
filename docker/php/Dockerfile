@@ -1,8 +1,6 @@
 ARG php_version=latest
 FROM php:${php_version}-alpine
 
-WORKDIR /var/www/html
-
 RUN apk --no-cache add git
 RUN apk --no-cache add zip
 RUN docker-php-ext-install pdo pdo_mysql

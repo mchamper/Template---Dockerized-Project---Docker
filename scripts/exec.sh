@@ -1,6 +1,8 @@
 #!/bin/bash
 
+. ../.env
+
 docker-compose \
-  -f ../compose.${3:-dev}.yml \
+  -f ../compose.${ENV}.yml \
   exec $1 \
   /bin/sh -c "$2"

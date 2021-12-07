@@ -42,7 +42,7 @@ services:
         npm_version: 8
     command: npm run start
     ports:
-      - ${PORT_PREFIX}03:4200
+      - ${PORT_PREFIX}05:4200
     volumes:
       - ${SRC_BACKOFFICE}:/home/node/app
     networks:
@@ -92,7 +92,7 @@ services:
     ports:
       - ${PORT_PREFIX}21:5432
     volumes:
-      - ./docker/_data/postgres:/var/lib/postgresql/data
+      - database:/var/lib/postgresql/data
     networks:
       - network-a
     restart: unless-stopped

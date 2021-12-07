@@ -28,6 +28,6 @@ esac
 git clone $src_git $src || exit 0
 
 cd $src
-git config user.name $GIT_USER_NAME
-git config user.email $GIT_USER_EMAIL
+git config user.name "$GIT_USER_NAME"
+git config user.email "$GIT_USER_EMAIL"
 git checkout develop
