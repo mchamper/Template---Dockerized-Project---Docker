@@ -12,4 +12,7 @@ RUN npm i -g npm@$npm_version
 ARG angular_version=latest
 RUN npm i -g @angular/cli@$angular_version
 
+ARG ionic_version=latest
+RUN npm i -g @ionic/cli@$ionic_version
+
 USER node

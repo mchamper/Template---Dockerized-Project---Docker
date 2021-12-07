@@ -4,6 +4,16 @@
 
 case $1 in
 
+  web)
+    src=../$SRC_WEB
+    src_git=$SRC_WEB_GIT
+    ;;
+
+  mobile)
+    src=../$SRC_MOBILE
+    src_git=$SRC_MOBILE_GIT
+    ;;
+
   backoffice)
     src=../$SRC_BACKOFFICE
     src_git=$SRC_BACKOFFICE_GIT

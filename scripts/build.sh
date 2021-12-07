@@ -1,5 +1,5 @@
 #!/bin/bash
 
 docker-compose \
-    -f ../compose.dev.yml \
-    build $1
+  -f ../compose.${2:-dev}.yml \
+  build $1

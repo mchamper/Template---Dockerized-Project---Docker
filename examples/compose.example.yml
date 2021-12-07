@@ -1,0 +1,121 @@
+version: '3.9'
+
+services:
+
+  web:
+    build:
+      context: ./docker/node
+      args:
+        node_version: 16
+        npm_version: 8
+        angular_version: 13
+    command: npm run start
+    ports:
+      - ${PORT_PREFIX}01:4200
+    volumes:
+      - ${SRC_WEB}:/home/node/app
+    networks:
+      - network-a
+    restart: unless-stopped
+
+  mobile:
+    build:
+      context: ./docker/node
+      args:
+        node_version: 16
+        npm_version: 8
+        ionic_version: 6
+    command: npm run start
+    ports:
+      - ${PORT_PREFIX}02:8100
+    volumes:
+      - ${SRC_MOBILE}:/home/node/app
+    networks:
+      - network-a
+    restart: unless-stopped
+
+  backoffice:
+    build:
+      context: ./docker/node
+      args:
+        node_version: 16
+        npm_version: 8
+    command: npm run start
+    ports:
+      - ${PORT_PREFIX}03:4200
+    volumes:
+      - ${SRC_BACKOFFICE}:/home/node/app
+    networks:
+      - network-a
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./docker/nginx
+      args:
+        nginx_version: 1.21.4
+    depends_on:
+      - backend-php
+      - database
+    ports:
+      - ${PORT_PREFIX}11:80
+    volumes:
+      - ./docker/nginx/php.default.conf:/etc/nginx/conf.d/default.conf
+      - ${SRC_BACKEND}:/var/www/html
+    networks:
+      - network-a
+    restart: unless-stopped
+
+  backend-php:
+    build:
+      context: ./docker/php
+      args:
+        php_version: 8.0.13-fpm
+    ports:
+      - ${PORT_PREFIX}12:9000
+    volumes:
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+      - ${SRC_BACKEND}:/var/www/html
+    networks:
+      - network-a
+    restart: unless-stopped
+
+  database:
+    build:
+      context: ./docker/postgres
+      args:
+        postgres_version: 14.1
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - ${PORT_PREFIX}21:5432
+    volumes:
+      - ./docker/_data/postgres:/var/lib/postgresql/data
+    networks:
+      - network-a
+    restart: unless-stopped
+
+  database-pgadmin:
+    build:
+      context: ./docker/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASS}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - ${PORT_PREFIX}22:80
+    volumes:
+      - database-pgadmin:/var/lib/pgadmin
+    networks:
+      - network-a
+    restart: unless-stopped
+
+networks:
+  network-a:
+    driver: bridge
+
+volumes:
+  database:
+  database-pgadmin:

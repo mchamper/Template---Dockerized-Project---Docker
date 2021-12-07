@@ -1,2 +1,5 @@
-.env
-docker/_data
+/.env
+/docker/_data
+/docker/_customs
+/compose.yml
+/compose.*.yml
