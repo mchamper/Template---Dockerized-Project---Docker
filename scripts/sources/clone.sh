@@ -9,7 +9,7 @@ for src in "${sources[@]}"; do
   path=${src##*:}
 
   if [[ $1 = $service ]]; then
-    git clone $2 ".$path" || exit 0
+    git clone $2 ".$path" || exit 1
 
     cd $path
     git config user.name "$GIT_USER_NAME"
