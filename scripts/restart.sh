@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#!/bin/bash
-
 . ../.env
 
 docker-compose \
