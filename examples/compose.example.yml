@@ -6,10 +6,10 @@ services:
     build:
       context: ./docker/node
       args:
-        node_version: 16
-        npm_version: 8
-        angular_version: 13
-    command: npm run start
+        NODE_VERSION: 16
+        NPM_VERSION: 8
+        ANGULAR_VERSION: 13
+    command: ng serve --host 0.0.0.0
     ports:
       - ${PORT_PREFIX}01:4200
     volumes:
@@ -18,16 +18,32 @@ services:
       - network-a
     restart: unless-stopped
 
+  mobile:
+    build:
+      context: ./docker/node
+      args:
+        NODE_VERSION: 16
+        NPM_VERSION: 7
+        ANGULAR_VERSION: 12
+        IONIC_VERSION: 6
+    command: ng serve --host 0.0.0.0 --port 8100
+    ports:
+      - ${PORT_PREFIX}02:8100
+    volumes:
+      - ${SRC_MOBILE}:/home/node/app
+    networks:
+      - network-a
+    restart: unless-stopped
+
   backoffice:
     build:
       context: ./docker/node
       args:
-        node_version: 16
-        npm_version: 8
-        angular_version: 13
-    command: npm run start
+        NODE_VERSION: 16
+        NPM_VERSION: 8
+    command: yarn start
     ports:
-      - ${PORT_PREFIX}02:4200
+      - ${PORT_PREFIX}05:3000
     volumes:
       - ${SRC_BACKOFFICE}:/home/node/app
     networks:
@@ -38,7 +54,7 @@ services:
     build:
       context: ./docker/nginx
       args:
-        nginx_version: 1.21.4
+        NGINX_VERSION: 1.21.4
     depends_on:
       - backend-php
       - database
@@ -55,7 +71,7 @@ services:
     build:
       context: ./docker/php
       args:
-        php_version: 8.0.13-fpm
+        PHP_VERSION: 8.0.13-fpm
     ports:
       - ${PORT_PREFIX}12:9000
     volumes:
@@ -69,7 +85,7 @@ services:
     build:
       context: ./docker/postgres
       args:
-        postgres_version: 14.1
+        POSTGRES_VERSION: 14.1
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
@@ -77,7 +93,7 @@ services:
     ports:
       - ${PORT_PREFIX}21:5432
     volumes:
-      - ./docker/_data/postgres:/var/lib/postgresql/data
+      - database:/var/lib/postgresql/data
     networks:
       - network-a
     restart: unless-stopped

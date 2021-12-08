@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. ../.env
+
 docker-compose \
-    -f ../compose.dev.yml \
-    build $1
+  -f ../compose.${ENV}.yml \
+  build $1

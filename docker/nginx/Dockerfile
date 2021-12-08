@@ -1,7 +1,6 @@
-ARG nginx_version=latest
-FROM nginx:${nginx_version}-alpine
+ARG NGINX_VERSION=latest
+FROM nginx:${NGINX_VERSION}-alpine
 
 WORKDIR /var/www/html
 
-RUN apk --no-cache add git
-RUN apk --no-cache add zip
+RUN apk --no-cache add git zip unzip

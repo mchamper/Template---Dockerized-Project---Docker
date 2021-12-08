@@ -1,2 +1,2 @@
-ARG postgres_version=latest
-FROM postgres:${postgres_version}-alpine
+ARG POSTGRES_VERSION=latest
+FROM postgres:${POSTGRES_VERSION}-alpine
