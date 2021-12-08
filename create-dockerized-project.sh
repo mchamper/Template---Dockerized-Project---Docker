@@ -1,16 +1,22 @@
 #!/bin/bash
 
-git clone git@github.com:mchamper/Template---Dockerized-Project---Docker.git "$1/docker" || exit 0
-rm -rf "$1/docker/.git"
+git clone git@github.com:mchamper/Template---Dockerized-Project---Docker.git ./.tmp-dockerized-project || exit 0
+rm -rf ./.tmp-dockerized-project/.git
 
-cd "$1/docker"
+# CREATE
+if [ ! -f "$1/docker/version" ]; then
+    cp ./.tmp-dockerized-project/examples/.env.example ./.tmp-dockerized-project/.env
+    cp ./.tmp-dockerized-project/examples/compose.example.yml ./.tmp-dockerized-project/compose.dev.yml
+    cp ./.tmp-dockerized-project/examples/install.example.sh ./.tmp-dockerized-project/install.sh
 
-if [ ! -f "examples/.env.example" ]; then cp examples/.env.example .env; fi
-if [ ! -f "examples/compose.example.yml" ]; then cp examples/compose.example.yml compose.dev.yml; fi
-if [ ! -f "examples/install.example.sh" ]; then cp examples/install.example.sh intall.sh; fi
+    echo "/.env" > .gitignore
 
-echo "
-/.env
-/docker/_data
-/docker/_customs
-" > .gitignore
+    mkdir -p "$1/docker"
+
+# UPDATE
+else
+    rm -f ./.tmp-dockerized-project/.gitignore
+fi
+
+cp -a ./.tmp-dockerized-project/. "$1/docker"
+rm -rf ./.tmp-dockerized-project
