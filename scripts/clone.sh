@@ -2,32 +2,17 @@
 
 . ../.env
 
-case $1 in
+IFS=';' read -a sources <<< $SRCS
 
-  web)
-    src=../$SRC_WEB
-    src_git=$SRC_WEB_GIT
-    ;;
+for src in "${sources[@]}"; do
+  service=${src%%:*}
+  path=${src##*:}
 
-  mobile)
-    src=../$SRC_MOBILE
-    src_git=$SRC_MOBILE_GIT
-    ;;
+  if [ $1=$service ]; then
+    git clone $2 $path || exit 0
 
-  backoffice)
-    src=../$SRC_BACKOFFICE
-    src_git=$SRC_BACKOFFICE_GIT
-    ;;
-
-  backend)
-    src=../$SRC_BACKEND
-    src_git=$SRC_BACKEND_GIT
-    ;;
-esac
-
-git clone $src_git $src || exit 0
-
-cd $src
-git config user.name "$GIT_USER_NAME"
-git config user.email "$GIT_USER_EMAIL"
-git checkout develop
+    cd $path
+    git config user.name "$GIT_USER_NAME"
+    git config user.email "$GIT_USER_EMAIL"
+  fi
+done

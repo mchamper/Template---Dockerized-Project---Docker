@@ -1,18 +1,17 @@
-ARG node_version=latest
-FROM node:${node_version}-alpine
+ARG NODE_VERSION=latest
+FROM node:${NODE_VERSION}-alpine
 
 WORKDIR /home/node/app
 
-RUN apk --no-cache add git
-RUN apk --no-cache add zip
+RUN apk --no-cache add git zip unzip
 
-ARG npm_version=latest
-RUN npm i -g npm@$npm_version
+ARG NPM_VERSION=latest
+RUN npm i -g npm@${NPM_VERSION}
 
-ARG angular_version=latest
-RUN npm i -g @angular/cli@$angular_version
+ARG ANGULAR_VERSION=latest
+RUN npm i -g @angular/cli@${ANGULAR_VERSION}
 
-ARG ionic_version=latest
-RUN npm i -g @ionic/cli@$ionic_version
+ARG IONIC_VERSION=latest
+RUN npm i -g @ionic/cli@${IONIC_VERSION}
 
 USER node
