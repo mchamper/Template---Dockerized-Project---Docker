@@ -10,5 +10,8 @@ for src in "${sources[@]}"; do
 
   if [ ! -d ".$path" ]; then
     mkdir -p .$path
+    echo "Created \"$path\""
+  elif [[ $1 = "--check-exists" ]]; then
+    echo "Directory already exists"; exit 0
   fi
 done

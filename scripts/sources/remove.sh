@@ -9,4 +9,5 @@ for src in "${sources[@]}"; do
   path=${src##*:}
 
   rm -rf .$path
+  echo "Removed \"$path\""
 done

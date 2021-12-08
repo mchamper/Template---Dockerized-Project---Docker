@@ -2,28 +2,16 @@
 
 cd scripts
 
+bash sources/create.sh --check-exists || exit 0
 bash build.sh
-bash sources/create.sh
 
-########################################
+bash sources/clone.sh web "git@github.com:project-name/project-name-web.git" || exit 0
+bash sources/clone.sh mobile "git@github.com:project-name/project-name-mobile.git" || exit 0
+bash sources/clone.sh backoffice "git@github.com:project-name/project-name-backoffice.git" || exit 0
+bash sources/clone.sh backend "git@github.com:project-name/project-name-backend.git" || exit 0
 
-# CREAR NUEVO PROYECTO
-if [ $1="create" ]; then
-  bash create/angular.sh web
-  bash create/ionic.sh mobile
-  bash create/react.sh backoffice
-  bash create/laravel backend
-
-# O CLONAR DESDE LOS REPOSITORIOS
-else
-  bash clone.sh web "git@github.com:project-name/project-name-web.git" || exit 0
-  bash clone.sh mobile "git@github.com:project-name/project-name-mobile.git" || exit 0
-  bash clone.sh backoffice "git@github.com:project-name/project-name-backoffice.git" || exit 0
-  bash clone.sh backend "git@github.com:project-name/project-name-backend.git" || exit 0
-
-  bash run.sh web "yarn install"
-  bash run.sh mobile "yarn install"
-  bash run.sh backoffice "yarn install"
-  bash run.sh backend-php "composer install"
-  bash run.sh backend-php "php artisan migrate --seed"
-fi
+bash run.sh web "yarn install"
+bash run.sh mobile "yarn install"
+bash run.sh backoffice "yarn install"
+bash run.sh backend-php "composer install"
+bash run.sh backend-php "php artisan migrate --seed"

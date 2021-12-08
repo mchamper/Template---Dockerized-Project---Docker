@@ -8,7 +8,7 @@ for src in "${sources[@]}"; do
   service=${src%%:*}
   path=${src##*:}
 
-  if [ $1=$service ]; then
+  if [[ $1 = $service ]]; then
     git clone $2 $path || exit 0
 
     cd $path
