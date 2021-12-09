@@ -11,9 +11,13 @@ for src in "${sources[@]}"; do
   if [[ $1 = $service ]]; then
     git clone $2 "../.$path" || exit 1
 
-    cd $path
+    cd "../.$path"
     git config user.name "$GIT_USER_NAME"
     git config user.email "$GIT_USER_EMAIL"
+
+    if [[ $3 != "" ]]; then
+      git checkout $3
+    fi
 
     echo "Cloned \"$2\" in \"../.$path\""
   fi
