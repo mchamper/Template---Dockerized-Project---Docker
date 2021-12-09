@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ../.env
+. ../../.env
 
 IFS=';' read -a sources <<< $SRCS
 
@@ -9,10 +9,12 @@ for src in "${sources[@]}"; do
   path=${src##*:}
 
   if [[ $1 = $service ]]; then
-    git clone $2 ".$path" || exit 1
+    git clone $2 "../.$path" || exit 1
 
     cd $path
     git config user.name "$GIT_USER_NAME"
     git config user.email "$GIT_USER_EMAIL"
+
+    echo "Cloned \"$2\" in \"../.$path\""
   fi
 done

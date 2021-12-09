@@ -4,7 +4,7 @@ services:
 
   web:
     build:
-      context: ./docker/node
+      context: ./base/dockerfiles/node
       args:
         NODE_VERSION: 16
         NPM_VERSION: 8
@@ -20,7 +20,7 @@ services:
 
   mobile:
     build:
-      context: ./docker/node
+      context: ./base/dockerfiles/node
       args:
         NODE_VERSION: 16
         NPM_VERSION: 7
@@ -37,7 +37,7 @@ services:
 
   backoffice:
     build:
-      context: ./docker/node
+      context: ./base/dockerfiles/node
       args:
         NODE_VERSION: 16
         NPM_VERSION: 8
@@ -52,7 +52,7 @@ services:
 
   backend:
     build:
-      context: ./docker/nginx
+      context: ./base/dockerfiles/nginx
       args:
         NGINX_VERSION: 1.21.4
     depends_on:
@@ -61,7 +61,7 @@ services:
     ports:
       - ${PORT_PREFIX}11:80
     volumes:
-      - ./docker/nginx/php.default.conf:/etc/nginx/conf.d/default.conf
+      - ./base/dockerfiles/nginx/php.default.conf:/etc/nginx/conf.d/default.conf
       - ${SRC_BACKEND}:/var/www/html
     networks:
       - network-a
@@ -69,13 +69,13 @@ services:
 
   backend-php:
     build:
-      context: ./docker/php
+      context: ./base/dockerfiles/php
       args:
         PHP_VERSION: 8.0.13-fpm
     ports:
       - ${PORT_PREFIX}12:9000
     volumes:
-      - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+      - ./base/dockerfiles/php/php.ini:/usr/local/etc/php/php.ini
       - ${SRC_BACKEND}:/var/www/html
     networks:
       - network-a
@@ -83,7 +83,7 @@ services:
 
   database:
     build:
-      context: ./docker/postgres
+      context: ./base/dockerfiles/postgres
       args:
         POSTGRES_VERSION: 14.1
     environment:
@@ -100,7 +100,7 @@ services:
 
   database-pgadmin:
     build:
-      context: ./docker/pgadmin4
+      context: ./base/dockerfiles/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASS}

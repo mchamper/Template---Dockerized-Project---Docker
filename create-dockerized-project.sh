@@ -18,5 +18,7 @@ else
   rm -f ./.tmp-dockerized-project/.gitignore
 fi
 
+rm -rf ./.tmp-dockerized-project/examples
+
 cp -a ./.tmp-dockerized-project/. "$1/docker"
 rm -rf ./.tmp-dockerized-project
