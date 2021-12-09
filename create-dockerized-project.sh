@@ -9,7 +9,7 @@ if [ ! -f "$1/docker/version" ]; then
   cp ./.tmp-dockerized-project/examples/compose.example.yml ./.tmp-dockerized-project/compose.dev.yml
   cp ./.tmp-dockerized-project/examples/install.example.sh ./.tmp-dockerized-project/install.sh
 
-  echo "/.env" > .gitignore
+  echo "/.env" > ./.tmp-dockerized-project/.gitignore
 
   mkdir -p "$1/docker"
 
