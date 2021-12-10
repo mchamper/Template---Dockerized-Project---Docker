@@ -3,8 +3,13 @@ FROM php:${PHP_VERSION}-alpine
 
 WORKDIR /var/www/html
 
-RUN apk --no-cache add git zip unzip
-RUN docker-php-ext-install pdo pdo_mysql
+RUN apk add --update --no-cache \
+  git \
+  zip \
+  unzip
+
+RUN docker-php-ext-install pdo pdo_mysql mysqli
+
 RUN curl -sL https://getcomposer.org/installer | php -- --install-dir /usr/bin --filename composer
 
 ARG USER=docker
