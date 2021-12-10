@@ -2,7 +2,7 @@
 
 git clone git@github.com:mchamper/Template---Dockerized-Project---Docker.git ./.tmp-dockerized-project || exit 0
 
-if [[ $2 = "--prefer-dev"]]; then
+if [[ $2 = "--prefer-dev" ]]; then
   cd ./.tmp-dockerized-project
   git checkout develop
   cd ..

@@ -5,4 +5,4 @@
 docker-compose \
   -f ../../compose.${ENV}.yml \
   exec $1 \
-  /bin/bash -c "$2"
+  /bin/sh -c "$2"
