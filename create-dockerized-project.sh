@@ -1,6 +1,13 @@
 #!/bin/bash
 
 git clone git@github.com:mchamper/Template---Dockerized-Project---Docker.git ./.tmp-dockerized-project || exit 0
+
+if [[ $2 = "--prefer-dev"]]; then
+  cd ./.tmp-dockerized-project
+  git checkout develop
+  cd ..
+fi
+
 rm -rf ./.tmp-dockerized-project/.git
 
 # CREATE
