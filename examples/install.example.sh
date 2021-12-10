@@ -7,7 +7,10 @@ if [[ $1 = "--force" ]]; then
 fi
 
 bash sources/create.sh --check-exists || exit 1
-bash docker/build.sh || exit 1
+
+if [[ $1 != "--no-build" ]]; then
+  bash docker/build.sh || exit 1
+fi
 
 ########################################
 
