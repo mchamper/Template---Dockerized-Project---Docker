@@ -89,7 +89,7 @@ services:
     environment:
       POSTGRES_USER: ${DB_USER:-admin}
       POSTGRES_PASSWORD: ${DB_PASS:-root}
-      POSTGRES_DB: ${DB_NAME:-database}
+      POSTGRES_DB: ${DB_NAME:-public}
     ports:
       - 10021:5432
     volumes:
@@ -97,6 +97,24 @@ services:
     networks:
       - network-a
     restart: unless-stopped
+
+  # database:
+  #   build:
+  #     context: ./base/dockerfiles/mariadb
+  #     args:
+  #       MARIADB_VERSION: 10.4
+  #   environment:
+  #     MYSQL_USER: ${DB_USER:-admin}
+  #     MYSQL_PASSWORD: ${DB_PASS:-root}
+  #     MYSQL_ROOT_PASSWORD: ${DB_PASS:-root}
+  #     MYSQL_DATABASE: ${DB_NAME:-public}
+  #   ports:
+  #     - 10021:3306
+  #   volumes:
+  #     - database:/var/lib/mysql
+  #   networks:
+  #     - network-a
+  #   restart: unless-stopped
 
   database-pgadmin:
     build:
