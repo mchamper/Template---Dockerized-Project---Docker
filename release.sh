@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ -f version ]]; then
-  $1 > version
+  echo $1 > version
 fi
 
 git pull --all
