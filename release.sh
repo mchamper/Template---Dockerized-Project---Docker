@@ -2,6 +2,8 @@
 
 if [[ -f version ]]; then
   echo $1 > version
+  git add .
+  git commit -m "Version changed"
 fi
 
 git pull --all
