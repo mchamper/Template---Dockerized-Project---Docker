@@ -6,8 +6,8 @@ if [[ -f version ]]; then
   git commit -m "Version changed"
 fi
 
-git pull --all
+# git pull --all
 git flow release start $1
-git flow release finish $1 -m
-# git push --all
-# git push --tags
+git flow release finish $1 -F -m $1
+git push --all
+git push --tags
