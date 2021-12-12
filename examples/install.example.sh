@@ -24,3 +24,6 @@ bash docker/run.sh mobile "yarn install"
 bash docker/run.sh backoffice "yarn install"
 bash docker/run.sh backend-php "composer install"
 bash docker/run.sh backend-php "php artisan migrate --seed"
+
+bash docker/start.sh database
+bash docker/exec.sh database "cd /var/exports; bash export.sh; bash import.sh"

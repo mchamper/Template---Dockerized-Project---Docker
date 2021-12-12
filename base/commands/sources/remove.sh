@@ -2,9 +2,7 @@
 
 . ../../.env
 
-IFS=';' read -a sources <<< $SRCS
-
-for src in "${sources[@]}"; do
+for src in "${SRCS[@]}"; do
   service=${src%%:*}
   path="../.${src##*:}"
 
