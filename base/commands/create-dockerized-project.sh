@@ -18,7 +18,7 @@ if [ ! -f "$path/version" ]; then
 
   echo "/.env" > ./.tmp-dockerized-project/.gitignore
 
-  mkdir -p $path
+  mkdir -p "$path"
 
 # UPDATE
 else
@@ -29,5 +29,5 @@ rm -rf ./.tmp-dockerized-project/examples
 rm -rf ./.tmp-dockerized-project/downloads
 rm -f ./.tmp-dockerized-project/base/commands/create-dockerized-project.sh
 
-cp -a ./.tmp-dockerized-project/. $path
+cp -a ./.tmp-dockerized-project/. "$path"
 rm -rf ./.tmp-dockerized-project
