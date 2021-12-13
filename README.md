@@ -6,7 +6,7 @@ Proyecto base pensado para orquestar todos los subproyectos que conforman al mis
 
 ## Creando un nuevo proyecto
 
-Para empezar un nuevo proyecto lo más fácil será descargar el archivo [create-dockerized-project.sh](./tree/master/downloads/create-dockerized-project.sh) situado en la carpeta **downloads** y colocarlo en la carpeta base de todos sus proyectos. A continuación:
+Para empezar un nuevo proyecto lo más fácil será copiar el contenido del archivo [create-dockerized-project.sh](https://github.com/mchamper/Template---Dockerized-Project---Docker/tree/master/downloads/create-dockerized-project.sh) situado en la carpeta **downloads** y colocarlo en la carpeta base de todos sus proyectos. A continuación:
 
 ```
 $ cd <base-project-folder>
