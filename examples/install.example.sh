@@ -2,10 +2,6 @@
 
 cd base/commands
 
-if [[ $1 = "--force" ]]; then
-  bash sources/remove.sh || exit 1
-fi
-
 bash sources/create.sh --check-exists || exit 1
 
 if [[ $1 != "--no-build" ]]; then
