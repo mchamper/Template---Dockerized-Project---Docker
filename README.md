@@ -84,18 +84,17 @@ services:
 
 # Comandos
 
-Dentro de la carpeta **base/commands** existen a disposición una serie de comandos preparados para realizar disintas acciones generales relacionadas con los subproyectos.
+Dentro de la carpeta **base/bin** existen a disposición una serie de comandos preparados para realizar disintas acciones generales relacionadas con los subproyectos.
 
-Para ejecutar cualquier estos comandos es necesario estar parado en la carpeta raíz de los mismos:
+Para ejecutar cualquier estos comandos es necesario estar parado en la carpeta raíz del proyecto principal:
 
 ```
-$ cd base/commands
-$ bash sources/create.sh
-$ bash docker/build.sh
-$ bash docker/create/laravel.sh <docker-service-name>
+$ bash base/bin/sources/create.sh
+$ bash base/bin/docker/build.sh
+$ bash base/bin/docker/create/laravel.sh <docker-service-name>
 ```
 
-Asi mismo, la carpeta raíz **commands** esta preparada para crear sus propios comandos.
+Asi mismo, la carpeta raíz **bin** esta preparada para crear sus propios comandos.
 
 # Dockerfiles
 
@@ -107,6 +106,6 @@ Si se necesita crear una imagen distinta se recomeindo copiar la carpeta base de
 
 Todos los contenidos de la carpeta raíz **base** son reemplazados por su nueva versión al momento de utilizar el comando `create-dockerized-project.sh` para actualizar el proyecto base.
 
-Si se necesita crear contenido personalizado utilice las carpetas **commands** y **dockerfiles** correspondientemente.
+Si se necesita crear contenido personalizado utilice las carpetas **bin** y **dockerfiles** correspondientemente.
 
 
