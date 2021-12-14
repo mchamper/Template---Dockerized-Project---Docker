@@ -11,14 +11,14 @@ for src in "${SRCS[@]}"; do
     cd $path || exit 1
     cat version
 
-    # if [[ -f "$path/version" ]]; then
-    #   echo $1 > version
-    #   git add .
-    #   git commit -m "Version changed"
-    # fi
+    if [[ -f "$path/version" ]]; then
+      echo $1 > version
+      git add .
+      git commit -m "Version changed"
+    fi
 
-    # git flow release start $2
-    # git flow release finish $2 -F -m $2 -p
+    git flow release start $2
+    git flow release finish $2 -F -m $2 -p
 
     exit 0
   fi
