@@ -1,10 +1,7 @@
 #!/bin/bash
 
 bash base/bin/sources/create.sh --check-exists || exit 1
-
-if [[ $1 != "--no-build" ]]; then
-  bash docker/build.sh || exit 1
-fi
+bash base/bin/docker/build.sh || exit 1
 
 ########################################
 

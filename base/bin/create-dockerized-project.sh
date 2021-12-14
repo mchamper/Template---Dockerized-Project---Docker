@@ -27,7 +27,7 @@ fi
 
 rm -rf ./.tmp-dockerized-project/examples
 rm -rf ./.tmp-dockerized-project/downloads
-rm -f ./.tmp-dockerized-project/base/commands/create-dockerized-project.sh
+rm -f ./.tmp-dockerized-project/base/bin/create-dockerized-project.sh
 
 cp -a ./.tmp-dockerized-project/. "$path"
 rm -rf ./.tmp-dockerized-project
