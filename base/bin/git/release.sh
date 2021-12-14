@@ -12,7 +12,7 @@ for src in "${SRCS[@]}"; do
     cat version
 
     if [[ -f "$path/version" ]]; then
-      echo $1 > version
+      echo $2 > version
       git add .
       git commit -m "Version changed"
     fi
