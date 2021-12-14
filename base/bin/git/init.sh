@@ -7,8 +7,8 @@ for src in "${SRCS[@]}"; do
   path="${src##*:}"
 
   if [[ $1 = $service || $1 = "docker" ]]; then
-    if [[ $1 = "docker" ]]; then $path=./; fi
-    cd $path
+    if [[ $1 = "docker" ]]; then path=./; fi
+    cd $path || exit 1
 
     git init || exit 1
     git config user.name "$GIT_USER_NAME"
