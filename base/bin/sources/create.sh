@@ -1,10 +1,10 @@
 #!/bin/bash
 
-. ../../.env
+. .env
 
 for src in "${SRCS[@]}"; do
   service=${src%%:*}
-  path="../.${src##*:}"
+  path="${src##*:}"
 
   if [ ! -d $path ]; then
     mkdir -p $path
