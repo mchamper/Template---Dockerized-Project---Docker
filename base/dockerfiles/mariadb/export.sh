@@ -3,6 +3,11 @@
 . .env || exit 1
 
 FILE="dumps/dump.sql"
+
+if [[ ! -f $FILE ]]; then
+  mkdir -p "${FILE%/*}" && touch "$FILE"
+fi
+
 EXCLUDED_TABLES_STRING=""
 
 for TABLE in "${EXCLUDED_TABLES[@]}"; do :
