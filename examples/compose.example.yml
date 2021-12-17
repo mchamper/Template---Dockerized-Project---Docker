@@ -113,7 +113,8 @@ services:
     ports:
       - ${PORT}21:3306
     volumes:
-      - ./base/dockerfiles/mariadb/bin:/var/exports
+      - ./base/dockerfiles/mariadb/export.sh:/var/exports/export.sh
+      - ./base/dockerfiles/mariadb/import.sh:/var/exports/import.sh
       - ./database-exports/.env:/var/exports/.env
       # - ./database-exports/dumps:/var/exports/dumps
       - database:/var/lib/mysql
