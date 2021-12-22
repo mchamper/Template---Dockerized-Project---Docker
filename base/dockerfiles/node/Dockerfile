@@ -3,7 +3,16 @@ FROM node:${NODE_VERSION}-alpine
 
 WORKDIR /home/node/app
 
-RUN apk --no-cache add git zip unzip
+RUN apk add --update --no-cache \
+  git \
+  zip \
+  unzip \
+  python3 \
+  py3-pip \
+&& pip3 install --upgrade pip \
+&& pip3 install awscli \
+&& pip3 install awsebcli --upgrade --user \
+&& rm -rf /var/cache/apk/*
 
 ARG NPM_VERSION=latest
 RUN npm i -g npm@${NPM_VERSION}
