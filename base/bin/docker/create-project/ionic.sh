@@ -1,5 +1,6 @@
 #!/bin/bash
 
+if [ ! -f .env ]; then cd ../../; fi
 . .env
 
 bash base/bin/docker/run.sh $1 "

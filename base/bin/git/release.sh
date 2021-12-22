@@ -1,5 +1,6 @@
 #!/bin/bash
 
+if [ ! -f .env ]; then cd ../../; fi
 . .env
 
 for src in "${SRCS[@]}"; do

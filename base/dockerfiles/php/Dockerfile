@@ -6,7 +6,13 @@ WORKDIR /var/www/html
 RUN apk add --update --no-cache \
   git \
   zip \
-  unzip
+  unzip \
+  python3 \
+  py3-pip \
+&& pip3 install --upgrade pip \
+&& pip3 install awscli \
+&& pip3 install awsebcli --upgrade --user \
+&& rm -rf /var/cache/apk/*
 
 RUN docker-php-ext-install pdo pdo_mysql mysqli
 
