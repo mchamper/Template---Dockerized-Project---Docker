@@ -18,6 +18,9 @@ RUN docker-php-ext-install pdo pdo_mysql mysqli
 
 RUN curl -sL https://getcomposer.org/installer | php -- --install-dir /usr/bin --filename composer
 
+ARG COMPOSER_VERSION=
+RUN composer self-update ${COMPOSER_VERSION}
+
 ARG USER=docker
 ARG UID=1000
 ARG GID=1000
