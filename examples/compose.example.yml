@@ -72,7 +72,7 @@ services:
       context: ./base/dockerfiles/php
       args:
         PHP_VERSION: 8.0.13-fpm
-        COMPOSER_VERSION: 2
+        COMPOSER_VERSION: --2
     depends_on:
       - database
     ports:
