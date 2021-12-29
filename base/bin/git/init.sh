@@ -11,6 +11,10 @@ for src in "${SRCS[@]}"; do
     if [[ $1 = "docker" ]]; then path=./; fi
     cd $path || exit 1
 
+    if [[ -d .git ]]; then
+      exit 0
+    fi
+
     git init || exit 1
     git config user.name "$GIT_USER_NAME"
     git config user.email "$GIT_USER_EMAIL"
