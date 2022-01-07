@@ -7,11 +7,11 @@ RUN apk add --update --no-cache \
   git \
   zip \
   unzip \
+  groff \
   python3 \
   py3-pip \
+  py3-pynacl \
 && pip3 install --upgrade pip \
-&& pip3 install awscli \
-# && pip3 install awsebcli --upgrade --user \
 && rm -rf /var/cache/apk/*
 
 ARG NPM_VERSION=latest
@@ -23,4 +23,10 @@ RUN npm i -g @angular/cli@${ANGULAR_VERSION}
 ARG IONIC_VERSION=latest
 RUN npm i -g @ionic/cli@${IONIC_VERSION}
 
-USER node
+ENV PATH="/home/node/.local/bin:${PATH}"
+
+USER ${USER}
+
+RUN \
+  pip3 install awscli --upgrade --user \
+&& pip3 install awsebcli --upgrade --user
