@@ -23,9 +23,9 @@ RUN npm i -g @angular/cli@${ANGULAR_VERSION}
 ARG IONIC_VERSION=latest
 RUN npm i -g @ionic/cli@${IONIC_VERSION}
 
-ENV PATH="/home/node/.local/bin:${PATH}"
-
 USER ${USER}
+
+ENV PATH="/home/node/.local/bin:${PATH}"
 
 RUN \
   pip3 install awscli --upgrade --user \
