@@ -7,11 +7,11 @@ RUN apk add --update --no-cache \
   git \
   zip \
   unzip \
+  groff \
   python3 \
   py3-pip \
+  py3-pynacl \
 && pip3 install --upgrade pip \
-&& pip3 install awscli \
-# && pip3 install awsebcli --upgrade --user \
 && rm -rf /var/cache/apk/*
 
 RUN docker-php-ext-install pdo pdo_mysql mysqli
@@ -27,4 +27,10 @@ ARG GID=1000
 RUN addgroup ${USER} && adduser -D ${USER} -u ${UID} -G www-data -G root
 RUN chown ${USER}:${USER} /var/www/html
 
+ENV PATH="/home/docker/.local/bin:${PATH}"
+
 USER ${USER}
+
+RUN \
+  pip3 install awscli --upgrade --user \
+&& pip3 install awsebcli --upgrade --user
