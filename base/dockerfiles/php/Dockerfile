@@ -27,9 +27,9 @@ ARG GID=1000
 RUN addgroup ${USER} && adduser -D ${USER} -u ${UID} -G www-data -G root
 RUN chown ${USER}:${USER} /var/www/html
 
-ENV PATH="/home/docker/.local/bin:${PATH}"
-
 USER ${USER}
+
+ENV PATH="/home/docker/.local/bin:${PATH}"
 
 RUN \
   pip3 install awscli --upgrade --user \
