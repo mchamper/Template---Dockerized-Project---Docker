@@ -17,8 +17,10 @@ for src in "${SRCS[@]}"; do
       git commit -m "Version changed"
     fi
 
+    GIT_MERGE_AUTOEDIT=no
+
     git flow release start $2
-    git flow release finish $2 -F -m -p
+    git flow release finish $2 -F -p -m
 
     exit 0
   fi
