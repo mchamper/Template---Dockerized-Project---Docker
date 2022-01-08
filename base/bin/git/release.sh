@@ -16,14 +16,12 @@ for src in "${SRCS[@]}"; do
       exit 0
     fi
 
-    if [[ -f "$path/version" ]]; then
-      echo $2 > version
-      git add .
-      git commit -m "Version changed"
-    fi
+    echo $2 > version
+    git add .
+    git commit -m "Auto commit: Version changed"
 
     git flow release start $2 || exit 1
-    git flow release finish $2 -F -p -m
+    git flow release finish $2 -F -p -m "Auto release:"
 
     exit 0
   fi
