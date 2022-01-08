@@ -11,6 +11,11 @@ for src in "${SRCS[@]}"; do
     if [[ $1 = "docker" ]]; then path=./; fi
     cd $path || exit 1
 
+    if [[ $2 = "-v" ]]; then
+      git describe --tags --abbrev=0
+      exit 0
+    fi
+
     if [[ -f "$path/version" ]]; then
       echo $2 > version
       git add .
