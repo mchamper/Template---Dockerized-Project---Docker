@@ -10,7 +10,6 @@ for src in "${SRCS[@]}"; do
   if [[ $1 = $service || $1 = "docker" ]]; then
     if [[ $1 = "docker" ]]; then path=./; fi
     cd $path || exit 1
-    cat version
 
     if [[ -f "$path/version" ]]; then
       echo $2 > version
@@ -19,7 +18,7 @@ for src in "${SRCS[@]}"; do
     fi
 
     git flow release start $2
-    git flow release finish $2 -F -m $2 -p
+    git flow release finish $2 -F -m -p
 
     exit 0
   fi
