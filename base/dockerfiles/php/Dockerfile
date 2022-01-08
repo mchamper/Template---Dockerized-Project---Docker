@@ -7,6 +7,7 @@ RUN apk add --update --no-cache \
   git \
   zip \
   unzip \
+  openssh \
   groff \
   python3 \
   py3-pip \
