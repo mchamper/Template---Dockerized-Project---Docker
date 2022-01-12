@@ -25,8 +25,8 @@ if [[ $CMD = "--exec" ]]; then
   SOURCE=$ARG1
   cd $SOURCE || exit 1
 
-  VERSION=$(git describe --tags --abbrev=0)
-  VERSION_FULL=$(git describe --tags)
+  VERSION=$(git describe --tags --abbrev=0) || exit
+  VERSION_FULL=$(git describe --tags) || exit
 
   if [[ $ARG2 = "--full" ]]; then
     echo $VERSION_FULL
