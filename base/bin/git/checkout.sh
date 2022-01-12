@@ -14,10 +14,6 @@ if [[ $CMD != "--exec" ]]; then
     fi
   done
 
-  if [[ $CMD = "docker" ]]; then
-    bash $0 --exec ./../docker "$ARG1"
-  fi
-
   exit
 fi
 
