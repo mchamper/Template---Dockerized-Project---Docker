@@ -1,26 +1,37 @@
 #!/bin/bash
 
-if [ ! -f .env ]; then cd ../../; fi
-. .env
+if [ ! -f .env ]; then cd ../../; fi; . .env
+CMD=$1; ARG1=$2; ARG2=$3; ARG3=$4; ARG4=$5; ARG5=$6;
 
-for src in "${SRCS[@]}"; do
-  service=${src%%:*}
-  path="${src##*:}"
+if [[ $CMD != "--exec" ]]; then
+  for SRC in "${SRCS[@]}"; do
+    SERVICE=${SRC%%:*}
+    SOURCE="${SRC##*:}"
 
-  if [[ $1 = $service || $1 = "docker" ]]; then
-    if [[ $1 = "docker" ]]; then path=./; fi
-    cd $path || exit 1
-
-    if [[ -d .git ]]; then
-      exit 0
+    if [[ $CMD = "--all" || $CMD = $SERVICE ]]; then
+      bash $0 --exec "$SOURCE"
     fi
 
-    git init || exit 1
-    git config user.name "$GIT_USER_NAME"
-    git config user.email "$GIT_USER_EMAIL"
-    git add .
-    git commit -m "Initial commit"
+    if [[ $CMD = $SERVICE ]]; then exit; fi
+  done
 
-    exit 0
+  exit
+fi
+
+if [[ $CMD = "--exec" ]]; then
+  SOURCE=$ARG1
+  cd $SOURCE || exit 1
+
+  if [[ -d .git ]]; then
+    echo "Git repository already initialized \"$SOURCE\""
+    exit
   fi
-done
+
+  git init || exit 1
+  git config user.name "$GIT_USER_NAME"
+  git config user.email "$GIT_USER_EMAIL"
+  git add .
+  git commit -m "Initial commit"
+
+  exit
+fi

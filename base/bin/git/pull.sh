@@ -27,9 +27,8 @@ if [[ $CMD = "--exec" ]]; then
   cd $SOURCE || exit 1
 
   if [[ -d .git ]]; then
-    git config user.name "$GIT_USER_NAME"
-    git config user.email "$GIT_USER_EMAIL"
-    echo "Git reposirory configured in \"$SOURCE\""
+    git pull --all
+    echo "Git reposirory pulled in \"$SOURCE\""
   else
     echo "No git repository in \"$SOURCE\""
   fi

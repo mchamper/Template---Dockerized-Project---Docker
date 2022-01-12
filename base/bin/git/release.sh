@@ -1,28 +1,49 @@
 #!/bin/bash
 
-if [ ! -f .env ]; then cd ../../; fi
-. .env
+if [ ! -f .env ]; then cd ../../; fi; . .env
+CMD=$1; ARG1=$2; ARG2=$3; ARG3=$4; ARG4=$5; ARG5=$6;
 
-for src in "${SRCS[@]}"; do
-  service=${src%%:*}
-  path="${src##*:}"
+if [[ $CMD != "--exec" ]]; then
+  for SRC in "${SRCS[@]}"; do
+    SERVICE=${SRC%%:*}
+    SOURCE="${SRC##*:}"
 
-  if [[ $1 = $service || $1 = "docker" ]]; then
-    if [[ $1 = "docker" ]]; then path=./; fi
-    cd $path || exit 1
-
-    if [[ $2 = "-v" ]]; then
-      git describe --tags --abbrev=0
-      exit 0
+    if [[ $CMD = $SERVICE ]]; then
+      bash $0 --exec "$SOURCE" "$ARG1"
+      exit
     fi
+  done
 
-    echo $2 > version
-    git add .
-    git commit -m "Auto commit: Version changed"
-
-    git flow release start $2 || exit 1
-    git flow release finish $2 -F -p -m "Auto release:"
-
-    exit 0
+  if [[ $CMD = "docker" ]]; then
+    bash $0 --exec ./../docker "$ARG1"
   fi
-done
+
+  exit
+fi
+
+if [[ $CMD = "--exec" ]]; then
+  SOURCE=$ARG1
+  VERSION=$ARG2
+
+  cd $SOURCE || exit 1
+
+  if [[ $ARG2 = "-v" ]]; then
+    git describe --tags --abbrev=0
+    exit
+  fi
+
+  if [[ $VERSION = "" ]]; then
+    exit
+  fi
+
+  echo $VERSION > version
+
+  git add .
+  git commit -m "Auto commit: Version changed"
+  git flow release start $VERSION || exit 1
+  git flow release finish $VERSION -F -p -m "Auto release:"
+
+  exit
+fi
+
+
