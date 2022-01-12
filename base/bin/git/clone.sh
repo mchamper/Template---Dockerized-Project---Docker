@@ -36,8 +36,6 @@ if [[ $CMD = "--exec" ]]; then
     git flow init -d
   fi
 
-  echo "Git reposirory cloned in \"$SOURCE\""
-
   exit
 fi
 
