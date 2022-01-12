@@ -32,6 +32,10 @@ if [[ $CMD = "--exec" ]]; then
     exit
   fi
 
+  if [[ $VERSION = "" ]]; then
+    exit
+  fi
+
   echo $VERSION > version
 
   git add .
