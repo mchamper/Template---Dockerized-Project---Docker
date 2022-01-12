@@ -1,16 +1,32 @@
 #!/bin/bash
 
-if [ ! -f .env ]; then cd ../../; fi
-. .env
+if [ ! -f .env ]; then cd ../../; fi; . .env
+CMD=$1; ARG1=$2; ARG2=$3; ARG3=$4; ARG4=$5; $ARG5=$6
 
-for src in "${SRCS[@]}"; do
-  service=${src%%:*}
-  path="${src##*:}"
+if [[ $CMD != "--exec" ]]; then
+  for SRC in "${SRCS[@]}"; do
+    SERVICE=${SRC%%:*}
+    SOURCE="${SRC##*:}"
 
-  if [ ! -d $path ]; then
-    mkdir -p $path
-    echo "Created \"$path\""
-  elif [[ $1 = "--check-exists" ]]; then
-    echo "Directory already exists"; exit 1
+    if [[ $CMD = "--all" || $CMD = $SERVICE ]]; then
+      bash $0 --exec "$SOURCE"
+    fi
+
+    if [[ $CMD = $SERVICE ]]; then exit; fi
+  done
+
+  exit
+fi
+
+if [[ $CMD = "--exec" ]]; then
+  SOURCE=$ARG1
+
+  if [ ! -d $SOURCE ]; then
+    mkdir -p $SOURCE
+    echo "Created \"$SOURCE\""
+  else
+    echo "Directory \"$SOURCE\" already exists"
   fi
-done
+
+  exit
+fi
