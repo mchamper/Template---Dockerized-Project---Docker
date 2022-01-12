@@ -23,7 +23,7 @@ if [[ $CMD = "--exec" ]]; then
   cd $SOURCE || exit 1
 
   if [[ -d .git ]]; then
-    echo "Git repository already initialized \"$SOURCE\""
+    echo "Git repository already initialized in \"$SOURCE\""
     exit
   fi
 
@@ -32,6 +32,8 @@ if [[ $CMD = "--exec" ]]; then
   git config user.email "$GIT_USER_EMAIL"
   git add .
   git commit -m "Initial commit"
+
+  echo "Git repository initialized in \"$SOURCE\""
 
   exit
 fi
