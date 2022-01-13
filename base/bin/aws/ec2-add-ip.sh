@@ -1,12 +1,11 @@
 #!/bin/bash
 
 if [ ! -f .env ]; then cd ../../; fi; . .env
-CMD=$1; ARG1=$2; ARG2=$3; ARG3=$4; ARG4=$5; ARG5=$6;
 
-SERVICE=$CMD
-SECURITY_GROUP_ID=$ARG1
-IP=$ARG2
-DESCRIPTION=$ARG3
+SERVICE=$1
+SECURITY_GROUP_ID=$2
+IP=$3
+DESCRIPTION=$4
 REGEX="^[0-9]+$"
 
 if ! [[ $IP =~ $REGEX ]]; then

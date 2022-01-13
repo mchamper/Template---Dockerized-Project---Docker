@@ -1,12 +1,10 @@
 #!/bin/bash
 
 if [ ! -f .env ]; then cd ../../; fi; . .env
-CMD=$1; ARG1=$2; ARG2=$3; ARG3=$4; ARG4=$5; ARG5=$6;
 
-SERVICE=$CMD
-
-VERSION=$(bash base/bin/git/version.sh $SERVICE)
-VERSION_FULL=$(bash base/bin/git/version.sh $SERVICE --full)
+SERVICE=$1
+VERSION=$(bash base/bin/git/version.sh $SERVICE) || exit 1
+VERSION_FULL=$(bash base/bin/git/version.sh $SERVICE --full) || exit 1
 LABEL="$COMPOSE_PROJECT_NAME-$SERVICE-$VERSION_FULL"
 
 if [[ $ARG1 = "-v" ]]; then
