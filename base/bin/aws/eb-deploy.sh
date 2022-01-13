@@ -3,10 +3,9 @@
 if [ ! -f .env ]; then cd ../../; fi; . .env
 
 SERVICE=$1
-TYPE=$2
 VERSION=$(bash base/bin/git/version.sh $SERVICE) || exit 1
 VERSION_FULL=$(bash base/bin/git/version.sh $SERVICE --full) || exit 1
-LABEL="$COMPOSE_PROJECT_NAME-$SERVICE-$TYPE-$VERSION_FULL"
+LABEL="$COMPOSE_PROJECT_NAME-$SERVICE-$VERSION_FULL"
 
 if [[ $ARG1 = "-v" ]]; then
   echo $VERSION \($VERSION_FULL\)
