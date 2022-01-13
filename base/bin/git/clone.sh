@@ -4,12 +4,12 @@ if [ ! -f .env ]; then cd ../../; fi; . .env
 CMD=$1; ARG1=$2; ARG2=$3; ARG3=$4; ARG4=$5; ARG5=$6;
 
 if [[ $CMD != "--exec" ]]; then
-  for SRC in "${SRCS[@]}"; do
+  for SRC in ${SRCS[@]}; do
     SERVICE=${SRC%%:*}
-    SOURCE="${SRC##*:}"
+    SOURCE=${SRC##*:}
 
-    if [[ $CMD = $SERVICE ]]; then
-      bash $0 --exec "$SOURCE" "$ARG1" "$ARG2" "$ARG3"
+    if [[ $1 = $SERVICE ]]; then
+      bash $0 --exec "$SOURCE" "$2" "$3" "$4"
       exit
     fi
   done
@@ -32,7 +32,7 @@ if [[ $CMD = "--exec" ]]; then
     git checkout $GIT_BRANCH
   fi
 
-  if [[ $ARG4 != "--flow" ]]; then
+  if [[ $ARG4 = "--flow" ]]; then
     git flow init -d
   fi
 

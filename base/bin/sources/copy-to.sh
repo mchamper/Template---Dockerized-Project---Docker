@@ -8,8 +8,8 @@ if [[ $CMD != "--exec" ]]; then
     SERVICE=${SRC%%:*}
     SOURCE=${SRC##*:}
 
-    if [[ $1 = "--all" || $1 = $SERVICE ]]; then
-      bash $0 --exec "$SOURCE"
+    if [[ $1 = $SERVICE ]]; then
+      bash $0 --exec "$SOURCE" "$2"
     fi
 
     if [[ $1 = $SERVICE ]]; then exit; fi
@@ -20,13 +20,10 @@ fi
 
 if [[ $CMD = "--exec" ]]; then
   SOURCE=$ARG1
+  TARGET=$ARG2
 
-  if [ ! -d $SOURCE ]; then
-    mkdir -p $SOURCE
-    echo "Created \"$SOURCE\""
-  else
-    echo "Directory \"$SOURCE\" already exists"
-  fi
+  cd "$SOURCE" && tar cf - . | (mkdir -p "$TARGET" && cd "$TARGET" && tar xf -) || exit 1
+  echo "Copied from \"$SOURCE\" to \"$TARGET\""
 
   exit
 fi
