@@ -36,7 +36,12 @@ if [[ $CMD = "--exec" ]]; then
     exit
   fi
 
-  echo $VERSION > version
+  if [[ -f package.json ]]; then
+    sed -i 's|\(.*"version"\): "\(.*\)",.*|\1: '"\"$VERSION\",|" package.json;
+    echo "export const version = \"$VERSION\";" > version.js
+  else
+    echo $VERSION > version
+  fi
 
   git add .
   git commit -m "Auto commit: Version changed"
@@ -45,5 +50,3 @@ if [[ $CMD = "--exec" ]]; then
 
   exit
 fi
-
-
