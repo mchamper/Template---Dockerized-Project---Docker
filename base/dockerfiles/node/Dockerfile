@@ -24,7 +24,7 @@ RUN npm i -g @angular/cli@${ANGULAR_VERSION}
 ARG IONIC_VERSION=latest
 RUN npm i -g @ionic/cli@${IONIC_VERSION}
 
-USER ${USER}
+USER node
 
 ENV PATH="/home/node/.local/bin:${PATH}"
 
