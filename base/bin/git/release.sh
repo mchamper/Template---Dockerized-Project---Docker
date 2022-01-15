@@ -40,7 +40,7 @@ if [[ $CMD = "--exec" ]]; then
     sed -i 's|\(.*"version"\): "\(.*\)",.*|\1: '"\"$VERSION\",|" package.json;
     echo "export const version = \"$VERSION\";" > version.js
   else
-    echo $VERSION > version
+    echo $VERSION > version.txt
   fi
 
   git add .
