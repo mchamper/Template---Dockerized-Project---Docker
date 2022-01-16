@@ -9,7 +9,7 @@ fi
 rm -rf ./.tmp-dockerized-project/.git
 
 # CREATE
-if [ ! -f "$path/version" ]; then
+if [[ ! -f "$path/version" && ! -f "$path/version.txt" ]]; then
   cp ./.tmp-dockerized-project/examples/.env.example ./.tmp-dockerized-project/.env
   cp ./.tmp-dockerized-project/examples/.env.example ./.tmp-dockerized-project/.env.example
   cp ./.tmp-dockerized-project/examples/compose.example.yml ./.tmp-dockerized-project/compose.dev.yml
