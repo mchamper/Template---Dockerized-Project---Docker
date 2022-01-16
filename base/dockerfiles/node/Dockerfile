@@ -23,6 +23,7 @@ RUN npm i -g @angular/cli@${ANGULAR_VERSION}
 
 ARG IONIC_VERSION=latest
 RUN npm i -g @ionic/cli@${IONIC_VERSION}
+RUN npm i -g cordova-res
 
 USER node
 
