@@ -38,6 +38,11 @@ if [[ $CMD = "--exec" ]]; then
 
   if [[ -f package.json ]]; then
     sed -i 's|\(.*"version"\): "\(.*\)",.*|\1: '"\"$VERSION\",|" package.json;
+
+    if [[ -f package-lock.json ]]; then
+      sed -i 's|\(.*"version"\): "\(.*\)",.*|\1: '"\"$VERSION\",|" package-lock.json;
+    fi
+
     echo "export const version = \"$VERSION\";" > version.js
   else
     echo $VERSION > version.txt
