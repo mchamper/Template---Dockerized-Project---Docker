@@ -8,27 +8,25 @@ RUN apk add --update --no-cache \
   zip \
   unzip \
   openssh \
-  groff \
+  groff
+
+RUN apk add --update --no-cache \
   python3 \
   py3-pip \
   py3-pynacl \
-&& pip3 install --upgrade pip \
-&& rm -rf /var/cache/apk/*
+&& pip3 install --upgrade pip
+
+RUN rm -rf /var/cache/apk/* && rm -rf /tmp/*
 
 ARG NPM_VERSION=latest
-RUN npm i -g npm@${NPM_VERSION}
-
 ARG ANGULAR_VERSION=latest
-RUN npm i -g @angular/cli@${ANGULAR_VERSION}
-
 ARG IONIC_VERSION=latest
+RUN npm i -g npm@${NPM_VERSION}
+RUN npm i -g @angular/cli@${ANGULAR_VERSION}
 RUN npm i -g @ionic/cli@${IONIC_VERSION}
 RUN npm i -g cordova-res --unsafe-perm
 
 USER node
-
 ENV PATH="/home/node/.local/bin:${PATH}"
 
-RUN \
-  pip3 install awscli --upgrade --user \
-&& pip3 install awsebcli --upgrade --user
+RUN pip3 install awscli --upgrade --user && pip3 install awsebcli --upgrade --user
