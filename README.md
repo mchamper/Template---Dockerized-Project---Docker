@@ -65,6 +65,7 @@ SRCS=(
   mobile:${SRC_MOBILE}
   backoffice:${SRC_BACKOFFICE}
   backend:${SRC_BACKEND}
+  backend-php:${SRC_BACKEND}
 )
 ```
 
@@ -80,6 +81,8 @@ services:
     ...
   backend:
     ...
+  backend-php:
+    ...
 ```
 
 # Comandos
@@ -91,7 +94,8 @@ Para ejecutar cualquier estos comandos es necesario estar parado en la carpeta r
 ```
 $ bash base/bin/sources/create.sh
 $ bash base/bin/docker/build.sh
-$ bash base/bin/docker/create/laravel.sh <docker-service-name>
+$ bash base/bin/create-project/laravel.sh <docker-service-name>
+$ bash base/bin/aws/eb-deploy.sh <docker-service-name>
 ```
 
 Asi mismo, la carpeta raíz **bin** esta preparada para crear sus propios comandos.
@@ -104,7 +108,7 @@ Si se necesita crear una imagen distinta se recomeindo copiar la carpeta base de
 
 # Importante
 
-Todos los contenidos de la carpeta raíz **base** son reemplazados por su nueva versión al momento de utilizar el comando `create-dockerized-project.sh` para actualizar el proyecto base.
+Todos los contenidos de la carpeta raíz **base** son reemplazados por su nueva versión al momento de utilizar el comando `update-dockerized-project.sh` para actualizar el proyecto base.
 
 Si se necesita crear contenido personalizado utilice las carpetas **bin** y **dockerfiles** correspondientemente.
 
