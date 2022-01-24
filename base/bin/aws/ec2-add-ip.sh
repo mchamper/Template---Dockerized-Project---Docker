@@ -6,7 +6,7 @@ SERVICE=$1
 SECURITY_GROUP_ID=$2
 IP=$3
 DESCRIPTION=$4
-REGEX="^[0-9]+$"
+REGEX="^[0-9]+"
 
 if ! [[ $IP =~ $REGEX ]]; then
   DESCRIPTION=$IP
