@@ -13,10 +13,26 @@ services:
     ports:
       - ${PORT}01:4200
     volumes:
+      - ./credentials/.aws/:/home/node/.aws/
       - ${SRC_WEB}:/home/node/app
     networks:
       - network-a
     restart: unless-stopped
+
+  # web:
+  #   build:
+  #     context: ./base/dockerfiles/nginx
+  #     args:
+  #       NGINX_VERSION: 1.21.4
+  #   ports:
+  #     - ${PORT}01:80
+  #   volumes:
+  #     - ./base/dockerfiles/nginx/html.default.conf:/etc/nginx/conf.d/default.conf
+  #     - ./credentials/.aws/:/root/.aws/
+  #     - ${SRC_WEB}:/var/www/html/dist
+  #   networks:
+  #     - network-a
+  #   restart: unless-stopped
 
   mobile:
     build:
@@ -45,6 +61,7 @@ services:
     ports:
       - ${PORT}05:3000
     volumes:
+      - ./credentials/.aws/:/home/node/.aws/
       - ${SRC_BACKOFFICE}:/home/node/app
     networks:
       - network-a
@@ -62,6 +79,8 @@ services:
       - ${PORT}11:80
     volumes:
       - ./base/dockerfiles/nginx/php.default.conf:/etc/nginx/conf.d/default.conf
+      - ./credentials/.aws/:/root/.aws/
+      - ./credentials/.ssh/:/root/.ssh/
       - ${SRC_BACKEND}:/var/www/html
     networks:
       - network-a
@@ -79,6 +98,8 @@ services:
       - ${PORT}12:9000
     volumes:
       - ./base/dockerfiles/php/php.ini:/usr/local/etc/php/php.ini
+      - ./credentials/.aws/:/home/docker/.aws/
+      - ./credentials/.ssh/:/home/docker/.ssh/
       - ${SRC_BACKEND}:/var/www/html
     networks:
       - network-a
@@ -141,4 +162,4 @@ networks:
 
 volumes:
   database:
-  database-pgadmin:
+  # database-pgadmin:

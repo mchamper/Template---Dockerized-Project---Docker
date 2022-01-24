@@ -15,6 +15,14 @@ if [[ ! -f "$path/version" && ! -f "$path/version.txt" ]]; then
   cp ./.tmp-dockerized-project/examples/compose.example.yml ./.tmp-dockerized-project/compose.dev.yml
   cp ./.tmp-dockerized-project/examples/install.example.sh ./.tmp-dockerized-project/install.sh
   cp ./.tmp-dockerized-project/examples/database-exports/.env.example ./.tmp-dockerized-project/database-exports/.env
+  cp ./.tmp-dockerized-project/examples/bin/core/web.sh ./.tmp-dockerized-project/bin/core/web.sh
+  cp ./.tmp-dockerized-project/examples/bin/core/mobile.sh ./.tmp-dockerized-project/bin/core/mobile.sh
+  cp ./.tmp-dockerized-project/examples/bin/core/backoffice.sh ./.tmp-dockerized-project/bin/core/backoffice.sh
+  cp ./.tmp-dockerized-project/examples/bin/core/backend.sh ./.tmp-dockerized-project/bin/core/backend.sh
+  cp ./.tmp-dockerized-project/examples/bin/core/database.sh ./.tmp-dockerized-project/bin/core/database.sh
+
+  mkdir -p ./.tmp-dockerized-project/credentials/.aws
+  mkdir -p ./.tmp-dockerized-project/credentials/.ssh
 
   echo "/.env" > ./.tmp-dockerized-project/.gitignore
 
