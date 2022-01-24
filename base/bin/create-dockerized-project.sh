@@ -10,6 +10,10 @@ rm -rf ./.tmp-dockerized-project/.git
 
 # CREATE
 if [[ ! -f "$path/version" && ! -f "$path/version.txt" ]]; then
+  mkdir -p ./.tmp-dockerized-project/bin/core
+  mkdir -p ./.tmp-dockerized-project/credentials/.aws
+  mkdir -p ./.tmp-dockerized-project/credentials/.ssh
+
   cp ./.tmp-dockerized-project/examples/.env.example ./.tmp-dockerized-project/.env
   cp ./.tmp-dockerized-project/examples/.env.example ./.tmp-dockerized-project/.env.example
   cp ./.tmp-dockerized-project/examples/compose.example.yml ./.tmp-dockerized-project/compose.dev.yml
@@ -20,9 +24,6 @@ if [[ ! -f "$path/version" && ! -f "$path/version.txt" ]]; then
   cp ./.tmp-dockerized-project/examples/bin/core/backoffice.sh ./.tmp-dockerized-project/bin/core/backoffice.sh
   cp ./.tmp-dockerized-project/examples/bin/core/backend.sh ./.tmp-dockerized-project/bin/core/backend.sh
   cp ./.tmp-dockerized-project/examples/bin/core/database.sh ./.tmp-dockerized-project/bin/core/database.sh
-
-  mkdir -p ./.tmp-dockerized-project/credentials/.aws
-  mkdir -p ./.tmp-dockerized-project/credentials/.ssh
 
   echo "/.env" > ./.tmp-dockerized-project/.gitignore
 
