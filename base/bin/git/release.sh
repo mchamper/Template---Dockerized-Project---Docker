@@ -36,11 +36,11 @@ if [[ $CMD = "--exec" ]]; then
     exit
   fi
 
-  if [[ -f package.json ]]; then
-    sed -i 's|\(.*"version"\): "\(.*\)",.*|\1: '"\"$VERSION\",|" package.json;
+  if [[ -f package.json && ! -f composer.json ]]; then
+    sed -i '0,/version/ s|\(.*"version"\): "\(.*\)",.*|\1: '"\"$VERSION\",|" package.json;
 
     if [[ -f package-lock.json ]]; then
-      sed -i 's|\(.*"version"\): "\(.*\)",.*|\1: '"\"$VERSION\",|" package-lock.json;
+      sed -i '0,/version/ s|\(.*"version"\): "\(.*\)",.*|\1: '"\"$VERSION\",|" package-lock.json;
     fi
 
     echo "export const version = \"$VERSION\";" > version.js

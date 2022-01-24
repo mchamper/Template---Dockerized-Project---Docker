@@ -15,6 +15,10 @@ if [[ $CMD != "--exec" ]]; then
     if [[ $1 = $SERVICE ]]; then exit; fi
   done
 
+  if [[ $1 = "--all" || $1 = "docker" ]]; then
+    bash $0 --exec ./../docker
+  fi
+
   exit
 fi
 
