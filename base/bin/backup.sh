@@ -21,7 +21,6 @@ cp -a examples/credentials/.aws/. "$BACKUP_PATH/examples/credentials/.aws"
 cp -a credentials/. "$BACKUP_PATH/credentials"
 cp -a database-exports/. "$BACKUP_PATH/database-exports"
 cp -a environments/. "$BACKUP_PATH/environments"
-cp .env "$BACKUP_PATH/.env"
 
 cd "$BACKUP_PATH/.."
 if [[ -f "$FOLDER_NAME.zip" ]]; then rm "$FOLDER_NAME.zip"; fi
