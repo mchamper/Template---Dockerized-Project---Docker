@@ -31,12 +31,12 @@ if [[ $CMD = "ssh" ]]; then
 fi
 
 if [[ $CMD = "deploy" ]]; then
-  bash base/bin/aws/eb-deploy.sh $SERVICE production
+  bash base/bin/aws/eb-deploy.sh $SERVICE
   exit
 fi
 
 if [[ $CMD = "deploy-and-migrate" ]]; then
-  bash base/bin/aws/eb-deploy.sh $SERVICE production || exit 1
+  bash base/bin/aws/eb-deploy.sh $SERVICE || exit 1
 
   bash base/bin/aws/eb-ssh.sh $SERVICE "
     cd /var/app/current;
@@ -47,11 +47,18 @@ if [[ $CMD = "deploy-and-migrate" ]]; then
 fi
 
 if [[ $CMD = "get-envs" ]]; then
-  bash base/bin/aws/eb-printenv.sh $SERVICE
+  if [[ $ARG1 = "--backup" ]]; then
+    echo $(bash base/bin/aws/eb-printenv.sh $SERVICE) > "environments/aws/eb/.projectname-backend-production.backup.env"
+  else
+    bash base/bin/aws/eb-printenv.sh $SERVICE
+  fi
+
   exit
 fi
 
 if [[ $CMD = "set-envs" ]]; then
   bash base/bin/aws/eb-setenv.sh $SERVICE "environments/aws/eb/.projectname-backend-production.env"
+  bash $0 deploy
+
   exit
 fi
