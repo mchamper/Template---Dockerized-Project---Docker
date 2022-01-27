@@ -1,15 +1,15 @@
 #!/bin/bash
 
-path=$1
+SOURCE=$1
 
 if [[ $2 != "--root" ]]; then
-  path="$1/docker"
+  SOURCE="$1/docker"
 fi
 
 rm -rf ./.tmp-dockerized-project/.git
 
 # CREATE
-if [[ ! -f "$path/version" && ! -f "$path/version.txt" ]]; then
+if [[ ! -f "$SOURCE/version" && ! -f "$SOURCE/version.txt" ]]; then
   mkdir -p ./.tmp-dockerized-project/bin/core
   mkdir -p ./.tmp-dockerized-project/credentials/.aws
   mkdir -p ./.tmp-dockerized-project/credentials/.ssh
@@ -19,15 +19,11 @@ if [[ ! -f "$path/version" && ! -f "$path/version.txt" ]]; then
   cp ./.tmp-dockerized-project/examples/compose.example.yml ./.tmp-dockerized-project/compose.dev.yml
   cp ./.tmp-dockerized-project/examples/install.example.sh ./.tmp-dockerized-project/install.sh
   cp ./.tmp-dockerized-project/examples/database-exports/.env.example ./.tmp-dockerized-project/database-exports/.env
-  cp ./.tmp-dockerized-project/examples/bin/core/web.sh ./.tmp-dockerized-project/bin/core/web.sh
-  cp ./.tmp-dockerized-project/examples/bin/core/mobile.sh ./.tmp-dockerized-project/bin/core/mobile.sh
-  cp ./.tmp-dockerized-project/examples/bin/core/backoffice.sh ./.tmp-dockerized-project/bin/core/backoffice.sh
-  cp ./.tmp-dockerized-project/examples/bin/core/backend.sh ./.tmp-dockerized-project/bin/core/backend.sh
-  cp ./.tmp-dockerized-project/examples/bin/core/database.sh ./.tmp-dockerized-project/bin/core/database.sh
+  cp -r ./.tmp-dockerized-project/examples/bin/core ./.tmp-dockerized-project/bin/core
 
   echo "/.env" > ./.tmp-dockerized-project/.gitignore
 
-  mkdir -p "$path"
+  mkdir -p "$SOURCE"
 
 # UPDATE
 else
@@ -38,5 +34,5 @@ fi
 rm -rf ./.tmp-dockerized-project/downloads
 rm -f ./.tmp-dockerized-project/base/bin/create-dockerized-project.sh
 
-cp -a ./.tmp-dockerized-project/. "$path"
+cp -a ./.tmp-dockerized-project/. "$SOURCE"
 rm -rf ./.tmp-dockerized-project
