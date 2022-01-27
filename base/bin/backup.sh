@@ -8,6 +8,7 @@ if [[ $BACKUP_PATH = "" ]]; then
 fi
 
 FOLDER_NAME="Docker backup"
+ZIP_NAME="$FOLDER_NAME ($COMPOSE_PROJECT_NAME).zip"
 BACKUP_PATH="$BACKUP_PATH/$FOLDER_NAME"
 PASSWORD=$(bash base/bin/generate-password.sh 64)
 
@@ -23,19 +24,19 @@ cp -a database-exports/. "$BACKUP_PATH/database-exports"
 cp -a environments/. "$BACKUP_PATH/environments"
 
 cd "$BACKUP_PATH/.."
-if [[ -f "$FOLDER_NAME.zip" ]]; then rm "$FOLDER_NAME.zip"; fi
-if [[ -f "$FOLDER_NAME.zip.txt" ]]; then rm "$FOLDER_NAME.zip.txt"; fi
+if [[ -f "$ZIP_NAME" ]]; then rm "$ZIP_NAME"; fi
+if [[ -f "$ZIP_NAME.txt" ]]; then rm "$ZIP_NAME.txt"; fi
 
 ENCRYPT=""
 
 if [[ $1 = "--encrypt" ]]; then
   ENCRYPT="-e"
 
-  echo $PASSWORD > "$FOLDER_NAME.zip.txt"
+  echo $PASSWORD > "$ZIP_NAME.txt"
   echo "Use this password (copy/paste below): $PASSWORD"
 fi
 
-zip -r "$FOLDER_NAME.zip" "$FOLDER_NAME" \
+zip -r "$ZIP_NAME" "$FOLDER_NAME" \
   -x "$FOLDER_NAME/credentials/.aws/*" \
   -x "$FOLDER_NAME/database-exports/dump.sql" \
   $ENCRYPT
