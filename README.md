@@ -55,17 +55,17 @@ SRCS=(
 Quedando de la siguiente manera en un caso de uso real:
 
 ```
-SRC_WEB="./../web"
-SRC_MOBILE="./../mobile"
-SRC_BACKOFFICE="./../backoffice"
-SRC_BACKEND="./../backend"
+SRC_WEB="../web"
+SRC_MOBILE="../mobile"
+SRC_BACKOFFICE="../backoffice"
+SRC_BACKEND="../backend"
 
 SRCS=(
-  web:${SRC_WEB}
-  mobile:${SRC_MOBILE}
-  backoffice:${SRC_BACKOFFICE}
-  backend:${SRC_BACKEND}
-  backend-php:${SRC_BACKEND}
+  web:$SRC_WEB
+  mobile:$SRC_MOBILE
+  backoffice:$SRC_BACKOFFICE
+  backend:$SRC_BACKEND
+  backend-php:$SRC_BACKEND
 )
 ```
 

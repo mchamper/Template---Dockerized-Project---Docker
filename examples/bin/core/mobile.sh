@@ -31,13 +31,13 @@ fi
 
 WSL_HOST_PATH="$WSL_HOST_PATH/from-WSL---$COMPOSE_PROJECT_NAME-$SERVICE"
 
-if [[ $CMD = "copy-to-host" ]]; then
+if [[ $CMD = "wsl-copy-to-host" ]]; then
   bash $0 remove-from-host
   bash base/bin/sources/copy-to.sh $SERVICE "$WSL_HOST_PATH"
   exit
 fi
 
-if [[ $CMD = "remove-from-host" ]]; then
+if [[ $CMD = "wsl-remove-from-host" ]]; then
   bash base/bin/sources/remove-from.sh "$WSL_HOST_PATH"
   exit
 fi

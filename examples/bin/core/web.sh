@@ -21,7 +21,9 @@ fi
 ##############################
 
 if [[ $CMD = "upload" ]]; then
-  bash base/bin/aws/s3-upload.sh $SERVICE "dist" "bucket-name"
+  bash base/bin/aws/s3-upload.sh $SERVICE "dist" "bucket-name" --delete
+  bash base/bin/aws/cloudfront-invalidate.sh $SERVICE "distribution-id"
+
   exit
 fi
 

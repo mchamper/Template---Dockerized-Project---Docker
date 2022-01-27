@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ ! -f .env ]; then cd ../../; fi; . .env
+. .env || exit 1
 
 SERVICE=$1
 VERSION=$(bash base/bin/git/version.sh $SERVICE) || exit 1

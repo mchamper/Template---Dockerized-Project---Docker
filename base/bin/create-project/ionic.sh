@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ ! -f .env ]; then cd ../../; fi; . .env
+. .env || exit 1
 
 bash base/bin/docker/run.sh $1 "
   ionic config set -g npmClient yarn;

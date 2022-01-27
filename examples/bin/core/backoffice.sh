@@ -38,8 +38,8 @@ if [[ $CMD = "download" ]]; then
 fi
 
 if [[ $CMD = "deploy" ]]; then
-  bash $0 build || exit 1
-  bash $0 upload || exit 1
+  bash $0 build
+  bash $0 upload
 
   exit
 fi
