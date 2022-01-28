@@ -14,6 +14,7 @@ RUN apk add --update --no-cache \
   python3 \
   py3-pip \
   py3-pynacl \
+  python3-dev libffi-dev openssl-dev musl-dev gcc make \
 && pip3 install --upgrade pip
 
 RUN apk add --update --no-cache \
