@@ -9,6 +9,6 @@ if [[ $CMD = "add-ip" ]]; then
   IP=$2
   DESCRIPTION=$3
 
-  bash base/bin/aws/ec2-add-ip.sh $SERVICE "security-group-id" "$IP" "$DESCRIPTION"
+  bash base/bin/aws/ec2-add-ip.sh $SERVICE "security-group-id" "$IP" "$DESCRIPTION" 3306
   exit
 fi
