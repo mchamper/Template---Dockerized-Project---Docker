@@ -12,7 +12,6 @@ REGEX="^[0-9]+"
 if ! [[ $IP =~ $REGEX ]]; then
   IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
   DESCRIPTION=$3
-  PORT=$4
 fi
 
 bash base/bin/docker/run.sh $SERVICE "
