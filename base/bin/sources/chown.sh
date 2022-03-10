@@ -1,32 +1,25 @@
 #!/bin/bash
 
 . .env || exit 1
-CMD=$1; ARG1=$2; ARG2=$3; ARG3=$4; ARG4=$5; ARG5=$6;
 
-if [[ $CMD != "--exec" ]]; then
-  for SRC in ${SRCS[@]}; do
-    SERVICE=${SRC%%:*}
-    SOURCE=${SRC##*:}
+SERVICE=${1}
+DOCKER_SOURCE=$(pwd)
 
-    if [[ $1 = "--all" || $1 = $SERVICE ]]; then
-      bash $0 --exec "$SOURCE"
-    fi
+function chown() {
+  local source=${1}
 
-    if [[ $1 = $SERVICE ]]; then exit; fi
-  done
+  cd "${DOCKER_SOURCE}"
+  cd "${source}" || exit 1
 
-  if [[ $1 = "--all" || $1 = "docker" ]]; then
-    bash $0 --exec ./../docker
-  fi
+  sudo chown -R $(whoami) ${source}
+}
 
-  exit
-fi
+for SRC in ${SRCS[@]}; do
+  SRC_SERVICE=${SRC%%:*}
+  SRC_SOURCE=${SRC##*:}
 
-if [[ $CMD = "--exec" ]]; then
-  SOURCE=$ARG1
-  cd $SOURCE || exit 1
+  if [[ ${SERVICE} = ${SRC_SERVICE} || ${SERVICE} = "--all" ]]; then chown "${SRC_SOURCE}"; fi
+  if [[ ${SERVICE} = ${SRC_SERVICE} ]]; then exit; fi
+done
 
-  sudo chown -R $USER $SOURCE
-
-  exit
-fi
+if [[ ${SERVICE} = "docker" || ${SERVICE} = "--all" ]]; then chown "${DOCKER_SOURCE}"; fi

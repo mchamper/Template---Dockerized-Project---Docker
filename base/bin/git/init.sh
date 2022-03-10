@@ -1,43 +1,36 @@
 #!/bin/bash
 
 . .env || exit 1
-CMD=$1; ARG1=$2; ARG2=$3; ARG3=$4; ARG4=$5; ARG5=$6;
 
-if [[ $CMD != "--exec" ]]; then
-  for SRC in ${SRCS[@]}; do
-    SERVICE=${SRC%%:*}
-    SOURCE=${SRC##*:}
+SERVICE=${1}
+DOCKER_SOURCE=$(pwd)
 
-    if [[ $1 = "--all" || $1 = $SERVICE ]]; then
-      bash $0 --exec "$SOURCE"
-    fi
+function init() {
+  local source=${1}
 
-    if [[ $1 = $SERVICE ]]; then exit; fi
-  done
-
-  if [[ $1 = "--all" || $1 = "docker" ]]; then
-    bash $0 --exec ./../docker
-  fi
-
-  exit
-fi
-
-if [[ $CMD = "--exec" ]]; then
-  SOURCE=$ARG1
-  cd $SOURCE || exit 1
+  cd "${DOCKER_SOURCE}"
+  cd "${source}" || exit 1
 
   if [[ -d .git ]]; then
-    echo "Git repository already initialized in \"$SOURCE\""
+    echo "Git repository already initialized in \"${source}\""
     exit
   fi
 
   git init || exit 1
-  git config user.name "$GIT_USER_NAME"
-  git config user.email "$GIT_USER_EMAIL"
+  git config user.name "${GIT_USER_NAME}"
+  git config user.email "${GIT_USER_EMAIL}"
   git add .
   git commit -m "Initial commit"
 
-  echo "Git repository initialized in \"$SOURCE\""
+  echo "Git repository initialized in \"${source}\""
+}
 
-  exit
-fi
+for SRC in ${SRCS[@]}; do
+  SRC_SERVICE=${SRC%%:*}
+  SRC_SOURCE=${SRC##*:}
+
+  if [[ ${SERVICE} = ${SRC_SERVICE} || ${SERVICE} = "--all" ]]; then init "${SRC_SOURCE}"; fi
+  if [[ ${SERVICE} = ${SRC_SERVICE} ]]; then exit; fi
+done
+5
+if [[ ${SERVICE} = "docker" || ${SERVICE} = "--all" ]]; then init "${DOCKER_SOURCE}"; fi

@@ -1,29 +1,22 @@
 #!/bin/bash
 
 . .env || exit 1
-CMD=$1; ARG1=$2; ARG2=$3; ARG3=$4; ARG4=$5; ARG5=$6;
 
-if [[ $CMD != "--exec" ]]; then
-  for SRC in ${SRCS[@]}; do
-    SERVICE=${SRC%%:*}
-    SOURCE=${SRC##*:}
+SERVICE=${1}
+TARGET=${2}
 
-    if [[ $1 = $SERVICE ]]; then
-      bash $0 --exec "$SOURCE" "$2"
-    fi
+function copy_to() {
+  local source=${1}
+  local target=${2}
 
-    if [[ $1 = $SERVICE ]]; then exit; fi
-  done
+  cd "${source}" && tar cf - . | (mkdir -p "${target}" && cd "${target}" && tar xf -) || exit 1
+  echo "Copied from \"${source}\" to \"${target}\""
+}
 
-  exit
-fi
+for SRC in ${SRCS[@]}; do
+  SRC_SERVICE=${SRC%%:*}
+  SRC_SOURCE=${SRC##*:}
 
-if [[ $CMD = "--exec" ]]; then
-  SOURCE=$ARG1
-  TARGET=$ARG2
-
-  cd "$SOURCE" && tar cf - . | (mkdir -p "$TARGET" && cd "$TARGET" && tar xf -) || exit 1
-  echo "Copied from \"$SOURCE\" to \"$TARGET\""
-
-  exit
-fi
+  if [[ ${SERVICE} = ${SRC_SERVICE} ]]; then copy_to ${SRC_SOURCE} ${TARGET}; fi
+  if [[ ${SERVICE} = ${SRC_SERVICE} ]]; then exit; fi
+done

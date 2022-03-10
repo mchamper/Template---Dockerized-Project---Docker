@@ -1,41 +1,36 @@
 #!/bin/bash
 
 . .env || exit 1
-CMD=$1; ARG1=$2; ARG2=$3; ARG3=$4; ARG4=$5; ARG5=$6;
 
-if [[ $CMD != "--exec" ]]; then
-  for SRC in ${SRCS[@]}; do
-    SERVICE=${SRC%%:*}
-    SOURCE=${SRC##*:}
+SERVICE=${1}
+SOURCE=${2}
+GIT_URL=${3}
+GIT_BRANCH=${4}
 
-    if [[ $1 = $SERVICE ]]; then
-      bash $0 --exec "$SOURCE" "$2" "$3" "$4"
-      exit
-    fi
-  done
+function clone() {
+  local source=${1}
+  local git_url=${2}
+  local git_branch=${3}
 
-  exit
-fi
+  git clone ${git_url} ${source} || exit 1
+  cd "${source}"
 
-if [[ $CMD = "--exec" ]]; then
-  SOURCE=$ARG1
-  GIT_CLONE_URL=$ARG2
-  GIT_BRANCH=$ARG3
+  git config user.name "${GIT_USER_NAME}"
+  git config user.email "${GIT_USER_EMAIL}"
 
-  git clone $GIT_CLONE_URL $SOURCE || exit 1
-  cd $SOURCE
-
-  git config user.name "$GIT_USER_NAME"
-  git config user.email "$GIT_USER_EMAIL"
-
-  if [[ $GIT_BRANCH != "" ]]; then
-    git checkout $GIT_BRANCH
+  if [[ ${git_branch} != "" ]]; then
+    git checkout ${git_branch}
   fi
 
-  if [[ $ARG4 = "--flow" ]]; then
+  if [[ ${4} = "--flow" ]]; then
     git flow init -d
   fi
+}
 
-  exit
-fi
+for SRC in ${SRCS[@]}; do
+  SRC_SERVICE=${SRC%%:*}
+  SRC_SOURCE=${SRC##*:}
 
+  if [[ ${SERVICE} = ${SRC_SERVICE} ]]; then clone "${SRC_SOURCE}" ${GIT_URL} ${GIT_BRANCH} ${5}; fi
+  if [[ ${SERVICE} = ${SRC_SERVICE} ]]; then exit; fi
+done

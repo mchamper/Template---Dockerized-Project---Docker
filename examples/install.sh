@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. .env || exit 1
+
 bash base/bin/sources/create.sh --all || exit 1
 bash base/bin/docker/build.sh || exit 1
 
@@ -9,6 +11,11 @@ bash bin/core/web.sh clone
 bash bin/core/mobile.sh clone
 bash bin/core/backoffice.sh clone
 bash bin/core/backend.sh clone
+
+if [[ ${MUTAGEN} = 1 ]]; then
+  bash start.sh
+  sleep ${MUTAGEN_SLEEP}
+fi
 
 bash base/bin/docker/run.sh web "
   yarn install;
@@ -30,27 +37,16 @@ bash base/bin/docker/run.sh backend-php "
   php artisan storage:link;
 "
 
-bash base/bin/docker/start.sh database
-sleep 30
+if [[ ${MUTAGEN} != 1 ]]; then
+  bash start.sh database
+  sleep 15
+fi
 
 bash base/bin/docker/run.sh backend-php "
   php artisan migrate --force --seed;
 "
 
-bash base/bin/docker/exec.sh database "
-  cd /home/mysql/bin;
-  bash export-remote.sh;
-  bash import.sh;
-"
+bash bin/core/database.sh export-remote
+bash bin/core/database.sh import
 
-bash base/bin/docker/run.sh backend-php "
-  php artisan tinker --execute \"
-    \DB::table('system_users')
-      ->where('username', 'root')
-      ->update([
-        'password' => bcrypt(env('ROOT_PASSWORD', 'root'))
-      ])
-  \";
-"
-
-bash base/bin/docker/down.sh
+bash stop.sh
