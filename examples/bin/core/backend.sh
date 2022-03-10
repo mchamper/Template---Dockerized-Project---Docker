@@ -1,44 +1,46 @@
 #!/bin/bash
 
-. .env
-CMD=$1; ARG1=$2; ARG2=$3; ARG3=$4; ARG4=$5; ARG5=$6;
+. .env || exit 1
 
-SERVICE=backend-php
+CMD=${1}; ARG1=${2}; ARG2=${3}; ARG3=${4}; ARG4=${5}; ARG5=${6};
+SERVICE=backend
 
-if [[ $CMD = "-v" ]]; then
-  if [[ $ARG1 != "" ]]; then
-    bash base/bin/git/release.sh $SERVICE "$ARG1"; else
-    bash base/bin/git/version.sh $SERVICE; fi
+if [[ ${CMD} = "-v" ]]; then
+  VERSION=${ARG1}
+
+  if [[ ${VERSION} != "" ]]; then
+    bash base/bin/git/release.sh ${SERVICE} "${VERSION}"; else
+    bash base/bin/git/version.sh ${SERVICE}; fi
 
   exit
 fi
 
-if [[ $CMD = "clone" ]]; then
-  bash base/bin/git/clone.sh $SERVICE "git@github.com:project-name/project-name.git" develop --flow || exit 1
+if [[ ${CMD} = "clone" ]]; then
+  bash base/bin/git/clone.sh ${SERVICE} "git@github.com:project-name/project-name.git" develop --flow || exit 1
   exit
 fi
 
 ##############################
 
-if [[ $CMD = "status" ]]; then
-  bash base/bin/aws/eb-status.sh $SERVICE
+if [[ ${CMD} = "status" ]]; then
+  bash base/bin/aws/eb-status.sh ${SERVICE}
   exit
 fi
 
-if [[ $CMD = "ssh" ]]; then
-  bash base/bin/aws/eb-ssh.sh $SERVICE
+if [[ ${CMD} = "ssh" ]]; then
+  bash base/bin/aws/eb-ssh.sh ${SERVICE}
   exit
 fi
 
-if [[ $CMD = "deploy" ]]; then
-  bash base/bin/aws/eb-deploy.sh $SERVICE
+if [[ ${CMD} = "deploy" ]]; then
+  bash base/bin/aws/eb-deploy.sh ${SERVICE}
   exit
 fi
 
-if [[ $CMD = "deploy-and-migrate" ]]; then
-  bash base/bin/aws/eb-deploy.sh $SERVICE || exit 1
+if [[ ${CMD} = "deploy-and-migrate" ]]; then
+  bash base/bin/aws/eb-deploy.sh ${SERVICE}
 
-  bash base/bin/aws/eb-ssh.sh $SERVICE "
+  bash base/bin/aws/eb-ssh.sh ${SERVICE} "
     cd /var/app/current;
     php artisan migrate --force;
   "
@@ -46,18 +48,18 @@ if [[ $CMD = "deploy-and-migrate" ]]; then
   exit
 fi
 
-if [[ $CMD = "get-envs" ]]; then
-  if [[ $ARG1 = "--backup" ]]; then
-    echo $(bash base/bin/aws/eb-printenv.sh $SERVICE) > "environments/aws/eb/.projectname-backend-production.backup.env"
+if [[ ${CMD} = "get-envs" ]]; then
+  if [[ ${ARG1} = "--backup" ]]; then
+    echo $(bash base/bin/aws/eb-printenv.sh ${SERVICE}) > "environments/aws/eb/.projectname-backend-production.backup.env"
   else
-    bash base/bin/aws/eb-printenv.sh $SERVICE
+    bash base/bin/aws/eb-printenv.sh ${SERVICE}
   fi
 
   exit
 fi
 
-if [[ $CMD = "set-envs" ]]; then
-  bash base/bin/aws/eb-setenv.sh $SERVICE "environments/aws/eb/.projectname-backend-production.env"
+if [[ ${CMD} = "set-envs" ]]; then
+  bash base/bin/aws/eb-setenv.sh ${SERVICE} "environments/aws/eb/.projectname-backend-production.env"
   bash $0 deploy
 
   exit

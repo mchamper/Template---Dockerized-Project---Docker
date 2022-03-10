@@ -1,32 +1,24 @@
 #!/bin/bash
 
 . .env || exit 1
-CMD=$1; ARG1=$2; ARG2=$3; ARG3=$4; ARG4=$5; ARG5=$6;
 
-if [[ $CMD != "--exec" ]]; then
-  for SRC in ${SRCS[@]}; do
-    SERVICE=${SRC%%:*}
-    SOURCE=${SRC##*:}
+SERVICE=${1}
 
-    if [[ $1 = "--all" || $1 = $SERVICE ]]; then
-      bash $0 --exec "$SOURCE"
-    fi
+function create() {
+  local source=${1}
 
-    if [[ $1 = $SERVICE ]]; then exit; fi
-  done
-
-  exit
-fi
-
-if [[ $CMD = "--exec" ]]; then
-  SOURCE=$ARG1
-
-  if [ ! -d $SOURCE ]; then
-    mkdir -p $SOURCE
-    echo "Created \"$SOURCE\""
+  if [[ ! -d ${source} ]]; then
+    mkdir -p ${source}
+    echo "Created \"${source}\""
   else
-    echo "Directory \"$SOURCE\" already exists"
+    echo "Directory \"${source}\" already exists"
   fi
+}
 
-  exit
-fi
+for SRC in ${SRCS[@]}; do
+  SRC_SERVICE=${SRC%%:*}
+  SRC_SOURCE=${SRC##*:}
+
+  if [[ ${SERVICE} = ${SRC_SERVICE} || ${SERVICE} = "--all" ]]; then create ${SRC_SOURCE}; fi
+  if [[ ${SERVICE} = ${SRC_SERVICE} ]]; then exit; fi
+done

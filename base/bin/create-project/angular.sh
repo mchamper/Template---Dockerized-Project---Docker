@@ -2,8 +2,11 @@
 
 . .env || exit 1
 
-bash base/bin/docker/run.sh $1 "
-  ng new app --directory ./ --package-manager yarn --skip-git;
+SERVICE=${1}
+PACKAGE_MANAGER=${2:-"yarn"}
+
+bash base/bin/docker/run.sh ${SERVICE} "
+  ng new app --directory ./ --package-manager ${PACKAGE_MANAGER} --skip-git;
 "
 
-bash base/bin/git/init.sh $1
+bash base/bin/git/init.sh ${SERVICE}

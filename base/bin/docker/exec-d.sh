@@ -9,7 +9,7 @@ if [[ ${MUTAGEN} != 1 ]]; then
   docker-compose \
     -f compose.${ENV}.yml \
     -f compose.${ENV}.volumes.yml \
-    run -rm ${SERVICE} \
+    exec -d ${SERVICE} \
     /bin/sh -c "${COMMAND}"
 
   exit
@@ -17,5 +17,5 @@ fi
 
 docker-compose \
   -f compose.${ENV}.yml \
-  exec ${SERVICE} \
+  exec -d ${SERVICE} \
   /bin/sh -c "${COMMAND}"

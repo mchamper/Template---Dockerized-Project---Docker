@@ -1,0 +1,21 @@
+services:
+
+  web:
+    volumes:
+      - ${SRC_WEB}:/home/node/app
+
+  mobile:
+    volumes:
+      - ${SRC_MOBILE}:/home/node/app
+
+  backoffice:
+    volumes:
+      - ${SRC_BACKOFFICE}:/home/node/app
+
+  backend:
+    volumes:
+      - ${SRC_BACKEND}:/var/www/html
+
+  backend-php:
+    volumes:
+      - ${SRC_BACKEND}:/var/www/html

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 . ../exports/.env || exit 1
+
 FILE="../exports/dump.sql"
 
 echo "Importing..."

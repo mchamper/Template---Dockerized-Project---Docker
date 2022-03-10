@@ -2,6 +2,8 @@
 
 . .env || exit 1
 
+SERVICE=${1}
+
 docker-compose \
   -f compose.${ENV}.yml \
-  stop $1
+  stop ${SERVICE}

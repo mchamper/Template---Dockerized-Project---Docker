@@ -2,6 +2,8 @@
 
 . .env || exit 1
 
-SERVICE=$1
+SERVICE=${1}
 
-bash base/bin/docker/run.sh $SERVICE "eb printenv"
+bash base/bin/docker/run.sh ${SERVICE} "
+  eb printenv
+"

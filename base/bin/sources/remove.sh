@@ -1,28 +1,20 @@
 #!/bin/bash
 
 . .env || exit 1
-CMD=$1; ARG1=$2; ARG2=$3; ARG3=$4; ARG4=$5; ARG5=$6;
 
-if [[ $CMD != "--exec" ]]; then
-  for SRC in ${SRCS[@]}; do
-    SERVICE=${SRC%%:*}
-    SOURCE=${SRC##*:}
+SERVICE=${1}
 
-    if [[ $1 = "--all" || $1 = $SERVICE ]]; then
-      bash $0 --exec "$SOURCE"
-    fi
+function remove() {
+  local source=${1}
 
-    if [[ $1 = $SERVICE ]]; then exit; fi
-  done
+  mkdir -p .tmp && rsync -a --delete .tmp/ ${source}/ && rm -rf .tmp ${source}
+  echo "Removed \"${source}\""
+}
 
-  exit
-fi
+for SRC in ${SRCS[@]}; do
+  SRC_SERVICE=${SRC%%:*}
+  SRC_SOURCE=${SRC##*:}
 
-if [[ $CMD = "--exec" ]]; then
-  SOURCE=$ARG1
-
-  mkdir -p .tmp && rsync -a --delete .tmp/ $SOURCE/ && rm -rf .tmp $SOURCE
-  echo "Removed \"$SOURCE\""
-
-  exit
-fi
+  if [[ ${SERVICE} = ${SRC_SERVICE} || ${SERVICE} = "--all" ]]; then remove ${SRC_SOURCE}; fi
+  if [[ ${SERVICE} = ${SRC_SERVICE} ]]; then exit; fi
+done

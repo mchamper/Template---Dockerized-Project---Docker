@@ -2,6 +2,7 @@ ARG NODE_VERSION=latest
 FROM node:${NODE_VERSION}-alpine
 
 WORKDIR /home/node/app
+RUN chown node:node /home/node/app
 
 RUN apk add --update --no-cache \
   git \

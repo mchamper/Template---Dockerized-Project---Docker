@@ -1,39 +1,36 @@
 #!/bin/bash
 
 . .env || exit 1
-CMD=$1; ARG1=$2; ARG2=$3; ARG3=$4; ARG4=$5; ARG5=$6;
 
-if [[ $CMD != "--exec" ]]; then
-  for SRC in ${SRCS[@]}; do
-    SERVICE=${SRC%%:*}
-    SOURCE=${SRC##*:}
+SERVICE=${1}
+DOCKER_SOURCE=$(pwd)
 
-    if [[ $1 = $SERVICE ]]; then
-      bash $0 --exec "$SOURCE" "$2"
-      exit
+function version() {
+  local source=${1}
+
+  cd "${DOCKER_SOURCE}"
+  cd "${source}" || exit 1
+
+  if [[ -d .git ]]; then
+    local version=$(git describe --tags --abbrev=0)
+    local version_full=$(git describe --tags)
+
+    if [[ ${2} = "--full" ]]; then
+      echo $version_full
+    else
+      echo $version
     fi
-  done
-
-  if [[ $CMD = "docker" ]]; then
-    bash $0 --exec ./../docker "$2"
-  fi
-
-  exit
-fi
-
-if [[ $CMD = "--exec" ]]; then
-  SOURCE=$ARG1
-  cd $SOURCE || exit 1
-
-  VERSION=$(git describe --tags --abbrev=0) || exit
-  VERSION_FULL=$(git describe --tags) || exit
-
-  if [[ $ARG2 = "--full" ]]; then
-    echo $VERSION_FULL
   else
-    echo $VERSION
+    echo "No git repository in \"${source}\""
   fi
+}
 
-  exit
-fi
+for SRC in ${SRCS[@]}; do
+  SRC_SERVICE=${SRC%%:*}
+  SRC_SOURCE=${SRC##*:}
 
+  if [[ ${SERVICE} = ${SRC_SERVICE} ]]; then version "${SRC_SOURCE}" ${2}; fi
+  if [[ ${SERVICE} = ${SRC_SERVICE} ]]; then exit; fi
+done
+
+if [[ ${SERVICE} = "docker" ]]; then version "${DOCKER_SOURCE}" ${2}; fi

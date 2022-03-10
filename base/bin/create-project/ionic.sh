@@ -2,11 +2,14 @@
 
 . .env || exit 1
 
-bash base/bin/docker/run.sh $1 "
-  ionic config set -g npmClient yarn;
+SERVICE=${1}
+PACKAGE_MANAGER=${2:-"yarn"}
+
+bash base/bin/docker/run.sh ${SERVICE} "
+  ionic config set -g npmClient ${PACKAGE_MANAGER};
   ionic start app --no-git;
   cp -rf ./app ../;
   rm -rf ./app;
 "
 
-bash base/bin/git/init.sh $1
+bash base/bin/git/init.sh ${SERVICE}
