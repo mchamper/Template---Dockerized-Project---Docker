@@ -2,5 +2,15 @@
 
 . .env || exit 1
 
-mutagen sync monitor \
-  --label-selector project="${COMPOSE_PROJECT_NAME}"
+while :
+do
+	clear
+
+  mutagen sync list \
+    --label-selector project="${COMPOSE_PROJECT_NAME}"
+
+	sleep 1
+done
+
+# mutagen sync monitor \
+#   --label-selector project="${COMPOSE_PROJECT_NAME}"
