@@ -3,9 +3,8 @@
 . .env || exit 1
 
 SERVICE=${1}
-SOURCE=${2}
-GIT_URL=${3}
-GIT_BRANCH=${4}
+GIT_URL=${2}
+GIT_BRANCH=${3}
 
 function clone() {
   local source=${1}
