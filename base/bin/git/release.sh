@@ -30,7 +30,11 @@ function release() {
         sed -i '0,/version/ s|\(.*"version"\): "\(.*\)",.*|\1: '"\"${version}\",|" package-lock.json;
       fi
 
-      echo "export const version = \"${version}\";" > version.js
+      if [[ -f version.ts ]]; then
+        echo "export const version = \"${version}\";" > version.ts
+      else
+        echo "export const version = \"${version}\";" > version.js
+      fi
     else
       echo ${version} > version.txt
     fi
