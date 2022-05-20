@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Packages\RESTful\Resolvers\Filters;
+namespace App\Commons\RESTful\Resolvers\Filters;
 
 use Illuminate\Support\Str;
-use App\Packages\RESTful\Resolvers\Filters\RESTfulFiltersResolver;
+use App\Commons\RESTful\Resolvers\Filters\RESTfulFiltersResolver;
 
 class RESTfulFiltersAdvanceResolver extends RESTfulFiltersResolver
 {

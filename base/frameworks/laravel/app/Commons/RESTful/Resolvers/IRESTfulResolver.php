@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Packages\RESTful\Resolvers;
+namespace App\Commons\RESTful\Resolvers;
 
 interface IRESTfulResolver
 {

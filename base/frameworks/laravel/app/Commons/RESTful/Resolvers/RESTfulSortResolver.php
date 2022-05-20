@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Packages\RESTful\Resolvers;
+namespace App\Commons\RESTful\Resolvers;
 
 use Illuminate\Support\Str;
-use App\Packages\RESTful\Resolvers\IRESTfulResolver;
+use App\Commons\RESTful\Resolvers\IRESTfulResolver;
 
 class RESTfulSortResolver implements IRESTfulResolver
 {

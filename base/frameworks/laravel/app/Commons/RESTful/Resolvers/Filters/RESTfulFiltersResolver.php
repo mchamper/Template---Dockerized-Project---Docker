@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Packages\RESTful\Resolvers\Filters;
+namespace App\Commons\RESTful\Resolvers\Filters;
 
-use App\Packages\RESTful\Resolvers\IRESTfulResolver;
-use App\Packages\RESTful\Resolvers\Filters\RESTfulFiltersDefaultResolver;
-use App\Packages\RESTful\Resolvers\Filters\RESTfulFiltersAdvanceResolver;
-use App\Packages\RESTful\Mappers\RESTfulOperationsMapper;
+use App\Commons\RESTful\Resolvers\IRESTfulResolver;
+use App\Commons\RESTful\Resolvers\Filters\RESTfulFiltersDefaultResolver;
+use App\Commons\RESTful\Resolvers\Filters\RESTfulFiltersAdvanceResolver;
+use App\Commons\RESTful\Mappers\RESTfulOperationsMapper;
+use Illuminate\Support\Str;
 
 abstract class RESTfulFiltersResolver implements IRESTfulResolver
 {
@@ -40,6 +41,30 @@ abstract class RESTfulFiltersResolver implements IRESTfulResolver
             case '!like': {
                 $method = $isOr ? 'orWhere' : 'where';
                 return $query->$method($field, RESTfulOperationsMapper::get($operation), $value);
+            }
+
+            case '-like':
+            case '-!like': {
+                $operation = Str::replace('-', '', $operation);
+                $method = $isOr ? 'orWhere' : 'where';
+
+                return $query->$method($field, RESTfulOperationsMapper::get($operation), '%' . $value);
+            }
+
+            case 'like-':
+            case '!like-': {
+                $operation = Str::replace('-', '', $operation);
+                $method = $isOr ? 'orWhere' : 'where';
+
+                return $query->$method($field, RESTfulOperationsMapper::get($operation), $value . '%');
+            }
+
+            case '-like-':
+            case '-!like-': {
+                $operation = Str::replace('-', '', $operation);
+                $method = $isOr ? 'orWhere' : 'where';
+
+                return $query->$method($field, RESTfulOperationsMapper::get($operation), '%' . $value . '%');
             }
 
             case 'null': {

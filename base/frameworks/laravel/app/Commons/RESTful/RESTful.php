@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Packages\RESTful;
+namespace App\Commons\RESTful;
 
-use App\Packages\RESTful\Resolvers\RESTfulFieldsResolver;
-use App\Packages\RESTful\Resolvers\RESTfulWithResolver;
-use App\Packages\RESTful\Resolvers\RESTfulWithCountResolver;
-use App\Packages\RESTful\Resolvers\Filters\RESTfulFiltersDefaultResolver;
-use App\Packages\RESTful\Resolvers\Filters\RESTfulFiltersAdvanceResolver;
-use App\Packages\RESTful\Resolvers\RESTfulScopesResolver;
-use App\Packages\RESTful\Resolvers\RESTfulSearchResolver;
-use App\Packages\RESTful\Resolvers\RESTfulSortResolver;
-use App\Packages\RESTful\Resolvers\RESTfulAppendsResolver;
-use App\Packages\RESTful\Resolvers\RESTfulGroupByResolver;
+use App\Commons\RESTful\Resolvers\RESTfulFieldsResolver;
+use App\Commons\RESTful\Resolvers\RESTfulWithResolver;
+use App\Commons\RESTful\Resolvers\RESTfulWithCountResolver;
+use App\Commons\RESTful\Resolvers\Filters\RESTfulFiltersDefaultResolver;
+use App\Commons\RESTful\Resolvers\Filters\RESTfulFiltersAdvanceResolver;
+use App\Commons\RESTful\Resolvers\RESTfulScopesResolver;
+use App\Commons\RESTful\Resolvers\RESTfulSearchResolver;
+use App\Commons\RESTful\Resolvers\RESTfulSortResolver;
+use App\Commons\RESTful\Resolvers\RESTfulAppendsResolver;
+use App\Commons\RESTful\Resolvers\RESTfulGroupByResolver;
 
 class RESTful
 {
@@ -52,11 +52,11 @@ class RESTful
         $this->_appendsResolver = new RESTfulAppendsResolver($params);
 
         if (!empty($params['limit'])) {
-            $this->_limit = $params['limit'];
+            $this->_limit = (int) $params['limit'];
         }
 
         if (!empty($params['offset'])) {
-            $this->_offset = $params['offset'];
+            $this->_offset = (int) $params['offset'];
         }
 
         $this->_resource = $this->_fieldsResolver->resolve($this->_resource);
@@ -107,6 +107,11 @@ class RESTful
     public function count(bool $mustClone = false)
     {
         return $this->getQuery($mustClone)->count();
+    }
+
+    public function sum(string $field, bool $mustClone = false)
+    {
+        return $this->getQuery($mustClone)->sum($field);
     }
 
     public function find($primaryKeys, bool $mustClone = false)
