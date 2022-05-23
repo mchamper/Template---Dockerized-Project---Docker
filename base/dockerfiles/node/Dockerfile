@@ -27,7 +27,7 @@ ARG IONIC_VERSION=latest
 RUN npm i -g npm@${NPM_VERSION}
 RUN npm i -g @angular/cli@${ANGULAR_VERSION}
 RUN npm i -g @ionic/cli@${IONIC_VERSION}
-RUN npm i -g cordova-res --unsafe-perm
+RUN npm i -g cordova-res --unsafe-perm; exit 0
 
 USER node
 ENV PATH="/home/node/.local/bin:${PATH}"
