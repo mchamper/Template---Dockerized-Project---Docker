@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Packages\RESTful\Mappers;
+namespace App\Commons\RESTful\Mappers;
 
 class RESTfulOperationsMapper
 {

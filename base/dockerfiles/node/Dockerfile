@@ -12,6 +12,7 @@ RUN apk add --update --no-cache \
   groff
 
 RUN apk add --update --no-cache \
+  python2 \
   python3 \
   py3-pip \
   py3-pynacl \

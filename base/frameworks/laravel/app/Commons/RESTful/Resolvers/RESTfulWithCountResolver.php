@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Packages\RESTful\Resolvers;
+namespace App\Commons\RESTful\Resolvers;
 
-use App\Packages\RESTful\Resolvers\IRESTfulResolver;
-use App\Packages\RESTful\RESTful;
+use App\Commons\RESTful\Resolvers\IRESTfulResolver;
+use App\Commons\RESTful\RESTful;
 
 class RESTfulWithCountResolver implements IRESTfulResolver
 {
