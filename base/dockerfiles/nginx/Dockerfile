@@ -8,6 +8,7 @@ RUN apk add --update --no-cache \
   zip \
   unzip \
   openssh \
+  putty \
   groff
 
 RUN apk add --update --no-cache \
