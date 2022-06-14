@@ -10,10 +10,11 @@ RUN apk add --update --no-cache \
   unzip \
   openssh \
   putty \
+  rsync \
   groff
 
 RUN apk add --update --no-cache \
-  python2 \
+  # python2 \ # No existe en "node"
   python3 \
   py3-pip \
   py3-pynacl \
