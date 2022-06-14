@@ -2,7 +2,8 @@ ARG NODE_VERSION=latest
 FROM node:${NODE_VERSION}-alpine
 
 WORKDIR /home/node/app
-RUN chown node:node /home/node/app
+RUN chown -R node:node /home/node/app
+ENV PATH="/home/node/.local/bin:${PATH}"
 
 RUN apk add --update --no-cache \
   git \
@@ -13,8 +14,8 @@ RUN apk add --update --no-cache \
   rsync \
   groff
 
+RUN apk add --update --no-cache python2; exit 0
 RUN apk add --update --no-cache \
-  # python2 \ # No existe en "node"
   python3 \
   py3-pip \
   py3-pynacl \
@@ -32,6 +33,5 @@ RUN npm i -g @ionic/cli@${IONIC_VERSION}
 RUN npm i -g cordova-res --unsafe-perm; exit 0
 
 USER node
-ENV PATH="/home/node/.local/bin:${PATH}"
 
 RUN pip3 install awscli --upgrade --user && pip3 install awsebcli --upgrade --user

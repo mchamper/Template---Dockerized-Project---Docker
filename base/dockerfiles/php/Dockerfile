@@ -2,6 +2,9 @@ ARG PHP_VERSION=latest
 FROM php:${PHP_VERSION}-alpine
 
 WORKDIR /var/www/html
+RUN addgroup docker && adduser -D docker -u 1000 -G www-data -G root
+RUN chown -R docker:docker /var/www/html
+ENV PATH="/home/docker/.local/bin:${PATH}"
 
 RUN apk add --update --no-cache \
   git \
@@ -12,8 +15,8 @@ RUN apk add --update --no-cache \
   rsync \
   groff
 
+RUN apk add --update --no-cache python2; exit 0
 RUN apk add --update --no-cache \
-  python2 \
   python3 \
   py3-pip \
   py3-pynacl \
@@ -55,13 +58,6 @@ ARG COMPOSER_VERSION=
 RUN curl -sL https://getcomposer.org/installer | php -- --install-dir /usr/bin --filename composer
 RUN composer self-update ${COMPOSER_VERSION}
 
-ARG USER=docker
-ARG UID=1000
-ARG GID=1000
-RUN addgroup ${USER} && adduser -D ${USER} -u ${UID} -G www-data -G root
-RUN chown ${USER}:${USER} /var/www/html
-
-USER ${USER}
-ENV PATH="/home/docker/.local/bin:${PATH}"
+USER docker
 
 RUN pip3 install awscli --upgrade --user && pip3 install awsebcli --upgrade --user
