@@ -6,7 +6,7 @@ SERVICE=${1}
 COMMAND=${2}
 
 if [[ ${MUTAGEN} != 1 ]]; then
-  docker-compose \
+  docker compose \
     -f compose.${ENV}.yml \
     -f compose.${ENV}.volumes.yml \
     exec -d ${SERVICE} \
@@ -15,7 +15,7 @@ if [[ ${MUTAGEN} != 1 ]]; then
   exit
 fi
 
-docker-compose \
+docker compose \
   -f compose.${ENV}.yml \
   exec -d ${SERVICE} \
   /bin/sh -c "${COMMAND}"

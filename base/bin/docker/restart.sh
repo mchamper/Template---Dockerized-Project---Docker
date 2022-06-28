@@ -4,6 +4,6 @@
 
 SERVICE=${1}
 
-docker-compose \
+docker compose \
   -f compose.${ENV}.yml \
   restart ${SERVICE}

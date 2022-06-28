@@ -2,6 +2,6 @@
 
 . .env || exit 1
 
-docker-compose \
+docker compose \
   -f compose.${ENV}.yml \
   down

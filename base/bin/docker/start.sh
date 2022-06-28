@@ -7,7 +7,7 @@ SERVICE=${1}
 if [[ ${MUTAGEN} != 1 ]]; then
   export MUTAGEN_SLEEP=0
 
-  docker-compose \
+  docker compose \
     -f compose.${ENV}.yml \
     -f compose.${ENV}.volumes.yml \
     up -d ${SERVICE}
@@ -15,6 +15,6 @@ if [[ ${MUTAGEN} != 1 ]]; then
   exit
 fi
 
-docker-compose \
+docker compose \
   -f compose.${ENV}.yml \
   up -d ${SERVICE}
