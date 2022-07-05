@@ -22,6 +22,20 @@ RUN apk add --update --no-cache \
   python3-dev libffi-dev openssl-dev musl-dev gcc make \
 && pip3 install --upgrade pip
 
+RUN apk add --update --no-cache \
+  freetype \
+  freetype-dev \
+  libjpeg-turbo \
+  libjpeg-turbo-dev \
+  libpng \
+  libpng-dev \
+  build-base \
+  libc6-compat \
+&& apk del --no-cache \
+  freetype-dev \
+  libjpeg-turbo-dev \
+  libpng-dev
+
 RUN rm -rf /var/cache/apk/* && rm -rf /tmp/*
 
 ARG NPM_VERSION=latest
