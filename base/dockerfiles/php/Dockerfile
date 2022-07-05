@@ -34,13 +34,15 @@ RUN apk add --update --no-cache \
 && apk del --no-cache \
   libzip-dev
 
-RUN apk add --no-cache \
+RUN apk add --update --no-cache \
   freetype \
   freetype-dev \
   libjpeg-turbo \
   libjpeg-turbo-dev \
   libpng \
   libpng-dev \
+  build-base \
+  libc6-compat \
 && docker-php-ext-configure gd \
   --with-freetype=/usr/include/ \
   # --with-png=/usr/include/ \
