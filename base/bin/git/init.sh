@@ -32,5 +32,5 @@ for SRC in ${SRCS[@]}; do
   if [[ ${SERVICE} = ${SRC_SERVICE} || ${SERVICE} = "--all" ]]; then init "${SRC_SOURCE}"; fi
   if [[ ${SERVICE} = ${SRC_SERVICE} ]]; then exit; fi
 done
-5
+
 if [[ ${SERVICE} = "docker" || ${SERVICE} = "--all" ]]; then init "${DOCKER_SOURCE}"; fi
