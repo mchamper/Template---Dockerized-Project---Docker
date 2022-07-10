@@ -7,6 +7,7 @@ class Response
     public static function json($data = [], $message = 'Ok.', $status = 200, array $headers = [], $options = 0)
     {
         return response()->json([
+            'time' => round(microtime(true) - LARAVEL_START, 4),
             'message' => $message,
             'body' => $data,
         ], $status, $headers, $options);
