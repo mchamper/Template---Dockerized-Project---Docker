@@ -2,5 +2,6 @@
 
 /compose.*.yml
 /install.sh
+/build.sh
 /start.sh
 /stop.sh
