@@ -16,8 +16,7 @@ if [[ ! -f "${SOURCE}/version" && ! -f "${SOURCE}/version.txt" ]]; then
 
   cp .tmp-dockerized-project/examples/.env .tmp-dockerized-project/.env
   cp .tmp-dockerized-project/examples/.env .tmp-dockerized-project/.env.example
-  cp .tmp-dockerized-project/examples/compose.yml .tmp-dockerized-project/compose.dev.yml
-  cp .tmp-dockerized-project/examples/compose.volumes.yml .tmp-dockerized-project/compose.dev.volumes.yml
+  cp .tmp-dockerized-project/examples/compose.dev.yml .tmp-dockerized-project/compose.dev.yml
   cp .tmp-dockerized-project/examples/install.sh .tmp-dockerized-project/install.sh
   cp .tmp-dockerized-project/examples/build.sh .tmp-dockerized-project/build.sh
   cp .tmp-dockerized-project/examples/start.sh .tmp-dockerized-project/start.sh
