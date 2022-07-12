@@ -1,26 +1,26 @@
 #!/bin/bash
 
-. .env || exit 1
+SERVICE="backend-php"
+GIT_URL="git@github.com:project-name/project-name.git"
+GIT_BRANCH="develop"
+GIT_FLOW=true
 
-CMD=${1}; ARG1=${2}; ARG2=${3}; ARG3=${4}; ARG4=${5}; ARG5=${6};
-SERVICE=backend
-
-if [[ ${CMD} = "-v" ]]; then
-  VERSION=${ARG1}
-
-  if [[ ${VERSION} != "" ]]; then
-    bash base/bin/git/release.sh ${SERVICE} "${VERSION}"; else
-    bash base/bin/git/version.sh ${SERVICE}; fi
-
-  exit
-fi
-
-if [[ ${CMD} = "clone" ]]; then
-  bash base/bin/git/clone.sh ${SERVICE} "git@github.com:project-name/project-name.git" develop --flow || exit 1
-  exit
-fi
+. bin/core/__base.sh
 
 ##############################
+
+if [[ ${CMD} = "install" ]]; then
+  bash ${THIS} run "
+    composer install
+    cp .env .env.backup
+    cp .env.example .env
+    php artisan key:generate
+    php artisan jwt:secret
+    php artisan storage:link
+  "
+
+  exit
+fi
 
 if [[ ${CMD} = "status" ]]; then
   bash base/bin/aws/eb-status.sh ${SERVICE}
@@ -28,7 +28,7 @@ if [[ ${CMD} = "status" ]]; then
 fi
 
 if [[ ${CMD} = "ssh" ]]; then
-  bash base/bin/aws/eb-ssh.sh ${SERVICE}
+  bash base/bin/aws/eb-ssh.sh ${SERVICE} "${ARG1}"
   exit
 fi
 
@@ -38,11 +38,9 @@ if [[ ${CMD} = "deploy" ]]; then
 fi
 
 if [[ ${CMD} = "deploy-and-migrate" ]]; then
-  bash base/bin/aws/eb-deploy.sh ${SERVICE}
-
-  bash base/bin/aws/eb-ssh.sh ${SERVICE} "
-    cd /var/app/current;
-    php artisan migrate --force;
+  bash ${THIS} deploy && bash ${THIS} ssh "
+    cd /var/app/current
+    php artisan migrate --force
   "
 
   exit
@@ -51,16 +49,24 @@ fi
 if [[ ${CMD} = "get-envs" ]]; then
   if [[ ${ARG1} = "--backup" ]]; then
     echo $(bash base/bin/aws/eb-printenv.sh ${SERVICE}) > "environments/aws/eb/.projectname-backend-production.backup.env"
-  else
-    bash base/bin/aws/eb-printenv.sh ${SERVICE}
+    exit
   fi
 
+  bash base/bin/aws/eb-printenv.sh ${SERVICE}
   exit
 fi
 
 if [[ ${CMD} = "set-envs" ]]; then
   bash base/bin/aws/eb-setenv.sh ${SERVICE} "environments/aws/eb/.projectname-backend-production.env"
-  bash $0 deploy
+  bash ${THIS} deploy
+
+  exit
+fi
+
+if [[ ${CMD} = "logs" ]]; then
+  # echo $(bash ${THIS} ssh "cat /var/log/eb-engine.log") > "logs/${SERVICE}--aws.eb--eb-engine.log"
+  # echo $(bash ${THIS} ssh "cat /var/log/cfn-init.log") > "logs/${SERVICE}--aws.eb--cfn-init.log"
+  echo $(bash ${THIS} ssh "cat /var/app/current/storage/logs/laravel.log") > "logs/${SERVICE}--aws.eb--laravel.log"
 
   exit
 fi

@@ -3,7 +3,6 @@
 . .env || exit 1
 
 bash base/bin/sources/create.sh --all || exit 1
-bash base/bin/docker/build.sh || exit 1
 
 ########################################
 
@@ -12,41 +11,18 @@ bash bin/core/mobile.sh clone
 bash bin/core/backoffice.sh clone
 bash bin/core/backend.sh clone
 
-if [[ ${MUTAGEN} = 1 ]]; then
-  bash start.sh
-  sleep ${MUTAGEN_SLEEP}
-fi
+bash bin/core/web.sh install
+bash bin/core/mobile.sh install
+bash bin/core/backoffice.sh install
+bash bin/core/backend.sh install
 
-bash base/bin/docker/run.sh web "
-  yarn install;
-"
-
-bash base/bin/docker/run.sh mobile "
-  yarn install;
-"
-
-bash base/bin/docker/run.sh backoffice "
-  yarn install;
-"
-
-bash base/bin/docker/run.sh backend-php "
-  composer install;
-  cp .env.example .env;
-  php artisan key:generate;
-  php artisan jwt:secret;
-  php artisan storage:link;
-"
-
-if [[ ${MUTAGEN} != 1 ]]; then
+if [[ ${1} = "--db-import" ]]; then
   bash start.sh database
   sleep 15
+
+  if [[ ! -f database-exports/dump.sql ]]; then
+    bash bin/core/database.sh export-remote
+  fi
+
+  bash bin/core/database.sh import
 fi
-
-bash base/bin/docker/run.sh backend-php "
-  php artisan migrate --force --seed;
-"
-
-bash bin/core/database.sh export-remote
-bash bin/core/database.sh import
-
-bash stop.sh

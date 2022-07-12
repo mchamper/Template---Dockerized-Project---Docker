@@ -5,10 +5,11 @@ namespace App\Commons\Response;
 use Exception;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class Error
 {
-    public static function parse(Exception $e, $rendered = null)
+    public static function parse(Throwable $e, $rendered = null)
     {
         $status = $rendered ? $rendered->getStatusCode() : $e->getCode();
         $code = 0;

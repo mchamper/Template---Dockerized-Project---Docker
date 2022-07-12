@@ -1,24 +1,11 @@
 #!/bin/bash
 
-. .env || exit 1
+SERVICE="web"
+GIT_URL="git@github.com:project-name/project-name.git"
+GIT_BRANCH="develop"
+GIT_FLOW=true
 
-CMD=${1}; ARG1=${2}; ARG2=${3}; ARG3=${4}; ARG4=${5}; ARG5=${6};
-SERVICE=web
-
-if [[ ${CMD} = "-v" ]]; then
-  VERSION=${ARG1}
-
-  if [[ ${VERSION} != "" ]]; then
-    bash base/bin/git/release.sh ${SERVICE} "${VERSION}"; else
-    bash base/bin/git/version.sh ${SERVICE}; fi
-
-  exit
-fi
-
-if [[ ${CMD} = "clone" ]]; then
-  bash base/bin/git/clone.sh ${SERVICE} "git@github.com:project-name/project-name.git" develop --flow || exit 1
-  exit
-fi
+. bin/core/__base.sh
 
 ##############################
 
@@ -35,6 +22,6 @@ if [[ ${CMD} = "download" ]]; then
 fi
 
 if [[ ${CMD} = "deploy" ]]; then
-  bash $0 upload
+  bash ${THIS} upload
   exit
 fi

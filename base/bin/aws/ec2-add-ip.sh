@@ -10,7 +10,8 @@ PORT=${5}
 REGEX="^[0-9]+"
 
 if ! [[ ${IP} =~ ${REGEX} ]]; then
-  IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
+  # IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
+  IP="$(curl https://ipinfo.io/ip)"
   DESCRIPTION=${3}
 fi
 

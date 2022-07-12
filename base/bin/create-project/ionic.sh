@@ -8,7 +8,7 @@ PACKAGE_MANAGER=${2:-"yarn"}
 bash base/bin/docker/run.sh ${SERVICE} "
   ionic config set -g npmClient ${PACKAGE_MANAGER};
   ionic start app --no-git;
-  cp -rf ./app ../;
+  cp -a ./app ../;
   rm -rf ./app;
 "
 
