@@ -36,6 +36,28 @@ fi
 
 ##############################
 
+if [[ ${CMD} = "eb-ssh" ]]; then
+  bash base/bin/aws/eb-ssh.sh ${SERVICE} "${ARG1}"
+  exit
+fi
+
+if [[ ${CMD} = "ssh" ]]; then
+  bash ${THIS} run "ssh -i ${SSH_FILE} ${SSH_USER} \"${ARG1}\""
+  exit
+fi
+
+if [[ ${CMD} = "ssh-download" ]]; then
+  bash ${THIS} run "rsync -avz --delete -e \"ssh -i ${SSH_FILE}\" ${SSH_USER}:${ARG1} ${ARG2}"
+  exit
+fi
+
+if [[ ${CMD} = "ssh-upload" ]]; then
+  bash ${THIS} run "rsync -avz --delete -e \"ssh -i ${SSH_FILE}\" ${ARG1} ${SSH_USER}:${ARG2}"
+  exit
+fi
+
+##############################
+
 if [[ ${CMD} = "npm" ]]; then
   bash ${THIS} run "npm run ${ARG1}"
   exit
@@ -60,29 +82,29 @@ fi
 
 if [[ ${CMD} = "npm-install" ]]; then
   if [[ ${ARG1} = "--clean" ]]; then bash ${THIS} npm-clean; fi
-
   bash ${THIS} run "npm install"
+
   exit
 fi
 
 if [[ ${CMD} = "npm-build" ]]; then
   if [[ ${ARG1} = "--clean" ]]; then bash ${THIS} npm-clean; fi
-
   bash ${THIS} run "npm install && npm run build"
+
   exit
 fi
 
 if [[ ${CMD} = "yarn-install" ]]; then
   if [[ ${ARG1} = "--clean" ]]; then bash ${THIS} npm-clean; fi
-
   bash ${THIS} run "yarn install"
+
   exit
 fi
 
 if [[ ${CMD} = "yarn-build" ]]; then
   if [[ ${ARG1} = "--clean" ]]; then bash ${THIS} npm-clean; fi
-
   bash ${THIS} run "yarn install && yarn build"
+
   exit
 fi
 
@@ -93,8 +115,8 @@ fi
 
 if [[ ${CMD} = "composer-install" ]]; then
   if [[ ${ARG1} = "--clean" ]]; then bash ${THIS} composer-clean; fi
-
   bash ${THIS} run "composer install"
+
   exit
 fi
 
