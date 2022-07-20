@@ -34,6 +34,11 @@ if [[ ${CMD} = "run" ]]; then
   exit
 fi
 
+if [[ ${CMD} = "exec" ]]; then
+  bash base/bin/docker/exec.sh ${SERVICE} "${ARG1}"
+  exit
+fi
+
 ##############################
 
 if [[ ${CMD} = "eb-ssh" ]]; then
