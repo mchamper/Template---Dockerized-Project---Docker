@@ -11,7 +11,7 @@ services:
     environment:
       - DISPLAY=${DISPLAY:-:0.0}
     volumes:
-      - android-studio:/root
+      - android-studio:/home/docker
     network_mode: host
 
 volumes:
