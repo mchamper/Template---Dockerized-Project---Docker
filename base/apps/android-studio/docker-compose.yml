@@ -4,7 +4,7 @@ services:
 
   android-studio:
     build:
-      context: base/dockerfiles/android-studio
+      context: base/apps/android-studio
       args:
         UBUNTU_VERSION: 22.04
         ANDROID_STUDIO_VERSION: 2021.2.1.15
@@ -12,7 +12,6 @@ services:
       - DISPLAY=${DISPLAY:-:0.0}
     volumes:
       - android-studio:/root
-      # - /tmp/.X11-unix:/tmp/.X11-unix
     network_mode: host
 
 volumes:
