@@ -22,8 +22,8 @@ if [[ ! -f "${SOURCE}/version" && ! -f "${SOURCE}/version.txt" ]]; then
   cp .tmp-dockerized-project/examples/start.sh .tmp-dockerized-project/start.sh
   cp .tmp-dockerized-project/examples/stop.sh .tmp-dockerized-project/stop.sh
   cp .tmp-dockerized-project/examples/database-exports/.env .tmp-dockerized-project/database-exports/.env
-  cp -r .tmp-dockerized-project/examples/bin/core .tmp-dockerized-project/bin/core
-  cp -r .tmp-dockerized-project/examples/credentials/.aws .tmp-dockerized-project/credentials/.aws
+  cp -r .tmp-dockerized-project/examples/bin/core .tmp-dockerized-project/bin
+  cp -r .tmp-dockerized-project/examples/credentials/.aws .tmp-dockerized-project/credentials
 
   echo "/.env" > .tmp-dockerized-project/.gitignore
 
