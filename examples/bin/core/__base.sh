@@ -47,7 +47,7 @@ if [[ ${CMD} = "eb-ssh" ]]; then
 fi
 
 if [[ ${CMD} = "ssh" ]]; then
-  bash ${THIS} run "ssh -i ${SSH_FILE} ${SSH_USER} \"${ARG1}\""
+  bash ${THIS} run "ssh -i ${SSH_FILE} ${SSH_USER} -p ${SSH_PORT:-22} \"${ARG1}\""
   exit
 fi
 
