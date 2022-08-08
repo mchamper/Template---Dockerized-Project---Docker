@@ -8,11 +8,12 @@ fi
 
 rm -rf .tmp-dockerized-project/.git
 
+mkdir -p .tmp-dockerized-project/bin/core
+mkdir -p .tmp-dockerized-project/credentials/.aws
+mkdir -p .tmp-dockerized-project/credentials/.ssh
+
 # CREATE
 if [[ ! -f "${SOURCE}/version" && ! -f "${SOURCE}/version.txt" ]]; then
-  mkdir -p .tmp-dockerized-project/bin/core
-  mkdir -p .tmp-dockerized-project/credentials/.aws
-  mkdir -p .tmp-dockerized-project/credentials/.ssh
 
   cp .tmp-dockerized-project/examples/.env .tmp-dockerized-project/.env
   cp .tmp-dockerized-project/examples/.env .tmp-dockerized-project/.env.example
