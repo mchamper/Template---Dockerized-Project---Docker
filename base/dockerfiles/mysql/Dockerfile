@@ -1,7 +1,7 @@
 ARG MYSQL_VERSION=latest
 FROM mysql:${MYSQL_VERSION}
 
-RUN apt update && apt install --no-cache \
+RUN apt update && apt install \
   git \
   zip \
   unzip \
