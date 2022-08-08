@@ -31,6 +31,7 @@ if [[ ! -f "${SOURCE}/version" && ! -f "${SOURCE}/version.txt" ]]; then
 
 # UPDATE
 else
+  cp .tmp-dockerized-project/examples/bin/core/__base.sh .tmp-dockerized-project/bin/core/__base.sh
   rm -f .tmp-dockerized-project/.gitignore
 fi
 
