@@ -52,12 +52,12 @@ if [[ ${CMD} = "ssh" ]]; then
 fi
 
 if [[ ${CMD} = "ssh-download" ]]; then
-  bash ${THIS} run "rsync -avz --delete -e \"ssh -i ${SSH_FILE}\" ${SSH_USER}:${ARG1} ${ARG2}"
+  bash ${THIS} run "rsync -avz --delete -e \"ssh -i ${SSH_FILE} -p ${SSH_PORT:-22}\" ${SSH_USER}:${ARG1} ${ARG2}"
   exit
 fi
 
 if [[ ${CMD} = "ssh-upload" ]]; then
-  bash ${THIS} run "rsync -avz --delete -e \"ssh -i ${SSH_FILE}\" ${ARG1} ${SSH_USER}:${ARG2}"
+  bash ${THIS} run "rsync -avz --delete -e \"ssh -i ${SSH_FILE} -p ${SSH_PORT:-22}\" ${ARG1} ${SSH_USER}:${ARG2}"
   exit
 fi
 
@@ -132,5 +132,12 @@ fi
 
 if [[ ${CMD} = "composer-dump-autoload" ]]; then
   bash ${THIS} run "composer dump-autoload"
+  exit
+fi
+
+##############################
+
+if [[ ${CMD} = "locust-start" ]]; then
+  bash ${THIS} exec "cd locust && locust"
   exit
 fi

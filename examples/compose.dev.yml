@@ -61,6 +61,8 @@ services:
       context: ./base/dockerfiles/nginx
       args:
         NGINX_VERSION: 1.21.4
+    links:
+      - backend-php:php
     ports:
       - ${PORT}11:80
     volumes:
@@ -76,7 +78,7 @@ services:
         PHP_VERSION: 8.1.8-fpm
         COMPOSER_VERSION: --2
     ports:
-      - ${PORT}12:9000
+      - ${PORT}12:8089
     volumes:
       - ./base/dockerfiles/php/php.ini:/usr/local/etc/php/php.ini
       - ./credentials/.aws/:/home/docker/.aws/
