@@ -63,3 +63,4 @@ RUN composer self-update ${COMPOSER_VERSION}
 USER docker
 
 RUN pip3 install awscli --upgrade --user && pip3 install awsebcli --upgrade --user
+RUN pip3 install locust

@@ -5,6 +5,10 @@ GIT_URL="git@github.com:project-name/project-name.git"
 GIT_BRANCH="develop"
 GIT_FLOW=true
 
+SSH_FILE="/home/node/.ssh/some-key.openssh.ppk"
+SSH_USER="root@0.0.0.0"
+SSH_PORT="22"
+
 . bin/core/__base.sh
 
 ##############################

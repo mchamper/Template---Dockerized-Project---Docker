@@ -12,8 +12,7 @@ GIT_FLOW=true
 if [[ ${CMD} = "install" ]]; then
   bash ${THIS} run "
     composer install
-    cp .env .env.backup
-    cp .env.example .env
+    cp -n .env.example .env
     php artisan key:generate
     php artisan jwt:secret
     php artisan storage:link
@@ -24,11 +23,6 @@ fi
 
 if [[ ${CMD} = "status" ]]; then
   bash base/bin/aws/eb-status.sh ${SERVICE}
-  exit
-fi
-
-if [[ ${CMD} = "ssh" ]]; then
-  bash base/bin/aws/eb-ssh.sh ${SERVICE} "${ARG1}"
   exit
 fi
 
@@ -64,9 +58,9 @@ if [[ ${CMD} = "set-envs" ]]; then
 fi
 
 if [[ ${CMD} = "logs" ]]; then
-  # echo $(bash ${THIS} ssh "cat /var/log/eb-engine.log") > "logs/${SERVICE}--aws.eb--eb-engine.log"
-  # echo $(bash ${THIS} ssh "cat /var/log/cfn-init.log") > "logs/${SERVICE}--aws.eb--cfn-init.log"
-  echo $(bash ${THIS} ssh "cat /var/app/current/storage/logs/laravel.log") > "logs/${SERVICE}--aws.eb--laravel.log"
+  # echo $(bash ${THIS} eb-ssh "cat /var/log/eb-engine.log") > "logs/${SERVICE}--prod--eb-engine.log"
+  # echo $(bash ${THIS} eb-ssh "cat /var/log/cfn-init.log") > "logs/${SERVICE}--prod--cfn-init.log"
+  echo $(bash ${THIS} eb-ssh "cat /var/app/current/storage/logs/laravel.log") > "logs/${SERVICE}--prod--laravel.log"
 
   exit
 fi

@@ -33,6 +33,5 @@ fi
 
 if [[ ${CMD} = "deploy" ]]; then
   bash ${THIS} build && bash ${THIS} upload
-
   exit
 fi
