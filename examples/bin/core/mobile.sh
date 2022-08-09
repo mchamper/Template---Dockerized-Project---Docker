@@ -15,18 +15,40 @@ if [[ ${CMD} = "install" ]]; then
 fi
 
 if [[ ${CMD} = "build" ]]; then
-  PLATFORM=${ARG1}
+  bash ${THIS} npm-build
+  exit
+fi
 
-  bash ${THIS} npm-install
-  bash ${THIS} run "ionic cap build ${PLATFORM} --prod --no-open"
+##############################
+########### NATIVE ###########
+##############################
 
-  if [[ ${PLATFORM} = "ios" ]]; then
-    cd ../mobile/ios/App
-    pod install
-    open -a Xcode App.xcworkspace
+function nativePrepare() {
+  . base/bin/nvm/use.sh
+  nvm install 16 && nvm use 16
+  npm i -g npm@7
+  npm i -g @angular/cli@12
 
-    exit
-  fi
+  cd "${SRC_MOBILE}"
+}
 
+if [[ ${CMD} = "na-start" ]]; then
+  nativePrepare
+
+  npm run start -- --host 0.0.0.0 --port 10004
+  exit
+fi
+
+if [[ ${CMD} = "na-install" ]]; then
+  nativePrepare
+
+  npm install
+  exit
+fi
+
+if [[ ${CMD} = "na-build" ]]; then
+  nativePrepare
+
+  npm install && npm run build
   exit
 fi
