@@ -92,6 +92,16 @@ if [[ ${CMD} = "npm-install" ]]; then
   exit
 fi
 
+if [[ ${CMD} = "npm-add" ]]; then
+  bash ${THIS} run "npm install ${ARG1}"
+  exit
+fi
+
+if [[ ${CMD} = "npm-remove" ]]; then
+  bash ${THIS} run "npm uninstall ${ARG1}"
+  exit
+fi
+
 if [[ ${CMD} = "npm-build" ]]; then
   if [[ ${ARG1} = "--clean" ]]; then bash ${THIS} npm-clean; fi
   bash ${THIS} run "npm install && npm run build"
@@ -103,6 +113,16 @@ if [[ ${CMD} = "yarn-install" ]]; then
   if [[ ${ARG1} = "--clean" ]]; then bash ${THIS} npm-clean; fi
   bash ${THIS} run "yarn install"
 
+  exit
+fi
+
+if [[ ${CMD} = "yarn-add" ]]; then
+  bash ${THIS} run "yarn add ${ARG1}"
+  exit
+fi
+
+if [[ ${CMD} = "yarn-remove" ]]; then
+  bash ${THIS} run "yarn remove ${ARG1}"
   exit
 fi
 
