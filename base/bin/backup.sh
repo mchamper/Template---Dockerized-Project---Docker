@@ -7,7 +7,7 @@ if [[ ${BACKUP_PATH} = "" ]]; then
   exit 1
 fi
 
-FOLDER_NAME="Docker backup"
+FOLDER_NAME="Backup (dockerized project)"
 ZIP_NAME="${FOLDER_NAME} (${COMPOSE_PROJECT_NAME}).zip"
 BACKUP_PATH="${BACKUP_PATH}/${FOLDER_NAME}"
 PASSWORD=$(bash base/bin/generate-password.sh 64)
