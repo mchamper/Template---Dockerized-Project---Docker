@@ -12,6 +12,8 @@ function fetch() {
   cd "${source}" || exit 1
 
   if [[ -d .git ]]; then
+    echo "Git reposirory fetching in \"${source}\"..."
+
     git fetch --all
 
     echo "Git reposirory fetched in \"${source}\""

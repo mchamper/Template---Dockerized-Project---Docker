@@ -12,6 +12,8 @@ function pull() {
   cd "${source}" || exit 1
 
   if [[ -d .git ]]; then
+    echo "Git reposirory pulling in \"${source}\"..."
+
     local current_branch=$(git branch --show-current)
 
     for BRANCH in $(git branch | sed 's/^\*//'); do

@@ -27,22 +27,22 @@ function nativePrepare() {
   . base/bin/nvm/use.sh
   nvm install 16 && nvm use 16
   npm i -g npm@7
-  npm i -g @angular/cli@12
+  npm i -g @angular/cli@14
 
   cd "${SRC_MOBILE}"
 }
-
-if [[ ${CMD} = "na-start" ]]; then
-  nativePrepare
-
-  npm run start -- --host 0.0.0.0 --port 10004
-  exit
-fi
 
 if [[ ${CMD} = "na-install" ]]; then
   nativePrepare
 
   npm install
+  exit
+fi
+
+if [[ ${CMD} = "na-start" ]]; then
+  nativePrepare
+
+  npm run start -- --host 0.0.0.0 --port 10004
   exit
 fi
 
