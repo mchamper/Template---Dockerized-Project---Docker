@@ -23,6 +23,8 @@ function release() {
       exit
     fi
 
+    bash base/bin/git/pull.sh ${SERVICE}
+
     if [[ -f package.json && ! -f composer.json ]]; then
       sed -i '0,/version/ s|\(.*"version"\): "\(.*\)",.*|\1: '"\"${version}\",|" package.json;
 
