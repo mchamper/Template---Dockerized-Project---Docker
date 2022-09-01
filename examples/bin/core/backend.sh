@@ -32,7 +32,7 @@ if [[ ${CMD} = "deploy" ]]; then
 fi
 
 if [[ ${CMD} = "deploy-and-migrate" ]]; then
-  bash ${THIS} deploy && bash ${THIS} ssh "
+  bash ${THIS} deploy && bash ${THIS} eb-ssh "
     cd /var/app/current
     php artisan migrate --force
   "
@@ -42,7 +42,8 @@ fi
 
 if [[ ${CMD} = "get-envs" ]]; then
   if [[ ${ARG1} = "--backup" ]]; then
-    echo $(bash base/bin/aws/eb-printenv.sh ${SERVICE}) > "environments/aws/eb/.projectname-backend-production.backup.env"
+    # echo "$(bash ${THIS} ssh "cat /var/app/current/.env")" > "environments/.projectname-backend-production.backup.envv"
+    echo $(bash base/bin/aws/eb-printenv.sh ${SERVICE}) > "environments/.projectname-backend-production.backup.env"
     exit
   fi
 
@@ -51,16 +52,17 @@ if [[ ${CMD} = "get-envs" ]]; then
 fi
 
 if [[ ${CMD} = "set-envs" ]]; then
-  bash base/bin/aws/eb-setenv.sh ${SERVICE} "environments/aws/eb/.projectname-backend-production.env"
+  # bash ${THIS} ssh "echo '$(cat environments/.projectname-backend-production.env)' > /var/app/current/.env"
+  bash base/bin/aws/eb-setenv.sh ${SERVICE} "environments/.projectname-backend-production.env"
   bash ${THIS} deploy
 
   exit
 fi
 
 if [[ ${CMD} = "logs" ]]; then
-  # echo $(bash ${THIS} eb-ssh "cat /var/log/eb-engine.log") > "logs/${SERVICE}--prod--eb-engine.log"
-  # echo $(bash ${THIS} eb-ssh "cat /var/log/cfn-init.log") > "logs/${SERVICE}--prod--cfn-init.log"
-  echo $(bash ${THIS} eb-ssh "cat /var/app/current/storage/logs/laravel.log") > "logs/${SERVICE}--prod--laravel.log"
+  # echo "$(bash ${THIS} eb-ssh "cat /var/log/eb-engine.log")"" > "logs/${SERVICE}--aws--eb-engine.log"
+  # echo "$(bash ${THIS} eb-ssh "cat /var/log/cfn-init.log")"" > "logs/${SERVICE}--aws--cfn-init.log"
+  echo "$(bash ${THIS} eb-ssh "cat /var/app/current/storage/logs/laravel.log")" > "logs/${SERVICE}--aws--laravel.log"
 
   exit
 fi

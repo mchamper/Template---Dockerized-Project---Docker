@@ -4,8 +4,18 @@
 
 SERVICE=${1}
 
+SOURCE=$(bash base/bin/sources/get.sh ${SERVICE})
+SUBFOLDER=""
+
+if [[ ! -d "${SOURCE}" ]]
+  then bash base/bin/sources/create.sh ${SERVICE}
+  else SUBFOLDER="___"
+  fi
+
 bash base/bin/docker/run.sh ${SERVICE} "
-  composer create-project --prefer-dist laravel/laravel ./;
+  composer create-project --prefer-dist laravel/laravel ./${SUBFOLDER};
 "
 
-bash base/bin/git/init.sh ${SERVICE}
+if [[ ${SUBFOLDER} = "" ]]; then
+  bash base/bin/git/init.sh ${SERVICE}
+fi

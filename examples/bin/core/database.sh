@@ -4,6 +4,33 @@
 
 ##############################
 
+if [[ ${CMD} = "truncate" ]]; then
+  bash base/bin/docker/run.sh backend-php "
+    php artisan db:wipe --force
+  "
+
+  exit
+fi
+
+if [[ ${CMD} = "install" ]]; then
+  bash base/bin/docker/run.sh backend-php "
+    php artisan db:wipe --force
+    php artisan migrate --force --seed
+  "
+
+  exit
+fi
+
+if [[ ${CMD} = "update" ]]; then
+  bash base/bin/docker/run.sh backend-php "
+    php artisan migrate --force --seed
+  "
+
+  exit
+fi
+
+##############################
+
 if [[ ${CMD} = "add-ip" ]]; then
   IP=${ARG1}
   DESCRIPTION=${ARG2:-${GIT_USER_NAME}}
@@ -24,6 +51,10 @@ if [[ ${CMD} = "export-remote" ]]; then
 fi
 
 if [[ ${CMD} = "import" ]]; then
+  bash base/bin/docker/run.sh backend-php "
+    php artisan db:wipe
+  "
+
   bash base/bin/docker/exec.sh database "
     cd /home/mysql/bin
     bash import.sh
