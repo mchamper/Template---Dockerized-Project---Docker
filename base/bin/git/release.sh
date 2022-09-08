@@ -82,8 +82,9 @@ function edit_files() {
       fi
     fi
 
+    VERSION_FILE_PATH="version"
+
     if [[ -f tsconfig.json ]]; then
-      VERSION_FILE_PATH="version"
       if [[ -d src ]]; then VERSION_FILE_PATH="src/version"; fi
 
       echo "export const versionCode = ${version_code};" > ${VERSION_FILE_PATH}.ts
