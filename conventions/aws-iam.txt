@@ -1,0 +1,23 @@
+Grupos:
+-------
+
+- Admins [AdministratorAccess]
+- Developers []
+
+
+Usuarios:
+---------
+
+Para usuarios con acceso a la consola: marcelo@example.com
+Para usuarios con acceso a la consola (externos): @example
+Para usuarios programáticos: --nebula-backend
+
+
+Políticas:
+----------
+
+{service}--{item}--{actions}
+
+s3--nebula-avatars-storage--read-write
+s3--nebulagames.io--read-write
+ses--nebulagames.io--send-email
