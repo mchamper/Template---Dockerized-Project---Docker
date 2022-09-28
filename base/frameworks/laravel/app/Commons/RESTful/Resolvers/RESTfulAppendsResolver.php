@@ -38,11 +38,11 @@ class RESTfulAppendsResolver implements IRESTfulResolver
 
     private function _setAppends($res, $appends)
     {
-        if (method_exists($res, 'append')) {
-            return $res->append($appends);
-        }
-
         if ($res) {
+            if (method_exists($res, 'append')) {
+                return $res->append($appends);
+            }
+
             $res->data = $res->each(function ($item, $key) use ($appends) {
                 return $item->append($appends);
             });

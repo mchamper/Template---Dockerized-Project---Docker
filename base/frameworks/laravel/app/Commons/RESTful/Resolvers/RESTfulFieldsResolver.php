@@ -33,7 +33,7 @@ class RESTfulFieldsResolver implements IRESTfulResolver
 
     public function resolve($query) {
         return $query->when($this->_fields, function ($query) {
-            return $query->select($this->_fields);
+            return $query->addSelect($this->_fields);
         });
     }
 }
