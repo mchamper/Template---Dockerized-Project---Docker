@@ -8,6 +8,7 @@ import { NzResultModule } from 'ng-zorro-antd/result';
     CommonModule,
     NzResultModule,
   ],
+  standalone: true,
   templateUrl: './not-found-page.component.html',
   styleUrls: ['./not-found-page.component.scss']
 })

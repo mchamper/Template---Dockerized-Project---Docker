@@ -1,7 +1,10 @@
+/** version: 1 */
+
 import { AbstractControl, FormArray, FormControl, FormGroup } from "@angular/forms";
 import { cloneDeep, isDate } from "lodash";
+import { Request } from "../request";
+import { formErrorMessages } from "./form-validators";
 import * as moment from "moment";
-import { Request } from "./request";
 
 export class Form {
 
@@ -173,8 +176,22 @@ export class Form {
 
   /* -------------------- */
 
-  getError(key: string): string {
-    return this.group.get(key)?.getError('apiError');
+  getLocalError(key: string): string {
+    for (const errorKey in this.group.get(key)?.errors) {
+      return formErrorMessages[errorKey];
+    }
+
+    return '';
+  }
+
+  getError(key: string, localFirst?: boolean): string {
+    const error = this.group.get(key)?.getError('apiError');
+
+    if (localFirst) {
+      return this.getLocalError(key) || error;
+    }
+
+    return error;
   }
 
   setErrors(errors: any = null): void {
