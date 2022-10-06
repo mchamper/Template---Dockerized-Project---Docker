@@ -1,4 +1,4 @@
-/** version: 1 */
+/** version: 2 */
 
 import { AbstractControl, FormArray, FormControl, FormGroup } from "@angular/forms";
 import { cloneDeep, isDate } from "lodash";
@@ -254,5 +254,22 @@ export class Form {
 
   castFA(control: AbstractControl | null): FormArray {
     return control as FormArray;
+  }
+
+  /* -------------------- */
+
+  validate(group?: FormGroup | FormArray): void {
+    const formGroup = group || this.group;
+
+    Object.keys(formGroup.controls).forEach((key: string) => {
+      const abstractControl = formGroup.get(key);
+
+      if (abstractControl instanceof FormGroup || abstractControl instanceof FormArray) {
+        this.validate(abstractControl);
+      } else {
+        abstractControl?.markAsTouched();
+        abstractControl?.updateValueAndValidity();
+      }
+    });
   }
 }
