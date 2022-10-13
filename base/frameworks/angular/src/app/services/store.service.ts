@@ -1,3 +1,5 @@
+/** version: 1 */
+
 import { EventEmitter, Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { factory } from '../commons/factory';
@@ -52,7 +54,9 @@ export class StoreService {
       : null
   );
 
-  constructor() { }
+  constructor(
+    private _ssrS: SsrService,
+  ) { }
 
   /* -------------------- */
 
@@ -79,6 +83,8 @@ export class StoreService {
   }
 
   private _getFromStorage(key: StoreKey): any {
+    if (this._ssrS.isServer()) return;
+
     const value = localStorage.getItem(`${this._prefix}${key}`);
 
     return !!value
@@ -87,6 +93,7 @@ export class StoreService {
   }
 
   private _removeFromStorage(key: StoreKey): void {
+    if (this._ssrS.isServer()) return;
     localStorage.removeItem(`${this._prefix}${key}`);
   }
 
@@ -109,7 +116,7 @@ export class StoreService {
   }
 
   set(key: StoreKey, value: any, inLocalStorage: boolean = false, options?: { expiresIn?: number, emit?: EmitReason }): void {
-    if (inLocalStorage) {
+    if (inLocalStorage && this._ssrS.isBrowser()) {
       let now = new Date();
 
       if (options?.expiresIn) {
@@ -130,7 +137,7 @@ export class StoreService {
   }
 
   update(key: StoreKey, value: any, options?: { emit?: EmitReason }): void {
-    if (this._hasInStorage(key)) {
+    if (this._hasInStorage(key) && this._ssrS.isBrowser()) {
       let data = this._getFromStorage(key);
 
       localStorage.setItem(`${this._prefix}${key}`, JSON.stringify({
