@@ -1,16 +1,21 @@
 import { FormControl } from "@angular/forms";
 
-export let formErrorMessages: { [key: string]: string } = {
+export const formValidatorMessages: { [key: string]: string } = {
   required: 'Este campo es obligatorio.',
-  _validEmail: 'Este campo debe ser un email válido.',
+  _email: 'Este campo debe ser un email válido.',
 }
 
 /* -------------------- */
 
-export const formValidEmailValidator = (control: FormControl<string>): { [key: string]: boolean } => {
-  if (control.value?.indexOf('@') < 0) {
-    return { _validEmail: true };
-  }
+export class FormValidators {
 
-  return {};
+  static email(control: FormControl<string>): { [key: string]: boolean } {
+    const regex = /(.+)@(.+)\.(.{2,})/;
+
+    if (!regex.test(control.value)) {
+      return { _email: true };
+    }
+
+    return {};
+  }
 };

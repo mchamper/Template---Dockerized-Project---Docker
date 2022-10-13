@@ -1,3 +1,5 @@
+/** version: 1 */
+
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
@@ -9,10 +11,6 @@ import { StoreService } from './store.service';
   providedIn: 'root'
 })
 export class InitService {
-
-  messages = {
-    error: 'An error has ocurred.',
-  };
 
   constructor(
     @Inject(DOCUMENT) private _dom: Document,
@@ -50,10 +48,12 @@ export class InitService {
   }
 
   throwError() {
+    const errorMessage = 'An error has ocurred.';
     const preloaderContentElem = this._dom.querySelector<HTMLElement>('#preloaderContent');
-    if (preloaderContentElem) preloaderContentElem.innerHTML = this.messages.error;
 
-    return Promise.reject(this.messages.error);
+    if (preloaderContentElem) preloaderContentElem.innerHTML = errorMessage;
+
+    return Promise.reject(errorMessage);
   }
 
   /* -------------------- */

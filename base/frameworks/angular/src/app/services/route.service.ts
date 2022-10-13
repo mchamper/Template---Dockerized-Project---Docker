@@ -1,6 +1,8 @@
+/** version: 1 */
+
 import { Injectable } from '@angular/core';
 import { Router, NavigationStart, NavigationEnd, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, Scroll, ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
 @Injectable({
@@ -8,12 +10,17 @@ import { filter, map } from 'rxjs/operators';
 })
 export class RouteService {
 
-  current: NavigationEnd | null = null;
+  currentPage: BehaviorSubject<string> = new BehaviorSubject(this.getSnapshotLastChild().data['name']);
 
   constructor(
     private _route: ActivatedRoute,
     private _router: Router,
-  ) { }
+  ) {
+
+    this.onActivationStart$().subscribe(snapshot => {
+      this.currentPage.next(snapshot.data['name']);
+    });
+  }
 
   /* -------------------- */
 
@@ -99,5 +106,11 @@ export class RouteService {
       }),
       map((event: ActivationEnd) => this.getSnapshotLastChild(event.snapshot.root))
     );
+  }
+
+  /* -------------------- */
+
+  isCurrentPage(name: string): boolean {
+    return this.currentPage.value === name;
   }
 }
