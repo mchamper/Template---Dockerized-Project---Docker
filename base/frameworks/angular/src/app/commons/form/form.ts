@@ -1,9 +1,9 @@
-/** version: 2 */
+/** version: 3 */
 
 import { AbstractControl, FormArray, FormControl, FormGroup } from "@angular/forms";
 import { cloneDeep, isDate } from "lodash";
 import { Request } from "../request";
-import { formErrorMessages } from "./form-validators";
+import { formValidatorMessages } from "./form-validators";
 import * as moment from "moment";
 
 export class Form {
@@ -178,7 +178,7 @@ export class Form {
 
   getLocalError(key: string): string {
     for (const errorKey in this.group.get(key)?.errors) {
-      return formErrorMessages[errorKey];
+      return formValidatorMessages[errorKey];
     }
 
     return '';
