@@ -36,6 +36,9 @@ RUN apk add --update --no-cache \
   libjpeg-turbo-dev \
   libpng-dev
 
+RUN apk add --update --no-cache \
+  ffmpeg
+
 RUN rm -rf /var/cache/apk/* && rm -rf /tmp/*
 
 ARG NPM_VERSION=latest
