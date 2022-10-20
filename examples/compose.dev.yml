@@ -70,6 +70,9 @@ services:
       - ./credentials/.aws/:/root/.aws/
       - ./credentials/.ssh/:/root/.ssh/
       - ${SRC_BACKEND}:/var/www/html
+    networks:
+      - default
+      # - dp-locust_default
 
   backend-php:
     build:
@@ -118,3 +121,7 @@ services:
 
 volumes:
   database:
+
+networks:
+  dp-locust_default:
+    external: true

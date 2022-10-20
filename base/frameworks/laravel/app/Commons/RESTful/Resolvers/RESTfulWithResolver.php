@@ -37,6 +37,14 @@ class RESTfulWithResolver implements IRESTfulResolver
                             $tableName = $query->getRelated()->getTable();
                         }
 
+                        if (!empty($params['limit'])) {
+                            $query->limit((int) $params['limit']);
+                        }
+
+                        if (!empty($params['offset'])) {
+                            $query->offset((int) $params['offset']);
+                        }
+
                         return (new RESTful($query, (array) $params, $tableName ?? null))->getQuery();
                     }
                 ]);
