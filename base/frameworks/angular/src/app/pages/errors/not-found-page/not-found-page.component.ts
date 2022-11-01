@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { NavService } from 'src/app/services/nav.service';
 import { NzResultModule } from 'ng-zorro-antd/result';
+import { SharedModule } from '../../../modules/shared.module';
 
 @Component({
   selector: 'app-not-found-page',
   imports: [
-    CommonModule,
+    SharedModule,
     NzResultModule,
   ],
   standalone: true,

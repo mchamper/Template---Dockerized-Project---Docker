@@ -21,6 +21,7 @@ services:
       context: ./base/dockerfiles/nginx
       args:
         NGINX_VERSION: 1.21.4
+        NGINX_ROOT: /var/www/html/dist/app/browser
     ports:
       - ${PORT}02:80
     volumes:
@@ -61,6 +62,7 @@ services:
       context: ./base/dockerfiles/nginx
       args:
         NGINX_VERSION: 1.21.4
+        NGINX_ROOT: /var/www/html/public
     links:
       - backend-php:php
     ports:

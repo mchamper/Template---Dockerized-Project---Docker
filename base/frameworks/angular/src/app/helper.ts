@@ -1,5 +1,5 @@
 export const parseQueryParams = (params: any, prefix?: string): string => {
-  let query = [];
+  let query: any[] = [];
 
   for (let p in params) {
     if (params.hasOwnProperty(p)) {
@@ -40,4 +40,27 @@ export const stringToObject = (object: any, strict: boolean = false): any => {
   }
 
   return res;
+}
+
+/* -------------------- */
+
+export const onViewportIntersection = (elem: Element, callbackIn: () => any, callbackOut?: () => any) => {
+  if (!window && 'IntersectionObserver' in window) {
+    return callbackIn();
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(({ isIntersecting }) => {
+      if (isIntersecting) {
+        if (!callbackOut) observer.unobserve(elem);
+        callbackIn();
+      } else if (callbackOut) {
+        callbackOut();
+      }
+    });
+  });
+
+  observer.observe(elem);
+
+  return observer;
 }
