@@ -1,0 +1,7 @@
+<ng-container *ngIf="asImage">
+  <img class="img-fluid" [src]="path" [attr.alt]="name">
+</ng-container>
+
+<ng-container *ngIf="!asImage">
+  <span class="img-fluid" [innerHTML]="svgContent"></span>
+</ng-container>

@@ -1,6 +1,9 @@
 ARG NGINX_VERSION=latest
 FROM nginx:${NGINX_VERSION}-alpine
 
+ARG NGINX_ROOT=/var/www/html
+RUN echo "root ${NGINX_ROOT};" > /etc/nginx/conf.d/root.conf
+
 WORKDIR /var/www/html
 ENV PATH="/root/.local/bin:${PATH}"
 

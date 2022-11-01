@@ -167,7 +167,9 @@ fi
 
 if [[ ${CMD} = "hls-create" ]]; then
   FILE_PATH=${ARG1}
-  bash ${THIS} run "ffmpeg -i ${FILE_PATH}.mp4 -codec: copy -start_number 0 -hls_time 10 -hls_list_size 0 -f hls ${FILE_PATH}.m3u8"
+  FILE_TIME=${ARG2:-5}
+
+  bash ${THIS} run "ffmpeg -i ${FILE_PATH}.mp4 -codec: copy -start_number 0 -hls_time ${FILE_TIME} -hls_list_size 0 -f hls ${FILE_PATH}.m3u8"
 
   exit
 fi
