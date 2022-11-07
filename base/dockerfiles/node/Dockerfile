@@ -10,9 +10,13 @@ RUN apk add --update --no-cache \
   zip \
   unzip \
   openssh \
+  openssl \
   putty \
   rsync \
   groff
+
+RUN mkdir -p /certs
+RUN openssl req -x509 -nodes -days 720 -newkey rsa:2048 -keyout /certs/server.key -out /certs/server.crt -subj "/C=AR/ST=Docker/L=Docker/O=Docker/OU=Docker/CN=Docker"
 
 RUN apk add --update --no-cache python2; exit 0
 RUN apk add --update --no-cache \
@@ -38,6 +42,9 @@ RUN apk add --update --no-cache \
 
 RUN apk add --update --no-cache \
   ffmpeg
+
+RUN apk add --update --no-cache \
+  nginx
 
 RUN rm -rf /var/cache/apk/* && rm -rf /tmp/*
 
