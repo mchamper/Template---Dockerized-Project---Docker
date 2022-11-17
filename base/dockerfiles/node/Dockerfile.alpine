@@ -1,5 +1,5 @@
 ARG NODE_VERSION=latest
-FROM node:${NODE_VERSION}
+FROM node:${NODE_VERSION}-alpine
 
 WORKDIR /docker/src
 RUN chown -R node:node /docker
@@ -9,35 +9,42 @@ ENV PATH="/home/node/.local/bin:${PATH}"
 ##############################
 
 # Install common dependencies
-RUN apt-get update && apt-get install -y \
+RUN apk add --update --no-cache \
   git \
   zip \
   unzip \
-  openssh-client \
+  openssh \
+  openssl \
   putty \
   rsync \
   groff \
   ffmpeg \
-  && rm -rf /var/cache/apt/* && rm -rf /tmp/*
+  && rm -rf /var/cache/apk/* && rm -rf /tmp/*
 
 # Install image libraries
-RUN apt-get update && apt-get install -y \
-  libfreetype6 \
-  libfreetype6-dev \
-  libjpeg-dev \
+RUN apk add --update --no-cache \
+  freetype \
+  freetype-dev \
+  libjpeg-turbo \
+  libjpeg-turbo-dev \
+  libpng \
   libpng-dev \
-  && rm -rf /var/cache/apt/* && rm -rf /tmp/*
+  libzip \
+  libzip-dev \
+  build-base \
+  libc6-compat \
+  && rm -rf /var/cache/apk/* && rm -rf /tmp/*
 
 # Install python and aws cli
-RUN apt-get update && apt-get install -y python; exit 0
-RUN apt-get update && apt-get install -y python2; exit 0
-RUN apt-get update && apt-get install -y \
+RUN apk add --update --no-cache python2; exit 0
+RUN apk add --update --no-cache \
   python3 \
-  python3-pip \
-  python3-dev libffi-dev musl-dev gcc make \
+  py3-pip \
+  py3-pynacl \
+  python3-dev libffi-dev openssl-dev musl-dev gcc make \
   && pip3 install --upgrade pip \
   && pip3 install awscli --upgrade --user && pip3 install awsebcli --upgrade --user \
-  && rm -rf /var/cache/apt/* && rm -rf /tmp/*
+  && rm -rf /var/cache/apk/* && rm -rf /tmp/*
 
 ##############################
 ##############################

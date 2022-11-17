@@ -1,11 +1,13 @@
 #!/bin/bash
 
+SERVICE="database"
+
 . bin/core/__base.sh
 
 ##############################
 
 if [[ ${CMD} = "truncate" ]]; then
-  bash base/bin/docker/run.sh backend-php "
+  bash base/bin/docker/run.sh backend "
     php artisan db:wipe --force
   "
 
@@ -13,7 +15,7 @@ if [[ ${CMD} = "truncate" ]]; then
 fi
 
 if [[ ${CMD} = "install" ]]; then
-  bash base/bin/docker/run.sh backend-php "
+  bash base/bin/docker/run.sh backend "
     php artisan db:wipe --force
     php artisan migrate --force --seed
   "
@@ -22,7 +24,7 @@ if [[ ${CMD} = "install" ]]; then
 fi
 
 if [[ ${CMD} = "update" ]]; then
-  bash base/bin/docker/run.sh backend-php "
+  bash base/bin/docker/run.sh backend "
     php artisan migrate --force --seed
   "
 
@@ -43,7 +45,7 @@ if [[ ${CMD} = "export-remote" ]]; then
   bash ${THIS} add-ip
 
   bash base/bin/docker/exec.sh database "
-    cd /home/mysql/bin
+    cd /docker/bin
     bash export-remote.sh
   "
 
@@ -51,16 +53,16 @@ if [[ ${CMD} = "export-remote" ]]; then
 fi
 
 if [[ ${CMD} = "import" ]]; then
-  bash base/bin/docker/run.sh backend-php "
+  bash base/bin/docker/run.sh backend "
     php artisan db:wipe
   "
 
   bash base/bin/docker/exec.sh database "
-    cd /home/mysql/bin
+    cd /docker/bin
     bash import.sh
   "
 
-  bash base/bin/docker/run.sh backend-php "
+  bash base/bin/docker/run.sh backend "
     php artisan tinker --execute \"
       \DB::table('system_users')
         ->where('username', 'root')

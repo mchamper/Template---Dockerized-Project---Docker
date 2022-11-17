@@ -20,7 +20,7 @@ if [[ ${CMD} = "build" ]]; then
 fi
 
 if [[ ${CMD} = "upload" ]]; then
-  bash base/bin/aws/s3-upload.sh ${SERVICE} "dist/App" "bucket-name" --delete
+  bash base/bin/aws/s3-upload.sh ${SERVICE} "dist/app" "bucket-name" --delete
   bash base/bin/aws/cloudfront-invalidate.sh ${SERVICE} "distribution-id"
 
   exit

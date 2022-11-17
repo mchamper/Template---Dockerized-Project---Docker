@@ -1,7 +1,13 @@
 ARG MARIADB_VERSION=latest
 FROM mariadb:${MARIADB_VERSION}
 
-COPY --chown=mysql export.sh /home/mysql/bin/export.sh
-COPY --chown=mysql export-remote.sh /home/mysql/bin/export-remote.sh
-COPY --chown=mysql import.sh /home/mysql/bin/import.sh
-COPY --chown=mysql import-remote.sh /home/mysql/bin/import-remote.sh
+WORKDIR /docker/src
+RUN chown -R mysql:mysql /docker
+ENV PATH="/home/mysql/.local/bin:${PATH}"
+
+##############################
+##############################
+
+COPY bin /docker/bin
+
+USER mysql

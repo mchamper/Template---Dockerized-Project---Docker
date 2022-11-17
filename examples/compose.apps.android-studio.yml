@@ -1,5 +1,0 @@
-services:
-
-  android-studio:
-    volumes:
-      - "${SRC_MOBILE}:/var/www/app"
