@@ -1,0 +1,10 @@
+ARG POSTGRES_VERSION=latest
+FROM postgres:${POSTGRES_VERSION}-alpine
+
+WORKDIR /docker/src
+ENV PATH="/root/.local/bin:${PATH}"
+
+##############################
+##############################
+
+COPY bin /docker/bin

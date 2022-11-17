@@ -40,6 +40,11 @@ if [[ ${CMD} = "exec" ]]; then
   exit
 fi
 
+if [[ ${CMD} = "attach" ]]; then
+  bash base/bin/docker/attach.sh ${SERVICE} "${ARG1}"
+  exit
+fi
+
 ##############################
 
 if [[ ${CMD} = "eb-ssh" ]]; then
@@ -76,6 +81,11 @@ fi
 
 if [[ ${CMD} = "composer" ]]; then
   bash ${THIS} run "composer ${ARG1}"
+  exit
+fi
+
+if [[ ${CMD} = "artisan" ]]; then
+  bash ${THIS} run "php artisan ${ARG1}"
   exit
 fi
 

@@ -14,7 +14,6 @@ mkdir -p .tmp-dockerized-project/credentials/.ssh
 
 # CREATE
 if [[ ! -f "${SOURCE}/version" && ! -f "${SOURCE}/version.txt" ]]; then
-
   cp .tmp-dockerized-project/examples/.env .tmp-dockerized-project/.env
   cp .tmp-dockerized-project/examples/.env .tmp-dockerized-project/.env.example
   cp .tmp-dockerized-project/examples/compose.dev.yml .tmp-dockerized-project/compose.dev.yml

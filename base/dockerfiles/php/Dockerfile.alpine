@@ -1,0 +1,71 @@
+ARG PHP_VERSION=latest
+FROM php:${PHP_VERSION}-alpine
+
+WORKDIR /docker/src
+RUN addgroup docker && adduser -D docker -u 1000 -G root -G www-data
+RUN chown -R docker:docker /docker
+
+##############################
+##############################
+
+# Install common dependencies
+RUN apk add --update --no-cache \
+  git \
+  zip \
+  unzip \
+  openssh \
+  openssl \
+  putty \
+  rsync \
+  groff \
+  ffmpeg \
+  && rm -rf /var/cache/apk/* && rm -rf /tmp/*
+
+# Install image libraries
+RUN apk add --update --no-cache \
+  freetype \
+  freetype-dev \
+  libjpeg-turbo \
+  libjpeg-turbo-dev \
+  libpng \
+  libpng-dev \
+  libzip \
+  libzip-dev \
+  build-base \
+  libc6-compat \
+  && rm -rf /var/cache/apk/* && rm -rf /tmp/*
+
+# Install python and aws cli
+RUN apk add --update --no-cache python2; exit 0
+RUN apk add --update --no-cache \
+  python3 \
+  py3-pip \
+  py3-pynacl \
+  python3-dev libffi-dev openssl-dev musl-dev gcc make \
+  && pip3 install --upgrade pip \
+  && pip3 install awscli --upgrade --user && pip3 install awsebcli --upgrade --user \
+  && rm -rf /var/cache/apk/* && rm -rf /tmp/*
+
+##############################
+##############################
+
+# Install php dependencies
+RUN docker-php-ext-install \
+  pdo \
+  pdo_mysql \
+  mysqli \
+  zip
+RUN docker-php-ext-configure gd \
+  --with-freetype=/usr/include/ \
+  # --with-png=/usr/include/ \
+  --with-jpeg=/usr/include/ \
+  && docker-php-ext-install gd \
+  && docker-php-ext-enable gd \
+  && rm -rf /var/cache/apk/* && rm -rf /tmp/*
+
+# Install composer
+ARG COMPOSER_VERSION=
+RUN curl -sL https://getcomposer.org/installer | php -- --install-dir /usr/bin --filename composer
+RUN composer self-update ${COMPOSER_VERSION}
+
+USER docker
