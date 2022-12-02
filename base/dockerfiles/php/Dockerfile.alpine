@@ -63,6 +63,16 @@ RUN docker-php-ext-configure gd \
   && docker-php-ext-enable gd \
   && rm -rf /var/cache/apk/* && rm -rf /tmp/*
 
+# Install php memcached
+RUN apk add --update --no-cache \
+  libmemcached \
+  libmemcached-dev \
+  && rm -rf /var/cache/apk/* && rm -rf /tmp/*
+RUN git clone https://github.com/php-memcached-dev/php-memcached /usr/src/php/ext/memcached \
+  && docker-php-ext-configure /usr/src/php/ext/memcached \
+  && docker-php-ext-install /usr/src/php/ext/memcached \
+  && rm -rf /usr/src/php/ext/memcached
+
 # Install composer
 ARG COMPOSER_VERSION=
 RUN curl -sL https://getcomposer.org/installer | php -- --install-dir /usr/bin --filename composer
