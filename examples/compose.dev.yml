@@ -7,9 +7,9 @@ services:
       context: ./base/dockerfiles/node
       dockerfile: Dockerfile.alpine
       args:
-        NODE_VERSION: 18
-        NPM_VERSION: 9
-        ANGULAR_VERSION: 14
+        NODE_VERSION: "18"
+        NPM_VERSION: "9"
+        ANGULAR_VERSION: "14"
     command: /bin/sh -c "npm start; tail -f /dev/null"
     ports:
       - ${PORT}0001:4200
@@ -23,7 +23,7 @@ services:
       context: ./base/dockerfiles/nginx
       dockerfile: Dockerfile.alpine
       args:
-        NGINX_VERSION: 1.23.2
+        NGINX_VERSION: "1.23.2"
         NGINX_CONF: html
         NGINX_ROOT: /docker/src/dist/app
     ports:
@@ -37,9 +37,9 @@ services:
       context: ./base/dockerfiles/node
       dockerfile: Dockerfile.alpine
       args:
-        NODE_VERSION: 18
-        NPM_VERSION: 9
-        ANGULAR_VERSION: 14
+        NODE_VERSION: "18"
+        NPM_VERSION: "9"
+        ANGULAR_VERSION: "14"
     command: /bin/sh -c "npm run serve:ssr; tail -f /dev/null"
     volumes:
       - ${SRC_WEB}:/docker/src
@@ -48,7 +48,7 @@ services:
       context: ./base/dockerfiles/nginx
       dockerfile: Dockerfile.alpine
       args:
-        NGINX_VERSION: 1.23.2
+        NGINX_VERSION: "1.23.2"
         NGINX_CONF: node
     links:
       - web-dist-ssr:node
@@ -63,10 +63,10 @@ services:
       context: ./base/dockerfiles/node
       dockerfile: Dockerfile.alpine
       args:
-        NODE_VERSION: 18
-        NPM_VERSION: 9
-        ANGULAR_VERSION: 14
-        IONIC_VERSION: 6
+        NODE_VERSION: "18"
+        NPM_VERSION: "9"
+        ANGULAR_VERSION: "14"
+        IONIC_VERSION: "6"
     command: /bin/sh -c "npm start; tail -f /dev/null;"
     ports:
       - ${PORT}0002:8100
@@ -78,9 +78,9 @@ services:
       context: ./base/dockerfiles/nginx
       dockerfile: Dockerfile.alpine
       args:
-        NODE_VERSION: 18
-        NPM_VERSION: 9
-        ANGULAR_VERSION: 14
+        NODE_VERSION: "18"
+        NPM_VERSION: "9"
+        ANGULAR_VERSION: "14"
     command: /bin/sh -c "npm start -- --port 3000; tail -f /dev/null"
     ports:
       - ${PORT}0003:3000
@@ -94,7 +94,7 @@ services:
       context: ./base/dockerfiles/nginx
       dockerfile: Dockerfile.alpine
       args:
-        NGINX_VERSION: 1.23.2
+        NGINX_VERSION: "1.23.2"
         NGINX_CONF: html
         NGINX_ROOT: /docker/src/dist/app
     ports:
@@ -122,7 +122,7 @@ services:
       context: ./base/dockerfiles/nginx
       dockerfile: Dockerfile.alpine
       args:
-        NGINX_VERSION: 1.23.2
+        NGINX_VERSION: "1.23.2"
         NGINX_CONF: php
         NGINX_ROOT: /docker/src/public
     links:
@@ -140,7 +140,7 @@ services:
     build:
       context: ./base/dockerfiles/mariadb
       args:
-        MARIADB_VERSION: 10.4
+        MARIADB_VERSION: "10.4"
     environment:
       MYSQL_USER: ${DB_USER:-admin}
       MYSQL_PASSWORD: ${DB_PASS:-root}
@@ -156,7 +156,7 @@ services:
   #   build:
   #     context: ./base/dockerfiles/postgres
   #     args:
-  #       POSTGRES_VERSION: 14.1
+  #       POSTGRES_VERSION: "14.1"
   #   environment:
   #     POSTGRES_USER: ${DB_USER:-admin}
   #     POSTGRES_PASSWORD: ${DB_PASS:-root}
