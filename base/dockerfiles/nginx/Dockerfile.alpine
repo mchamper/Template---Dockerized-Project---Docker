@@ -31,7 +31,9 @@ RUN mkdir -p /certs \
 
 ARG NGINX_CONF=html
 ARG NGINX_ROOT=/docker/src
+ARG NGINX_REMOTE_ADDR="\$remote_addr"
 RUN mkdir -p /etc/nginx/common.d
 RUN echo "root ${NGINX_ROOT};" > /etc/nginx/common.d/server-root.conf
+RUN echo "fastcgi_param REMOTE_ADDR ${NGINX_REMOTE_ADDR};" > /etc/nginx/common.d/fastcgi-param-remote-addr
 COPY common.d /etc/nginx/common.d
 COPY http.d/for-${NGINX_CONF}.conf /etc/nginx/conf.d/default.conf
