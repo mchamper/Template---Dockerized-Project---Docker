@@ -6,18 +6,18 @@ import { Directive, ElementRef, Input, OnChanges, AfterViewInit } from '@angular
 })
 export class LoadingBtnDirective implements AfterViewInit, OnChanges {
 
-  @Input('appLoadingBtn') loading: boolean = false;
+  @Input('appLoadingBtn') loading: boolean | null = false;
   @Input() selector: string = 'button';
 
   content!: HTMLSpanElement | null;
   spinner!: HTMLDivElement | null;
 
   constructor(
-    private _elem: ElementRef,
+    private _host: ElementRef,
   ) { }
 
   ngAfterViewInit(): void {
-    const content: string = `<span>${this._elem.nativeElement.innerHTML}</span>`;
+    const content: string = `<span style="display: inherit;">${this._host.nativeElement.innerHTML}</span>`;
     const spinner: string = `<div class="spinner-border" role="status" aria-hidden="true" style="
       position: absolute;
       top: 0;
@@ -30,11 +30,11 @@ export class LoadingBtnDirective implements AfterViewInit, OnChanges {
       border-width: 2px;
     "></div>`;
 
-    this._elem.nativeElement.innerHTML = content + spinner;
-    this._elem.nativeElement.style.position = 'relative';
+    this._host.nativeElement.innerHTML = content + spinner;
+    this._host.nativeElement.style.position = 'relative';
 
-    this.content = this._elem.nativeElement.querySelector(this.selector + ' > span');
-    this.spinner = this._elem.nativeElement.querySelector(this.selector + ' > div');
+    this.content = this._host.nativeElement.querySelector(this.selector + ' > span');
+    this.spinner = this._host.nativeElement.querySelector(this.selector + ' > div');
 
     this.loading
       ? this.setLoading()

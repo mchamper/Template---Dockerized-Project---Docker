@@ -1,4 +1,4 @@
-import { AfterViewInit, Directive, ElementRef, HostBinding, Input } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Directive, ElementRef, HostBinding, Input } from '@angular/core';
 import { onViewportIntersection } from '../helper';
 import { SsrService } from '../services/ssr.service';
 
@@ -13,18 +13,13 @@ export class LazyImageDirective implements AfterViewInit {
 
   constructor(
     private _elem: ElementRef<HTMLImageElement>,
+    private _cdr: ChangeDetectorRef,
     private _ssrS: SsrService,
   ) { }
 
   ngAfterViewInit(): void {
     if (this._ssrS.isServer()) return;
-
-    if ('loading' in HTMLImageElement.prototype) {
-      this._elem.nativeElement.setAttribute('loading', 'lazy');
-      this._load();
-    } else {
-      this._lazyLoad();
-    }
+    this._lazyLoad();
   }
 
   /* -------------------- */
@@ -36,6 +31,7 @@ export class LazyImageDirective implements AfterViewInit {
   }
 
   private _load(): void {
-    setTimeout(() => this.srcAttr = this.src);
+    this.srcAttr = this.src;
+    this._cdr.detectChanges();
   }
 }

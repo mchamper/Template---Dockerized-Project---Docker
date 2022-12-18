@@ -1,53 +1,85 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable, tap } from "rxjs";
-import { AuthSystemUser } from "../core/auth-system-user/auth-system-user.model";
-import { AbstractInterceptor } from "./abstract.interceptor";
-import { AUTH_LOGIN, AUTH_STORE_KEY, AUTH_UPDATE } from "./contexts";
+import { get } from "lodash";
+import { map, Observable } from "rxjs";
+import { AuthService, TGuard } from "../services/auth.service";
+import { AUTH_GUARD, AUTH_LOGIN, AUTH_UPDATE, MAP, RES, URL } from "./contexts";
 
-export interface IHttpResponse {
-  body: any,
+export interface IHttpResponse<T1 = any, T2 = any> {
+  body: T1,
   message: string,
+  status: number,
+  bodyMapped?: T2,
 }
 
 @Injectable()
-export class SuccessInterceptor extends AbstractInterceptor implements HttpInterceptor {
+export class SuccessInterceptor implements HttpInterceptor {
+
+  constructor(
+    protected _authS: AuthService,
+  ) { }
+
+  /* -------------------- */
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    this.resolveAuth(req);
+    const guard: TGuard | null = req.context.get(AUTH_GUARD);
 
     return next.handle(req).pipe(
-      tap((event: HttpEvent<any>) => {
+      map((event: HttpEvent<any>) => {
         if (event instanceof HttpResponse) {
-          const res: IHttpResponse = event.body;
+          let res: IHttpResponse = {
+            body: event.body,
+            message: event.statusText,
+            status: event.status,
+          };
 
-          if (req.context.get(AUTH_LOGIN)) {
-            switch (req.context.get(AUTH_STORE_KEY)) {
-              case 'authSystemUser': {
+          const urlContext = req.context.get(URL);
+          const resContext = req.context.get(RES);
+          const mapContext = req.context.get(MAP);
 
-                this._storeS.set('authSystemUser', new AuthSystemUser({
-                  systemUser: res.body.auth_system_user,
-                  token: res.body.token,
-                }), true, { emit: 'login' });
+          if (resContext) {
+            res = {
+              body: resContext.body ? get(event.body, resContext.body) : event.body,
+              message: resContext.message ? get(event.body, resContext.message) : event.statusText,
+              status: event.status,
+            };
+          }
+          else if (urlContext === 'backend') {
+            res = {
+              body: event.body?.body,
+              message: event.body?.message || event.statusText,
+              status: event.status,
+            };
+          }
 
-                break;
-              }
+          if (mapContext) {
+            res.bodyMapped = mapContext(res);
+          }
+
+          if (guard) {
+            const authLoginPaths = req.context.get(AUTH_LOGIN);
+            const authUpdatePaths = req.context.get(AUTH_UPDATE);
+
+            if (authLoginPaths) {
+              this._authS.login({
+                data: get(res.bodyMapped || res.body, authLoginPaths?.data || '') || null,
+                token: get(res.bodyMapped || res.body, authLoginPaths?.token || '') || null,
+                tokenExpiresAt: get(res.bodyMapped || res.body, authLoginPaths?.tokenExpiresAt || '') || null,
+              });
+            }
+            else if (authUpdatePaths) {
+              this._authS.login({
+                data: get(res.bodyMapped || res.body, authUpdatePaths?.data || '') || this._authS.guard$(guard).value?.data || null,
+                token: get(res.bodyMapped || res.body, authUpdatePaths?.token || '') || this._authS.guard$(guard).value?.token || null,
+                tokenExpiresAt: get(res.bodyMapped || res.body, authUpdatePaths?.tokenExpiresAt || '') || this._authS.guard$(guard).value?.tokenExpiresAt || null,
+              });
             }
           }
 
-          if (req.context.get(AUTH_UPDATE)) {
-            switch (req.context.get(AUTH_STORE_KEY)) {
-              case 'authSystemUser': {
-                this._storeS.update('authSystemUser', new AuthSystemUser({
-                  systemUser: res.body.auth_system_user,
-                  token: this._storeS.authSystemUser.value?.token,
-                }));
-
-                break;
-              }
-            }
-          }
+          event = event.clone({ body: res });
         }
+
+        return event;
       })
     );
   }
