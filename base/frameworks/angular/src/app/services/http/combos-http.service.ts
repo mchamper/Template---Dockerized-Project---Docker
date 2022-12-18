@@ -13,6 +13,6 @@ export class CombosHttpService {
   /* -------------------- */
 
   get(concepts: string) {
-    return this._httpClient.get(`/combos?concepts=${concepts}`);
+    return this._httpClient.get(`backend:/combos/${concepts}`);
   }
 }

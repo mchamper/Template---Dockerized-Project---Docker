@@ -4,16 +4,22 @@ import { cloneDeep } from "lodash";
 import { Observable, of } from "rxjs";
 import { tap } from "rxjs/operators";
 import { environment } from "src/environments/environment";
-import { AbstractInterceptor } from "./abstract.interceptor";
+import { StorageService } from "../services/storage.service";
 
 @Injectable()
-export class CachingInterceptor extends AbstractInterceptor implements HttpInterceptor {
+export class CachingInterceptor implements HttpInterceptor {
 
-  private _cache: Map<string, HttpResponse<any>> = new Map(this._storeS.httpCache.value);
+  private _cache: Map<string, HttpResponse<any>>;
+
+  constructor(
+    protected _storageS: StorageService,
+  ) {
+    this._cache = new Map(this._storageS.getSecureSession('httpCache'));
+  }
+
+  /* -------------------- */
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    this.resolveAuth(req);
-
     if (!this.isCacheable(req)) {
       return next.handle(req);
     }
@@ -35,7 +41,7 @@ export class CachingInterceptor extends AbstractInterceptor implements HttpInter
       tap(event => {
         if (event instanceof HttpResponse) {
           this._cache.set(req.urlWithParams, cloneDeep(event));
-          this._storeS.set('httpCache', Array.from(this._cache.entries()), environment.httpCacheStore, { expiresIn: environment.httpCacheMinutes });
+          this._storageS.setSecureSession('httpCache', Array.from(this._cache.entries()));
         }
       })
     );
@@ -44,12 +50,14 @@ export class CachingInterceptor extends AbstractInterceptor implements HttpInter
   /* -------------------- */
 
   isCacheable(req: HttpRequest<any>): boolean {
+    // return true;
+
     if (!environment.httpCache) {
       return false;
     }
 
     return req.method === 'GET' && (false
-      || req.url.startsWith(`${environment.apiUrl}`)
+      || req.url.startsWith(`${environment.backendUrl}`)
       )
       ;
   }

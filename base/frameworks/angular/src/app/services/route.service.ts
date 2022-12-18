@@ -1,5 +1,3 @@
-/** version: 1 */
-
 import { Injectable } from '@angular/core';
 import { Router, NavigationStart, NavigationEnd, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, Scroll, ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -10,7 +8,7 @@ import { filter, map } from 'rxjs/operators';
 })
 export class RouteService {
 
-  currentPage: BehaviorSubject<string> = new BehaviorSubject(this.getSnapshotLastChild().data['name']);
+  currentPage$: BehaviorSubject<any> = new BehaviorSubject(this.getSnapshotLastChild().data);
 
   constructor(
     private _route: ActivatedRoute,
@@ -18,8 +16,23 @@ export class RouteService {
   ) {
 
     this.onActivationStart$().subscribe(snapshot => {
-      this.currentPage.next(snapshot.data['name']);
+      this.currentPage$.next(snapshot.data);
     });
+  }
+
+  /* -------------------- */
+
+  isCurrentPage(name: string | string[]): boolean {
+    let names: string[];
+
+    Array.isArray(name)
+      ? names = name
+      : names = [name];
+
+    return names.includes(this.currentPage$.value?.name);
+  }
+  isCurrentPage$(name: string | string[]): Observable<boolean> {
+    return this.currentPage$.pipe(map(() => this.isCurrentPage(name)));
   }
 
   /* -------------------- */
@@ -106,11 +119,5 @@ export class RouteService {
       }),
       map((event: ActivationEnd) => this.getSnapshotLastChild(event.snapshot.root))
     );
-  }
-
-  /* -------------------- */
-
-  isCurrentPage(name: string): boolean {
-    return this.currentPage.value === name;
   }
 }

@@ -1,0 +1,9 @@
+@import "nunitosans.scss";
+@import "hoggax-icons.scss";
+
+[class^="hoggax-icon-"], [class*=" hoggax-icon-"] {
+  &.icon-fw {
+    width: 2rem;
+    display: inline-block;
+  }
+}

@@ -1,0 +1,78 @@
+// 1. Include functions first (so you can manipulate colors, SVGs, calc, etc)
+@import "node_modules/bootstrap/scss/functions";
+
+// 2. Include any default variable overrides here
+$body-bg: #FFF;
+$body-color: #0F0054;
+$primary: #FF366C;
+$secondary: #0F0054;
+
+$font-family-base: "Arial", sans-serif;
+$font-size-base: 1rem;
+$line-height-base: 1.25;
+
+$grid-columns: 60;
+$enable-smooth-scroll: false;
+
+// 3. Include remainder of required Bootstrap stylesheets
+@import "node_modules/bootstrap/scss/variables";
+
+// 4. Include any default map overrides here
+$custom-colors: (
+  /* -------------------- */
+  "app-facebook": #3b5998,
+  "app-instagram": #dd2a7b,
+  "app-twitter": #00aaee,
+  "app-youtube": #f70000,
+  "app-linkedin": #0077b0,
+  "app-whatsapp": #25d366,
+  "app-google": #d04b32,
+);
+$theme-colors: map-merge($theme-colors, $custom-colors);
+
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+);
+
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1140px,
+);
+
+// // 5. Include remainder of required parts
+// @import "node_modules/bootstrap/scss/maps";
+// @import "node_modules/bootstrap/scss/mixins";
+// @import "node_modules/bootstrap/scss/root";
+
+// // 6. Optionally include any other parts as needed
+// @import "node_modules/bootstrap/scss/utilities";
+// @import "node_modules/bootstrap/scss/reboot";
+// @import "node_modules/bootstrap/scss/type";
+// @import "node_modules/bootstrap/scss/images";
+// @import "node_modules/bootstrap/scss/containers";
+// @import "node_modules/bootstrap/scss/grid";
+// @import "node_modules/bootstrap/scss/helpers";
+// /* -------------------- */
+// @import "node_modules/bootstrap/scss/buttons";
+// @import "node_modules/bootstrap/scss/navbar";
+// @import "node_modules/bootstrap/scss/forms";
+// @import "node_modules/bootstrap/scss/placeholders";
+// @import "node_modules/bootstrap/scss/spinners";
+// @import "node_modules/bootstrap/scss/collapse";
+
+// // 7. Optionally include utilities API last to generate classes based on the Sass map in `_utilities.scss`
+// @import "node_modules/bootstrap/scss/utilities/api";
+
+@import "node_modules/bootstrap";
+
+// 8. Add additional custom code here
+
+h1, h2, h3, h4, h5, h6 {
+  color: $body-color;
+}

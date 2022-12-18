@@ -1,5 +1,3 @@
-/** version: 1 */
-
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 

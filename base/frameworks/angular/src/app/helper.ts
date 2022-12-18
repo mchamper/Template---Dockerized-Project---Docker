@@ -45,7 +45,7 @@ export const stringToObject = (object: any, strict: boolean = false): any => {
 /* -------------------- */
 
 export const onViewportIntersection = (elem: Element, callbackIn: () => any, callbackOut?: () => any) => {
-  if (!window && 'IntersectionObserver' in window) {
+  if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
     return callbackIn();
   }
 

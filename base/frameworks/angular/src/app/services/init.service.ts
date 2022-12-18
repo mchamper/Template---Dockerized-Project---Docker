@@ -1,40 +1,40 @@
-/** version: 1 */
-
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { delay, firstValueFrom, of } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { AuthSystemUserHttpService } from './http/auth-system-user-http.service';
-import { StoreService } from './store.service';
+import { versionName } from 'src/version';
+import { AuthService } from './auth.service';
+import { StorageService } from './storage.service';
+
+export const initializeApp = (initS: InitService) => {
+  return () => initS.init();
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class InitService {
 
+  errorMessage: string = 'Ha ocurrido un error.';
+
   constructor(
     @Inject(DOCUMENT) private _dom: Document,
-    private _storeS: StoreService,
-    private _authSystemUserHttpS: AuthSystemUserHttpService,
+    private _storageS: StorageService,
+    private _authS: AuthService,
   ) { }
 
   /* -------------------- */
 
   async init(): Promise<void> {
-    const preloaderContentDivElem = this._dom.querySelector<HTMLElement>('#preloaderContent > div');
-    if (preloaderContentDivElem) preloaderContentDivElem.innerHTML = `v${environment.version}`;
+    const preloaderAppVersionElem = this._dom.querySelector<HTMLElement>('#preloaderAppVersion');
+    if (preloaderAppVersionElem) preloaderAppVersionElem.innerHTML = `${versionName}`;
 
-    const storage: number = parseInt(localStorage.getItem('storage') || '1');
-
-    if (!storage || storage !== environment.storage) {
-      localStorage.clear();
-      localStorage.setItem('storage', environment.storage + '');
-    }
-
-    /* -------------------- */
+    this.checkStorage();
 
     return Promise.all([
-      this.resolveAuthSystemUser(),
+      this.checkAuthClient(),
+      this.checkAuthUser(),
+      // this._delay(),
     ])
     .then(() => this.continue())
     .catch(() => this.throwError());
@@ -48,19 +48,46 @@ export class InitService {
   }
 
   throwError() {
-    const errorMessage = 'An error has ocurred.';
     const preloaderContentElem = this._dom.querySelector<HTMLElement>('#preloaderContent');
+    if (preloaderContentElem) preloaderContentElem.innerHTML = this.errorMessage;
 
-    if (preloaderContentElem) preloaderContentElem.innerHTML = errorMessage;
-
-    return Promise.reject(errorMessage);
+    return Promise.reject(this.errorMessage);
   }
 
   /* -------------------- */
 
-  async resolveAuthSystemUser(): Promise<void> {
-    if (this._storeS.authSystemUser.value?.isLoggedIn()) {
-      await firstValueFrom(this._authSystemUserHttpS.me()).catch(() => null);
+  checkStorage(): void {
+    const storageVersion: number = this._storageS.get('storageVersion');
+
+    if (!storageVersion || storageVersion !== environment.storageVersion) {
+      this._storageS.clear();
+      this._storageS.clearSession();
+
+      this._storageS.set('storageVersion', environment.storageVersion);
+    }
+  }
+
+  /* -------------------- */
+
+  async checkAuthClient(): Promise<void> {
+    if (this._authS.isLoggedIn('client')) {
+      await firstValueFrom(of('this._authClientHttpS.me()')).catch(() => null);
+    }
+
+    return Promise.resolve();
+  }
+
+  async checkAuthUser(): Promise<void> {
+    if (this._authS.isLoggedIn('user')) {
+      await firstValueFrom(of('this._authUserHttpS.me()')).catch(() => null);
+    }
+
+    return Promise.resolve();
+  }
+
+  async _delay(seconds: number = 3): Promise<void> {
+    if (!environment.production) {
+      await firstValueFrom(of(true).pipe(delay(seconds * 1000)));
     }
 
     return Promise.resolve();

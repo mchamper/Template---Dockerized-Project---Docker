@@ -46,7 +46,9 @@ export class HlsDirective implements OnInit, OnChanges, OnDestroy {
       return;
     }
 
-    if (!this.source.endsWith('m3u8')) {
+    const source = this.source.split('?')[0];
+
+    if (!source.endsWith('m3u8')) {
       this._elem.nativeElement.src = this.source;
     }
     else if (Hls.isSupported()) {

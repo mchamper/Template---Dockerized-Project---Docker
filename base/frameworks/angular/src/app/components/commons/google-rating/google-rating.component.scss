@@ -1,0 +1,35 @@
+@import "/src/theme/fonts/nunitosans";
+
+:host {
+  .rating {
+    font-size: 2.5rem;
+    @include app-ff-nunitosans-b();
+  }
+
+  .stars {
+    i {
+      font-size: 1.5rem;
+    }
+  }
+
+  p {
+    font-size: 1rem;
+  }
+
+  .size-lg {
+    .rating {
+      @include app-ff-nunitosans-l();
+      font-size: var(--app-px-72);
+    }
+
+    .stars {
+      i {
+        font-size: var(--app-px-64);
+      }
+    }
+
+    p {
+      font-size: var(--app-px-18);
+    }
+  }
+}
