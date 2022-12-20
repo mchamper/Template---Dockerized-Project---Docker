@@ -8,6 +8,7 @@ import { IHttpErrorResponse } from "src/app/interceptors/error.interceptor";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { inject } from "@angular/core";
 import { environment } from "src/environments/environment";
+import { IHttpResponse } from "src/app/interceptors/success.interceptor";
 
 export enum FormUnpreparedReasonEnum {
   IS_LOADING = 'IS_LOADING',
@@ -324,7 +325,7 @@ export class Form {
 
   /* -------------------- */
 
-  prepare(group?: FormGroup | FormArray): {
+  prepare(group?: FormGroup | FormArray, mustResetErrors: boolean = true): {
     status: boolean,
     reason?: FormUnpreparedReasonEnum
   } {
@@ -353,7 +354,9 @@ export class Form {
       };
     };
 
-    this.resetErrors();
+    if (mustResetErrors) {
+      this.resetErrors();
+    }
 
     return {
       status: true
@@ -377,13 +380,13 @@ export class Form {
 
   /* -------------------- */
 
-  send<T>(
-    observable: Observable<T>,
+  send(
+    observable: Observable<any>,
     options?: {
       unprepared?: (reason: FormUnpreparedReasonEnum) => void,
       before?: () => void,
-      success?: () => void,
-      error?: () => void,
+      success?: (res: IHttpResponse) => void,
+      error?: (err: IHttpErrorResponse) => void,
       after?: () => void,
       reset?: boolean,
       persist?: boolean,
@@ -391,7 +394,7 @@ export class Form {
       notifySuccess?: boolean | string[],
       notifyError?: boolean | string[],
     }
-  ): Observable<T> {
+  ): Observable<IHttpResponse> {
     const defaultOptions = {
       unprepared: typeof options?.unprepared !== 'undefined' ? options?.unprepared : null,
       before: typeof options?.before !== 'undefined' ? options?.before : null,
@@ -421,7 +424,7 @@ export class Form {
 
     return this.requestH.send(observable).pipe(
       tap({
-        next: () => {
+        next: (res: IHttpResponse) => {
           if (defaultOptions.reset) {
             this.reset();
           } else if (defaultOptions.persist) {
@@ -444,7 +447,7 @@ export class Form {
           }
 
           if (defaultOptions.success) {
-            defaultOptions.success();
+            defaultOptions.success(res);
           }
         },
         error: (err: IHttpErrorResponse) => {
@@ -466,7 +469,7 @@ export class Form {
           }
 
           if (defaultOptions.error) {
-            defaultOptions.error();
+            defaultOptions.error(err);
           }
         },
         complete: () => {
