@@ -1,12 +1,14 @@
 npm install \
   bootstrap \
   crypto-js \
-  @types/crypto-js
+  @types/crypto-js \
   hls.js \
   lodash \
   @types/lodash \
   moment \
   ng-zorro-antd \
+  @ant-design/icons-angular \
   ngx-mask \
   ngx-webstorage \
+  ngx-google-analytics \
   simplebar

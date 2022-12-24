@@ -1,24 +1,24 @@
 <?php
 
-namespace App\Http\Requests;
+namespace Teatrix\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 
 abstract class BaseRequest extends FormRequest
 {
-    public function rulesFrom(?array $params = [])
+    public function rulesFrom($input, ?array $params = [])
     {
-        $rules = collect($this->rules($params))->filter(function ($value, $key) use ($params) {
+        $rules = collect($this->rules($params))->filter(function ($value, $key) use ($input, $params) {
             $arrayKeyExists = false;
 
-            foreach ($params['input'] as $key2 => $value2) {
+            foreach ($input as $key2 => $value2) {
                 if ($arrayKeyExists = Str::startsWith($key, $key2 . '.')) {
                     break;
                 }
             }
 
-            return $arrayKeyExists || array_key_exists($key, $params['input']);
+            return $arrayKeyExists || array_key_exists($key, $input);
         })->toArray();
 
         if (empty($rules)) {
