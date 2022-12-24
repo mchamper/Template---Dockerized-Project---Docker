@@ -81,7 +81,7 @@ export class RequestHandler {
 
   /* -------------------- */
 
-  send<T>(observables: Observable<T> | Observable<T>[]): Observable<T> {
+  send(observables: Observable<any> | Observable<any>[]): Observable<IHttpResponse> {
     if (this.isLoading()) {
       return of();
     }

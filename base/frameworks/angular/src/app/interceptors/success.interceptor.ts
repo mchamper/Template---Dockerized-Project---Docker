@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { get } from "lodash";
 import { map, Observable } from "rxjs";
 import { AuthService, TGuard } from "../services/auth.service";
-import { AUTH_GUARD, AUTH_LOGIN, AUTH_UPDATE, MAP, RES, URL } from "./contexts";
+import { AUTH_GUARD, AUTH_LOGIN, AUTH_UPDATE, RES, RES_MAP, URL } from "./contexts";
 
 export interface IHttpResponse<T1 = any, T2 = any> {
   body: T1,
@@ -35,25 +35,32 @@ export class SuccessInterceptor implements HttpInterceptor {
 
           const urlContext = req.context.get(URL);
           const resContext = req.context.get(RES);
-          const mapContext = req.context.get(MAP);
+          const resMapContext = req.context.get(RES_MAP);
 
           if (resContext) {
             res = {
-              body: resContext.body ? get(event.body, resContext.body) : event.body,
-              message: resContext.message ? get(event.body, resContext.message) : event.statusText,
-              status: event.status,
+              ...res,
+              body: resContext.body ? get(event.body, resContext.body) : res.body,
+              message: resContext.message ? get(event.body, resContext.message) : res.message,
+            };
+          }
+          else if (urlContext === 'api') {
+            res = {
+              ...res,
+              body: event.body?.payload,
+              message: event.body?.message || res.message,
             };
           }
           else if (urlContext === 'backend') {
             res = {
+              ...res,
               body: event.body?.body,
-              message: event.body?.message || event.statusText,
-              status: event.status,
+              message: event.body?.message || res.message,
             };
           }
 
-          if (mapContext) {
-            res.bodyMapped = mapContext(res);
+          if (resMapContext) {
+            res.bodyMapped = resMapContext(res);
           }
 
           if (guard) {
