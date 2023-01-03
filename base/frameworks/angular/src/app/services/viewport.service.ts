@@ -10,7 +10,7 @@ export class ViewportService {
 
   width$: BehaviorSubject<number>;
 
-  sizes: any = {
+  sizes = {
     xs: 0,
     sm: 576,
     md: 768,
@@ -23,7 +23,7 @@ export class ViewportService {
     private _ssrS: SsrService,
   ) {
 
-    this.width$ = new BehaviorSubject(this._ssrS.isBrowser() ? window.innerWidth : 1920);
+    this.width$ = new BehaviorSubject(this._ssrS.isBrowser() ? this._dom.defaultView?.innerWidth || 1920 : 1920);
 
     if (this._ssrS.isBrowser()) {
       this._dom.defaultView?.addEventListener('resize', () => {
@@ -47,7 +47,7 @@ export class ViewportService {
       return size;
     }
 
-    return this.sizes[size];
+    return (this.sizes as any)[size];
   }
 
   /* -------------------- */

@@ -331,6 +331,8 @@ export class Form {
   } {
     const formGroup = group || this.group;
 
+    this.validate(formGroup);
+
     if (this.requestH.isLoading()) {
       return {
         status: false,
@@ -344,8 +346,6 @@ export class Form {
         reason: FormUnpreparedReasonEnum.IS_SUCCESS_AND_PRISTINE,
       };
     }
-
-    this.validate(formGroup);
 
     if (formGroup.invalid) {
       return {

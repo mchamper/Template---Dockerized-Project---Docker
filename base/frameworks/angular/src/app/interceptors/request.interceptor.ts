@@ -43,7 +43,7 @@ export class RequestInterceptor implements HttpInterceptor {
       headers,
       context,
     })).pipe(
-      delay(1 * 1000)
+      delay(0 * 1000)
     );
   }
 }

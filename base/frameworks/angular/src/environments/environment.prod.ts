@@ -1,11 +1,16 @@
-import { IEnvironment } from "./environment";
+import { IEnvironment } from "./IEnvironment";
 
 export const environment: IEnvironment = {
   production: true,
   name: 'production',
   storageVersion: 1,
+  mock: false,
   httpMock: false,
   httpCache: false,
   httpCacheStore: false,
-  backendUrl: 'test://production',
+  appUrl: 'https://hoggax.com',
+  apiUrl: 'https://api.hoggax.com',
+  backendUrl: '',
+  gtmId: 'GTM-WP29RB3',
+  fbPixelId: '477673610107480',
 };
