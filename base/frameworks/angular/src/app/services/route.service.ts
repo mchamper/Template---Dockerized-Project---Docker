@@ -15,7 +15,7 @@ export class RouteService {
     private _router: Router,
   ) {
 
-    this.onActivationStart$().subscribe(snapshot => {
+    this.onActivationEnd$().subscribe(snapshot => {
       this.currentPage$.next(snapshot.data);
     });
   }

@@ -29,17 +29,17 @@
   <ng-content></ng-content>
 
   <ng-container *ngIf="!vm.res">
-      <ng-container *ngTemplateOutlet="
-        loadingTpl || (type === 'data' ? defaultLoadingTpl : null) || null;
-        context: { $implicit: vm.isLoading || false }
-      "></ng-container>
+    <ng-container *ngTemplateOutlet="
+      loadingTpl || (type === 'data' ? defaultLoadingTpl : null) || null;
+      context: { $implicit: vm.isLoading || false }
+    "></ng-container>
 
-      <ng-template #defaultLoadingTpl let-isLoading>
-        <div *ngIf="isLoading" class="interaction-disabled">
-          <div class="spinner-border" style="width: 2.5rem; height: 2.5rem;" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div>
+    <ng-template #defaultLoadingTpl let-isLoading>
+      <div *ngIf="isLoading" class="interaction-disabled">
+        <div class="spinner-border" style="width: 2.5rem; height: 2.5rem;" role="status">
+          <span class="visually-hidden">Loading...</span>
         </div>
-      </ng-template>
+      </div>
+    </ng-template>
   </ng-container>
 </div>

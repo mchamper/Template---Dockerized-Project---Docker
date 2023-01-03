@@ -1,19 +1,16 @@
-export interface IEnvironment {
-  production: boolean,
-  name: string,
-  storageVersion: number,
-  httpMock: boolean,
-  httpCache: boolean,
-  httpCacheStore: boolean,
-  backendUrl: string,
-}
+import { IEnvironment } from "./IEnvironment";
 
 export const environment: IEnvironment = {
   production: false,
-  name: 'local',
+  name: 'development',
   storageVersion: 1,
-  httpMock: true,
+  mock: false,
+  httpMock: false,
   httpCache: false,
   httpCacheStore: false,
-  backendUrl: 'http://localhost:10011',
+  appUrl: 'http://localhost:10003',
+  apiUrl: 'http://localhost:10012',
+  backendUrl: '',
+  gtmId: 'GTM-KPBLJGT',
+  fbPixelId: '477673610107480',
 };
