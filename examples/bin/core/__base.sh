@@ -67,6 +67,16 @@ if [[ ${CMD} = "ssh-upload" ]]; then
   exit
 fi
 
+if [[ ${CMD} = "echo-ssh-download" ]]; then
+  echo "$(bash ${THIS} ssh "cat ${ARG1}")" > "${ARG2}"
+  exit
+fi
+
+if [[ ${CMD} = "echo-ssh-upload" ]]; then
+  bash ${THIS} ssh "echo '$(cat ${ARG1})' > ${ARG2}"
+  exit
+fi
+
 ##############################
 
 if [[ ${CMD} = "npm" ]]; then
