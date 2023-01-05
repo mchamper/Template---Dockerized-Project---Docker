@@ -13,7 +13,7 @@ export class MockInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const url: string = req.context.get(URL_ORIGINAL) || '';
-    const mock: string = req.context.get(MOCK) || '';
+    const mock: unknown = req.context.get(MOCK) || null;
 
     if (mock) {
       return of(new HttpResponse({
