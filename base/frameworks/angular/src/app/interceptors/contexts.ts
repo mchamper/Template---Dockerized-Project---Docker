@@ -13,4 +13,4 @@ export const AUTH_GUARD = new HttpContextToken<TGuard | null>(() => null);
 export const AUTH_LOGIN = new HttpContextToken<IAuthLoginContext | null>(() => null);
 export const AUTH_UPDATE = new HttpContextToken<IAuthLoginContext | null>(() => null);
 export const AUTH_LOGOUT_ON_ERROR = new HttpContextToken<boolean>(() => false);
-export const MOCK = new HttpContextToken<any>(() => null);
+export const MOCK = new HttpContextToken<unknown>(() => null);
