@@ -391,8 +391,8 @@ export class Form {
       reset?: boolean,
       persist?: boolean,
       notify?: boolean,
-      notifySuccess?: boolean | string[],
-      notifyError?: boolean | string[],
+      notifySuccess?: boolean | [title: string, content: string],
+      notifyError?: boolean | [title: string, content: string],
     }
   ): Observable<IHttpResponse> {
     const defaultOptions = {
