@@ -15,8 +15,11 @@ export class RouteService {
     private _router: Router,
   ) {
 
-    this.onActivationEnd$().subscribe(snapshot => {
-      this.currentPage$.next(snapshot.data);
+    this.onNavigationEnd$().subscribe(value => {
+      this.currentPage$.next({
+        ...this.getSnapshotLastChild().data,
+        url: value.urlAfterRedirects
+      });
     });
   }
 
@@ -71,13 +74,13 @@ export class RouteService {
 
   /* -------------------- */
 
-  onNavigationStart$(): Observable<any> {
+  onNavigationStart$(): Observable<NavigationStart> {
     return this._router.events.pipe(
       filter((event: any) => event instanceof NavigationStart)
     );
   }
 
-  onNavigationEnd$(): Observable<any> {
+  onNavigationEnd$(): Observable<NavigationEnd> {
     return this._router.events.pipe(
       filter((event: any) => event instanceof NavigationEnd)
     );

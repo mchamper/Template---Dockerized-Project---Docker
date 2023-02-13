@@ -22,6 +22,8 @@ export class QuoterHttpService {
             cotizacion: { importe, alquiler, expensas, plazo, legales, facilidades_pago, discount, discountRef },
           } = res.body;
 
+          let featured: boolean = false;
+
           return {
             quotation: {
               importe,
@@ -32,6 +34,10 @@ export class QuoterHttpService {
               discount,
               discountRef,
               facilidades: facilidades_pago.map((facilidad: any) => {
+                !featured
+                  ? featured = facilidad.destacado
+                  : facilidad.destacado = false;
+
                 return {
                   orden: facilidad.orden,
                   destacado: facilidad.destacado,
@@ -57,14 +63,23 @@ export class QuoterHttpService {
 
           switch (res.body.message) {
             case 'Aprobado': status = 'APPROVED'; break;
+            case 'Casi Aprobado': status = 'ALMOST_APPROVED'; break;
             case 'Sumar solicitante': status = 'NEED_APPLICANT'; break;
+            case 'Identidad Invalida': status = 'INFO_ERROR'; break;
+            case 'Problema Técnico': status = 'INFO_ERROR'; break;
+            case 'Datos envíados incorrectos': status = 'INFO_ERROR'; break;
+            case 'Rechazado': status = 'NOT_APPROVED'; break;
             default: status = 'ERROR'; break;
           }
 
           return {
             qualification: new Qualification({
-              applicantName: res?.body.payload.nombre || null,
               status: status,
+              applicantName: res?.body.payload.nombre || null,
+              agent: res?.body.payload.agente ? {
+                name: res?.body.payload.agente.nombre,
+                pictureUrl: res?.body.payload.agente.foto,
+              } : undefined,
             }),
           };
         })
@@ -73,6 +88,7 @@ export class QuoterHttpService {
             switch (err.code) {
               case 605:
               case 609:
+              case 615:
               case 616: {
                 return true
               }
@@ -81,6 +97,14 @@ export class QuoterHttpService {
 
           return false;
         })
+    });
+  }
+
+  /* -------------------- */
+
+  saveQuotation(input: any) {
+    return this._httpClient.post(`api:/cotizador/individuo/enviar-cotizacion`, input, {
+      context: new HttpContext()
     });
   }
 }

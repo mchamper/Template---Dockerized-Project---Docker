@@ -64,3 +64,11 @@ export const onViewportIntersection = (elem: Element, callbackIn: () => any, cal
 
   return observer;
 }
+
+export const scrollToAnchor = (anchor: string, offset: number = 30) => {
+  const anchorTarget = document.querySelector<HTMLElement>(`#${anchor}`);
+
+  if (anchorTarget) {
+    window.scrollTo({ behavior: 'smooth', top: anchorTarget.offsetTop - offset });
+  }
+}
