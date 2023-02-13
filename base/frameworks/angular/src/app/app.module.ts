@@ -25,6 +25,14 @@ import { AuthService } from './services/auth.service';
 import { StorageService } from './services/storage.service';
 import { MockInterceptor } from './interceptors/mock.interceptor';
 import { initializeApp, InitService } from './services/init.service';
+import { environment } from 'src/environments/environment';
+import { GoogleTagManagerModule } from 'angular-google-tag-manager';
+import { PixelModule } from 'ngx-pixel';
+import { TransferHttpCacheModule } from '@nguniversal/common';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+
+import SwiperCore, { Pagination, Navigation, Virtual } from 'swiper';
+SwiperCore.use([Pagination, Navigation, Virtual]);
 
 registerLocaleData(es);
 
@@ -37,10 +45,14 @@ registerLocaleData(es);
     BrowserAnimationsModule,
     AppRoutingModule,
     HttpClientModule,
+    // TransferHttpCacheModule,
     NzMessageModule,
     NzNotificationModule,
+    NzModalModule,
     NgxMaskModule.forRoot({ validation: true, thousandSeparator: '.' }),
     NgxWebstorageModule.forRoot({ prefix: 'app', separator: '.', caseSensitive: true }),
+    GoogleTagManagerModule.forRoot({ id: environment.gtmId }),
+    PixelModule.forRoot({ enabled: true, pixelId: environment.fbPixelId }),
   ],
   providers: [
     { provide: NZ_I18N, useValue: es_ES },

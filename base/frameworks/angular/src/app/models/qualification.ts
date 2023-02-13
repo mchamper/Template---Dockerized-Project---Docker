@@ -3,6 +3,7 @@ import { map, Observable } from "rxjs";
 
 export type TQualificationStatus =
   | 'APPROVED'
+  | 'ALMOST_APPROVED'
   | 'NOT_APPROVED'
   | 'NEED_APPLICANT'
   | 'INFO_ERROR'
@@ -10,8 +11,12 @@ export type TQualificationStatus =
   ;
 
 export interface IQualification {
-  applicantName: string;
-  status: TQualificationStatus;
+  status: TQualificationStatus,
+  applicantName: string,
+  agent?: {
+    name: string,
+    pictureUrl?: string,
+  },
 }
 
 export class Qualification extends AbstractModel<IQualification> {
@@ -25,38 +30,10 @@ export class Qualification extends AbstractModel<IQualification> {
     return this.subject$.pipe(map(() => this.isStatus(status)));
   }
 
-  public isApproved(): boolean {
-    return this.data.status === 'APPROVED';
-  }
-  public isApproved$(): Observable<boolean> {
-    return this.subject$.pipe(map(() => this.isApproved()));
-  }
+  /* -------------------- */
 
-  public isNotApproved(): boolean {
-    return this.data.status === 'NOT_APPROVED';
-  }
-  public isNotApproved$(): Observable<boolean> {
-    return this.subject$.pipe(map(() => this.isNotApproved()));
-  }
-
-  public isNeedApplicant(): boolean {
-    return this.data.status === 'NEED_APPLICANT';
-  }
-  public isNeedApplicant$(): Observable<boolean> {
-    return this.subject$.pipe(map(() => this.isNeedApplicant()));
-  }
-
-  public isInfoError(): boolean {
-    return this.data.status === 'INFO_ERROR';
-  }
-  public isInfoError$(): Observable<boolean> {
-    return this.subject$.pipe(map(() => this.isInfoError()));
-  }
-
-  public isError(): boolean {
-    return this.data.status === 'ERROR';
-  }
-  public isError$(): Observable<boolean> {
-    return this.subject$.pipe(map(() => this.isError()));
+  public hasAgent(): boolean {
+    return !(['NOT_APPROVED', 'INFO_ERROR', 'ERROR'] as TQualificationStatus[]).includes(this.data.status)
+      && !!this.data.agent;
   }
 }

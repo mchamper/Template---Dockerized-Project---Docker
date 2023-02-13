@@ -1,6 +1,6 @@
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { get, random } from "lodash";
+import { get } from "lodash";
 import { catchError, Observable, of, tap, throwError } from "rxjs";
 import { AuthService, TGuard } from "../services/auth.service";
 import { AUTH_GUARD, AUTH_LOGOUT_ON_ERROR, ERR, ERR_AS_200, URL } from "./contexts";

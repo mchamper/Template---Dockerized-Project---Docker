@@ -20,10 +20,6 @@ export class TaxonomyService {
     return environment.appUrl;
   }
 
-  get domUrl(): string {
-    return `${this.domBaseUrl}${this._dom.location.pathname}`;
-  }
-
   /* -------------------- */
 
   resolve(currentPage: any): void {
@@ -46,7 +42,7 @@ export class TaxonomyService {
     this._meta.updateTag({ name: 'description', content: taxonomy.description });
     this._meta.updateTag({ name: 'keywords', content: taxonomy.keywords });
 
-    this._dom.querySelector('[rel="canonical"]')?.setAttribute('href', taxonomy.canonical || this.domUrl);
+    this._dom.querySelector('[rel="canonical"]')?.setAttribute('href', taxonomy.canonical || `${this.domBaseUrl}${currentPage.url?.split('?')[0]}`);
   }
 
   /* -------------------- */
