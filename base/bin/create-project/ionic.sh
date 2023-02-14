@@ -3,20 +3,24 @@
 . .env || exit 1
 
 SERVICE=${1}
-PACKAGE_MANAGER=${2:-"yarn"}
+MANAGER=${2:-"npm"}
 
 SOURCE=$(bash base/bin/sources/get.sh ${SERVICE})
 SUBFOLDER=""
 
-if [[ ! -d "${SOURCE}" ]]; then
-  bash base/bin/sources/create.sh ${SERVICE};
-fi
+if [[ ! -d "${SOURCE}" ]]
+  then bash base/bin/sources/create.sh ${SERVICE}
+  else SUBFOLDER="__NEW_APP__"
+  fi
 
 bash base/bin/docker/run.sh ${SERVICE} "
-  ionic config set -g npmClient ${PACKAGE_MANAGER};
+  cd ${SUBFOLDER};
+  ionic config set -g npmClient ${MANAGER};
   ionic start app --no-git;
   cp -a ./app ../;
   rm -rf ./app;
 "
 
-bash base/bin/git/init.sh ${SERVICE}
+if [[ ${SUBFOLDER} = "" ]]; then
+  bash base/bin/git/init.sh ${SERVICE}
+fi
