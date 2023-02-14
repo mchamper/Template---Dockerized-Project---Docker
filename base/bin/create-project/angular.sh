@@ -3,18 +3,18 @@
 . .env || exit 1
 
 SERVICE=${1}
-PACKAGE_MANAGER=${2:-"npm"}
+MANAGER=${2:-"npm"}
 
 SOURCE=$(bash base/bin/sources/get.sh ${SERVICE})
 SUBFOLDER=""
 
 if [[ ! -d "${SOURCE}" ]]
   then bash base/bin/sources/create.sh ${SERVICE}
-  else SUBFOLDER="___"
+  else SUBFOLDER="__NEW_APP__"
   fi
 
 bash base/bin/docker/run.sh ${SERVICE} "
-  ng new app --directory ./${SUBFOLDER} --package-manager ${PACKAGE_MANAGER} --skip-git;
+  ng new app --directory ./${SUBFOLDER} --package-manager ${MANAGER} --skip-git;
 "
 
 if [[ ${SUBFOLDER} = "" ]]; then

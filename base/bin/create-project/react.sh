@@ -9,7 +9,7 @@ SUBFOLDER=""
 
 if [[ ! -d "${SOURCE}" ]]
   then bash base/bin/sources/create.sh ${SERVICE}
-  else SUBFOLDER="___"
+  else SUBFOLDER="__NEW_APP__"
   fi
 
 bash base/bin/docker/run.sh ${SERVICE} "
