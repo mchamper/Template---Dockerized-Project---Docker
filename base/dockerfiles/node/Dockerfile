@@ -36,7 +36,6 @@ RUN apt-get update && apt-get install -y \
   python3-pip \
   python3-dev libffi-dev musl-dev gcc make \
   && pip3 install --upgrade pip \
-  && pip3 install awscli --upgrade --user && pip3 install awsebcli --upgrade --user \
   && rm -rf /var/cache/apt/* && rm -rf /tmp/*
 
 ##############################
@@ -53,3 +52,6 @@ RUN npm i -g npm-check-updates
 RUN npm i -g cordova-res --unsafe-perm; exit 0
 
 USER node
+
+# Install aws cli
+RUN pip3 install awscli --upgrade --user && pip3 install awsebcli --upgrade --user
