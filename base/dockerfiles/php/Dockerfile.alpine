@@ -35,7 +35,7 @@ RUN apk add --update --no-cache \
   libc6-compat \
   && rm -rf /var/cache/apk/* && rm -rf /tmp/*
 
-# Install python and aws cli
+# Install python
 RUN apk add --update --no-cache python2; exit 0
 RUN apk add --update --no-cache \
   python3 \
@@ -43,7 +43,6 @@ RUN apk add --update --no-cache \
   py3-pynacl \
   python3-dev libffi-dev openssl-dev musl-dev gcc make \
   && pip3 install --upgrade pip \
-  && pip3 install awscli --upgrade --user && pip3 install awsebcli --upgrade --user \
   && rm -rf /var/cache/apk/* && rm -rf /tmp/*
 
 ##############################
@@ -79,3 +78,6 @@ RUN curl -sL https://getcomposer.org/installer | php -- --install-dir /usr/bin -
 RUN composer self-update ${COMPOSER_VERSION}
 
 USER docker
+
+# Install aws cli
+RUN pip3 install awscli --upgrade --user && pip3 install awsebcli --upgrade --user
