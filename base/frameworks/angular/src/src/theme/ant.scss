@@ -1,0 +1,11 @@
+nz-avatar {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.anticon:not(.ant-input-number-handler-up-inner,.ant-input-number-handler-down-inner,.ant-notification-notice-icon) {
+  position: relative!important;
+  top: -1px!important;
+  vertical-align: unset!important;
+}

@@ -7,6 +7,7 @@ MANAGER=${2:-"npm"}
 
 bash base/bin/docker/run.sh ${SERVICE} "
   ${MANAGER} install \
+    @abacritt/angularx-social-login \
     @ant-design/icons-angular \
     bootstrap \
     crypto-js \

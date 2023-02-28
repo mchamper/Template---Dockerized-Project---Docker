@@ -3,14 +3,14 @@ console.log(`Version: ${versionName}`);
 
 /* -------------------- */
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NZ_I18N } from 'ng-zorro-antd/i18n';
 import { es_ES } from 'ng-zorro-antd/i18n';
 import { registerLocaleData } from '@angular/common';
-import es from '@angular/common/locales/es';
+import localeEs from '@angular/common/locales/es';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 // import { TransferHttpCacheModule } from '@nguniversal/common';
@@ -30,11 +30,12 @@ import { environment } from 'src/environments/environment';
 import { GoogleTagManagerModule } from 'angular-google-tag-manager';
 import { PixelModule } from 'ngx-pixel';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { GoogleLoginProvider, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
 
 // import SwiperCore, { Pagination, Navigation, Virtual } from 'swiper';
 // SwiperCore.use([Pagination, Navigation, Virtual]);
 
-registerLocaleData(es);
+registerLocaleData(localeEs, 'es');
 
 @NgModule({
   declarations: [
@@ -54,7 +55,25 @@ registerLocaleData(es);
     PixelModule.forRoot({ enabled: true, pixelId: environment.fbPixelId }),
   ],
   providers: [
-    provideNgxMask({ validation: true, thousandSeparator: '.' }),
+    {
+      provide: 'SocialAuthServiceConfig',
+      useValue: {
+        autoLogin: true,
+        providers: [
+          {
+            id: GoogleLoginProvider.PROVIDER_ID,
+            provider: new GoogleLoginProvider(environment.authGoogleClientId, {
+              oneTapEnabled: environment.authGuard === 'local',
+            })
+          },
+        ],
+        onError: (err) => {
+          console.error(err);
+        }
+      } as SocialAuthServiceConfig,
+    },
+    provideEnvironmentNgxMask({ validation: true, thousandSeparator: '.' }),
+    { provide: LOCALE_ID, useValue: 'es' },
     { provide: NZ_I18N, useValue: es_ES },
     { provide: APP_INITIALIZER, useFactory: initializeApp, deps: [InitService], multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: RequestInterceptor, deps: [AuthService], multi: true },

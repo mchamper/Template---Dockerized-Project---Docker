@@ -20,8 +20,8 @@ export class RequestHandlerComponent implements OnInit {
   @Input() requestH!: RequestHandler;
   @Input() form!: Form;
   @Input() type: 'data' | 'form' = 'data';
-  @Input() theme: 'light' | 'dark' = 'light';
   @Input() errorInfo: boolean = true;
+  @Input() errorTheme: 'light' | 'dark' = 'light';
 
   @ContentChild('loadingTpl') loadingTpl!: TemplateRef<any>;
   @ContentChild('errorTpl') errorTpl!: TemplateRef<any>;

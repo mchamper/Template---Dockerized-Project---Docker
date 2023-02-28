@@ -1,12 +1,17 @@
-import { EventEmitter } from "@angular/core";
+import { EventEmitter, inject } from "@angular/core";
 import { ActivatedRoute, Params, Router } from "@angular/router";
-import { difference, xor } from "lodash";
+import { difference, get, xor } from "lodash";
 import { NzTableQueryParams } from "ng-zorro-antd/table";
-import { debounceTime, distinctUntilChanged, skip, Subscription } from "rxjs";
-import { stringToObject } from "../helper";
-import { factory } from "./factory";
+import { BehaviorSubject, debounceTime, distinctUntilChanged, Observable, of, skip, Subscription, tap } from "rxjs";
+import { scrollTo, stringToObject } from "../helper";
+import { IHttpErrorResponse } from "../interceptors/error.interceptor";
+import { IHttpResponse } from "../interceptors/success.interceptor";
 import { Form } from "./form/form";
 import { RequestHandler } from "./handlers/request-handler/request-handler";
+
+export enum ListUnpreparedReasonEnum {
+  IS_LOADING = 'IS_LOADING',
+}
 
 export interface IPage {
   data: any[];
@@ -22,14 +27,23 @@ export interface ILaravelPage {
   total: number;
 }
 
+export interface INestJsPage {
+  items: any[];
+  meta: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+  };
+}
+
 export interface INoPage {
   data: any[];
 }
 
-export class List<T> {
+export class List<T = any> {
 
-  columns: { [key: string]: { sortFn?: any } } = {};
   data: T[] = [];
+  data$: BehaviorSubject<T[]> = new BehaviorSubject<T[]>([]);
   currentPage: number = 1;
   lastPage: number = 1;
   total: number = 0;
@@ -38,8 +52,12 @@ export class List<T> {
   selected: any[] = [];
   extras: any = null;
 
-  requestH: RequestHandler = new RequestHandler();
   filtersForm!: Form;
+
+  requestH: RequestHandler = new RequestHandler();
+  combosRequestH: RequestHandler = new RequestHandler();
+
+  nzExpandSet = new Set<number>();
 
   changes$: EventEmitter<{
     page: number,
@@ -49,33 +67,33 @@ export class List<T> {
 
   private _setPageMethod!: string;
 
+  private _router: Router = inject(Router);
+  private _route: ActivatedRoute = inject(ActivatedRoute);
+
   constructor(
-    pageInterface: 'Page' | 'LaravelPage' | 'NoPage' = 'Page',
-    columns: { [key: string]: { sortFn?: any } } = {},
+    pageInterface: 'Page' | 'LaravelPage' | 'NestJsPage' | 'NoPage' = 'Page',
   ) {
 
     this._setPageMethod = pageInterface;
-    this.columns = columns;
   }
 
   /* -------------------- */
 
-  initNg(
-    callback: (page: number, reset: boolean) => any,
+  init(
+    getList: (page: number, reset: boolean) => any,
     options?: {
-      router: Router,
-      route: ActivatedRoute,
+      persistOnUrl: boolean
     }
   ): Subscription[] {
 
     const subscriptions: Subscription[] = [];
 
-    if (options?.router && options?.route) {
-      this.filtersForm?.setValuesFromQueryParams(options.route.snapshot.queryParams);
+    if (options?.persistOnUrl) {
+      this.filtersForm?.setValuesFromQueryParams(this._route.snapshot.queryParams);
 
       subscriptions.push(this.changes$.pipe(skip(this._setPageMethod !== 'NoPage' ? 1 : 0)).subscribe(({ page, reset, refresh }) => {
         if (refresh) {
-          callback(page, reset);
+          getList(page, reset);
           return;
         }
 
@@ -94,22 +112,22 @@ export class List<T> {
           };
         }
 
-        options.router.navigate([], {
+        this._router.navigate([], {
           queryParams: stringToObject(queryParams, true),
           state: { reset },
         });
       }));
 
-      subscriptions.push(options.route.queryParams.subscribe((queryParams: Params) => {
+      subscriptions.push(this._route.queryParams.subscribe((queryParams: Params) => {
         const page: number = parseInt(queryParams['page'] || '1') || this.currentPage;
         this.limit = parseInt(queryParams['limit'] || '0') || this.limit;
         this.sort = queryParams['sort'] || this.sort;
 
-        callback(page, options.router.getCurrentNavigation()?.extras?.state?.['reset'] || false);
+        getList(page, this._router.getCurrentNavigation()?.extras?.state?.['reset'] || false);
       }));
     } else {
       subscriptions.push(this.changes$.subscribe(({ page, reset }) => {
-        callback(page, reset);
+        getList(page, reset);
       }));
     }
 
@@ -124,6 +142,7 @@ export class List<T> {
   /* -------------------- */
 
   reset(): void {
+    this.data$.next([]);
     this.data = [];
     this.currentPage = 1;
     this.lastPage = 1;
@@ -132,22 +151,27 @@ export class List<T> {
     this.extras = null;
   }
 
-  set(page: IPage | ILaravelPage | INoPage, options?: { extras?: any, className?: any }): void {
-    this.data = options?.className
-      ? factory.createMany<T>(page.data, options.className)
-      : page.data;
+  set(page: IPage | ILaravelPage | INestJsPage | INoPage, options?: { extras?: any }): void {
+    'items' in page
+      ? this.data = page.items
+      : this.data = page.data;
+
+    this.data$.next(this.data);
 
     this.extras = options?.extras;
 
     (this as any)[`_set${this._setPageMethod}`](page);
   }
 
-  add(page: IPage | ILaravelPage | INoPage, options?: { className?: any }): void {
-    const data: T[] = options?.className
-      ? factory.createMany<T>(page.data, options.className)
-      : page.data;
+  add(page: IPage | ILaravelPage | INestJsPage | INoPage): void {
+    let data: T[];
+
+    'items' in page
+      ? data = page.items
+      : data = page.data;
 
     this.data = [...this.data, ...data];
+    this.data$.next(this.data);
 
     (this as any)[`_set${this._setPageMethod}`](page);
   }
@@ -162,6 +186,12 @@ export class List<T> {
     this.currentPage = page.current_page;
     this.lastPage = page.last_page;
     this.total = page.total;
+  }
+
+  private _setNestJsPage(page: INestJsPage): void {
+    this.currentPage = page.meta.currentPage;
+    this.lastPage = page.meta.totalPages;
+    this.total = page.meta.totalItems;
   }
 
   private _setNoPage(page: INoPage): void {
@@ -181,14 +211,22 @@ export class List<T> {
   }
 
   isAllSelected(attribute: string = 'id'): boolean {
-    return !!this.selected.length && this.data.every((item: any) => this.isSelected(item[attribute]));
+    if (this.data[0] && 'data' in (this.data[0] as any)) {
+      attribute = `data.${attribute}`;
+    }
+
+    return !!this.selected.length && this.data.every((item: any) => this.isSelected(get(item, attribute)));
   }
 
   selectAll(attribute: string = 'id'): void {
-    let ids: any[] = difference(this.data.map((item: any) => item[attribute]), this.selected);
+    if (this.data[0] && 'data' in (this.data[0] as any)) {
+      attribute = `data.${attribute}`;
+    }
+
+    let ids: any[] = difference(this.data.map((item: any) => get(item, attribute)), this.selected);
 
     if (!ids.length) {
-      ids = this.data.map((item: any) => item[attribute]);
+      ids = this.data.map((item: any) => get(item, attribute));
     }
 
     this.select(...ids);
@@ -209,6 +247,12 @@ export class List<T> {
   }
 
   /* -------------------- */
+
+  onNzExpandChange(id: number, checked: boolean): void {
+    checked
+      ? this.nzExpandSet.add(id)
+      : this.nzExpandSet.delete(id);
+  }
 
   onNzQueryParamsChange(event: NzTableQueryParams): void {
     const page = event.pageIndex;
@@ -235,5 +279,76 @@ export class List<T> {
       page: 1,
       reset: true
     });
+  }
+
+  /* -------------------- */
+
+  prepare(): {
+    status: boolean,
+    reason?: ListUnpreparedReasonEnum
+  } {
+    if (this.requestH.isLoading()) {
+      return {
+        status: false,
+        reason: ListUnpreparedReasonEnum.IS_LOADING,
+      };
+    }
+
+    return {
+      status: true
+    };
+  }
+
+  send(
+    observable: Observable<any>,
+    options?: {
+      unprepared?: (reason: ListUnpreparedReasonEnum) => void,
+      before?: () => void,
+      success?: (res: IHttpResponse) => void,
+      error?: (err: IHttpErrorResponse) => void,
+      after?: () => void,
+    }
+  ): Observable<IHttpResponse> {
+    const defaultOptions = {
+      unprepared: typeof options?.unprepared !== 'undefined' ? options?.unprepared : null,
+      before: typeof options?.before !== 'undefined' ? options?.before : null,
+      success: typeof options?.success !== 'undefined' ? options?.success : null,
+      error: typeof options?.error !== 'undefined' ? options?.error : null,
+      after: typeof options?.after !== 'undefined' ? options?.after : null,
+    }
+
+    const prepare = this.prepare();
+
+    if (!prepare.status && prepare.reason) {
+      if (defaultOptions.unprepared) {
+        defaultOptions.unprepared(prepare.reason);
+      }
+
+      return of();
+    }
+
+    scrollTo(0);
+
+    if (defaultOptions.before) {
+      defaultOptions.before();
+    }
+
+    return this.requestH.send(observable).pipe(
+      tap({
+        next: (res: IHttpResponse) => {
+          if (defaultOptions.success) {
+            defaultOptions.success(res);
+          }
+        },
+        error: (err: IHttpErrorResponse) => {
+          if (defaultOptions.error) {
+            defaultOptions.error(err);
+          }
+        },
+        complete: () => {
+          if (defaultOptions.after) defaultOptions.after();
+        },
+      }),
+    );
   }
 }

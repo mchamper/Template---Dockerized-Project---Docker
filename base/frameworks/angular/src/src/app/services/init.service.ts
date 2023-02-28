@@ -32,9 +32,8 @@ export class InitService {
     this.checkStorage();
 
     return Promise.all([
-      this.checkAuthClient(),
       this.checkAuthUser(),
-      // this._delay(),
+      // this._delay(1),
     ])
     .then(() => this.continue())
     .catch(() => this.throwError());
@@ -68,14 +67,6 @@ export class InitService {
   }
 
   /* -------------------- */
-
-  async checkAuthClient(): Promise<void> {
-    if (this._authS.isLoggedIn('client')) {
-      await firstValueFrom(of('this._authClientHttpS.me()')).catch(() => null);
-    }
-
-    return Promise.resolve();
-  }
 
   async checkAuthUser(): Promise<void> {
     if (this._authS.isLoggedIn('user')) {

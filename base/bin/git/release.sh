@@ -64,10 +64,17 @@ function edit_files() {
   echo ${version_name} >> version.txt
 
   if [[ -f package.json && ! -f composer.json ]]; then
-    sed -i '0,/version/ s|\(.*"version"\): "\(.*\)",.*|\1: "'${version_name}'",|' package.json
+    # sed -i '0,/version/ s|\(.*"version"\): "\(.*\)",.*|\1: "'${version_name}'",|' package.json
+
+    tmp=$(mktemp)
+    jq --arg version "${version_name}" '.version=$version' package.json > "$tmp" && mv "$tmp" package.json
 
     if [[ -f package-lock.json ]]; then
-      sed -i '0,/version/ s|\(.*"version"\): "\(.*\)",.*|\1: "'${version_name}'",|' package-lock.json
+      # sed -i '0,/version/ s|\(.*"version"\): "\(.*\)",.*|\1: "'${version_name}'",|' package-lock.json
+
+      tmp=$(mktemp)
+      jq --arg version "${version_name}" '.version=$version' package-lock.json > "$tmp" && mv "$tmp" package-lock.json
+      jq --arg version "${version_name}" '.packages."".version=$version' package-lock.json > "$tmp" && mv "$tmp" package-lock.json
     fi
 
     if [[ -f capacitor.config.ts ]]; then

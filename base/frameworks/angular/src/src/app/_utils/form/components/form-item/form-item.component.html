@@ -1,0 +1,6 @@
+<div
+  [class.is-empty]="!hasValue((control?.valueChanges | async) || control?.value)"
+  [class.has-value]="hasValue((control?.valueChanges | async) || control?.value)"
+>
+  <ng-content></ng-content>
+</div>

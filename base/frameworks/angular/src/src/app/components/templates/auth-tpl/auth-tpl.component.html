@@ -1,0 +1,13 @@
+<main>
+  <div class="bg-animation">
+    <app-min-width class="birds" [value]="1024">
+      <app-rive-animation name="pajaro_ultimo2" [fullWidth]="true" [height]="300"></app-rive-animation>
+    </app-min-width>
+
+    <app-min-width class="clouds" [value]="1024">
+      <app-rive-animation name="nubes" [fullWidth]="true" [height]="300"></app-rive-animation>
+    </app-min-width>
+  </div>
+
+  <router-outlet></router-outlet>
+</main>
