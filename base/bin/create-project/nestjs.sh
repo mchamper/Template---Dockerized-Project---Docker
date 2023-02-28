@@ -3,6 +3,7 @@
 . .env || exit 1
 
 SERVICE=${1}
+MANAGER=${2:-"npm"}
 
 SOURCE=$(bash base/bin/sources/get.sh ${SERVICE})
 SUBFOLDER=""
@@ -13,7 +14,7 @@ if [[ ! -d "${SOURCE}" ]]
   fi
 
 bash base/bin/docker/run.sh ${SERVICE} "
-  npx create-react-app ./${SUBFOLDER}
+  nest new app --directory ./${SUBFOLDER} --package-manager ${MANAGER}
   rm -rf ./${SUBFOLDER}/.git
 "
 

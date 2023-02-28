@@ -13,7 +13,7 @@ if [[ ! -d "${SOURCE}" ]]
   fi
 
 bash base/bin/docker/run.sh ${SERVICE} "
-  composer create-project --prefer-dist laravel/laravel ./${SUBFOLDER};
+  composer create-project --prefer-dist laravel/laravel ./${SUBFOLDER}
 "
 
 if [[ ${SUBFOLDER} = "" ]]; then

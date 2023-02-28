@@ -14,7 +14,7 @@ if [[ ! -d "${SOURCE}" ]]
   fi
 
 bash base/bin/docker/run.sh ${SERVICE} "
-  ng new app --directory ./${SUBFOLDER} --package-manager ${MANAGER} --skip-git;
+  ng new app --directory ./${SUBFOLDER} --package-manager ${MANAGER} --skip-git
 "
 
 if [[ ${SUBFOLDER} = "" ]]; then

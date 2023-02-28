@@ -45,9 +45,11 @@ RUN apt-get update && apt-get install -y \
 ARG NPM_VERSION=latest
 ARG ANGULAR_VERSION=latest
 ARG IONIC_VERSION=latest
+ARG NESTJS_VERSION=latest
 RUN npm i -g npm@${NPM_VERSION}
 RUN npm i -g @angular/cli@${ANGULAR_VERSION}
 RUN npm i -g @ionic/cli@${IONIC_VERSION}
+RUN npm i -g @nestjs/cli@${NESTJS_VERSION}
 RUN npm i -g npm-check-updates
 RUN npm i -g cordova-res --unsafe-perm; exit 0
 
