@@ -17,6 +17,10 @@ export const parseQueryParams = (params: any, prefix?: string): string => {
   return query.join('&');
 }
 
+export const parseFloatToStringWithComma = (value: number): string => {
+  return value.toString().replace('.', ',');
+}
+
 export const stringToObject = (object: any, strict: boolean = false): any => {
   const res = {};
 
@@ -66,9 +70,15 @@ export const onViewportIntersection = (elem: Element, callbackIn: () => any, cal
 }
 
 export const scrollToAnchor = (anchor: string, offset: number = 30) => {
-  const anchorTarget = document.querySelector<HTMLElement>(`#${anchor}`);
+  const scrollableElem = window;
+  const anchorTargetElem = document.querySelector<HTMLElement>(`#${anchor}`);
 
-  if (anchorTarget) {
-    window.scrollTo({ behavior: 'smooth', top: anchorTarget.offsetTop - offset });
+  if (anchorTargetElem) {
+    scrollableElem.scrollTo({ behavior: 'smooth', top: anchorTargetElem.offsetTop - offset });
   }
+}
+
+export const scrollTo = (top: 0, offset: number = 30) => {
+  const scrollableElem = document.querySelector<HTMLElement>(`main`) || window;
+  scrollableElem.scrollTo({ behavior: 'smooth', top: top - offset });
 }

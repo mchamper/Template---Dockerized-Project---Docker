@@ -46,7 +46,7 @@ export class Form {
   };
 
   groupInit!: FormGroup;
-  combos: { [key: string]: any[] } = {};
+  combos!: { [key: string]: any[] };
 
   requestH: RequestHandler = new RequestHandler();
   dataRequestH: RequestHandler = new RequestHandler();
@@ -244,7 +244,7 @@ export class Form {
     return '';
   }
 
-  getError(key: string | any[], localFirst: boolean = true): string {
+  getError(key: string | any[], localFirst?: boolean): string {
     let group = this.group;
 
     if (Array.isArray(key)) {

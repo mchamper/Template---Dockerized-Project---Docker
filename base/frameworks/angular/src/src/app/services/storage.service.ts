@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { LocalStorageService, SessionStorageService } from 'ngx-webstorage';
 import * as CryptoJS from  'crypto-js';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StorageService {
 
-  private _cryptoKey: string = '';
+  private _cryptoKey: string = `qwerty.${environment.storageVersion}`;
 
   constructor(
     public localStorage: LocalStorageService,

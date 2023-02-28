@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
-import { NavService } from '../services/nav.service';
 import { AuthService } from '../services/auth.service';
 
 @Injectable({
@@ -11,7 +10,7 @@ export class AuthUserIsNotLoggedInGuard implements CanActivate {
 
   constructor(
     private _authS: AuthService,
-    private _navS: NavService,
+    private _router: Router,
   ) { }
 
   canActivate(
@@ -34,10 +33,12 @@ export class AuthUserIsNotLoggedInGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
-      const can: boolean = !this._authS.isLoggedIn('user');
+    const can: boolean = !this._authS.isLoggedIn();
 
     if (!can) {
-      this._navS.pages.HomePage.nav();
+      this._router.navigate(['/'], {
+        replaceUrl: true,
+      });
     }
 
     return can;
