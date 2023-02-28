@@ -14,11 +14,11 @@ if [[ ! -d "${SOURCE}" ]]
   fi
 
 bash base/bin/docker/run.sh ${SERVICE} "
-  cd ${SUBFOLDER};
-  ionic config set -g npmClient ${MANAGER};
-  ionic start app --no-git;
-  cp -a ./app ../;
-  rm -rf ./app;
+  cd ${SUBFOLDER}
+  ionic config set -g npmClient ${MANAGER}
+  ionic start app --no-git
+  cp -a ./app ../
+  rm -rf ./app
 "
 
 if [[ ${SUBFOLDER} = "" ]]; then
