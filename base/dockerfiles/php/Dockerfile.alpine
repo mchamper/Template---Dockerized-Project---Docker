@@ -53,7 +53,8 @@ RUN docker-php-ext-install \
   pdo \
   pdo_mysql \
   mysqli \
-  zip
+  zip \
+  exif
 RUN docker-php-ext-configure gd \
   --with-freetype=/usr/include/ \
   # --with-png=/usr/include/ \
