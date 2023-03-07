@@ -63,6 +63,12 @@ RUN docker-php-ext-configure gd \
   && docker-php-ext-enable gd \
   && rm -rf /var/cache/apk/* && rm -rf /tmp/*
 
+# Install pgsql
+RUN apk add --update --no-cache \
+  libpq-dev \
+  && docker-php-ext-configure pgsql --with-pgsql=/usr/local/pgsql \
+  && docker-php-ext-install pdo_pgsql pgsql
+
 # Install php memcached
 RUN apk add --update --no-cache \
   libmemcached \
