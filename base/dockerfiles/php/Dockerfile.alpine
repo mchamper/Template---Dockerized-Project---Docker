@@ -4,6 +4,7 @@ FROM php:${PHP_VERSION}-alpine
 WORKDIR /docker/src
 RUN addgroup docker && adduser -D docker -u 1000 -G root -G www-data
 RUN chown -R docker:docker /docker
+ENV PATH="/home/docker/.local/bin:${PATH}"
 
 ##############################
 ##############################
