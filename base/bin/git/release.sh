@@ -77,7 +77,7 @@ function edit_files() {
       jq --arg version "${version_name}" '.packages."".version=$version' package-lock.json > "$tmp" && mv "$tmp" package-lock.json
     fi
 
-    if [[ -f capacitor.config.ts ]]; then
+    if [[ -f capacitor.config.ts || -f capacitor.config.json ]]; then
       if [[ -f android/app/build.gradle  ]]; then
         sed -i 's|\(.*versionCode\) \(.*\)|\1 '${version_code}'|' android/app/build.gradle;
         sed -i 's|\(.*versionName\) "\(.*\)"|\1 "'${version_name}'"|' android/app/build.gradle;
