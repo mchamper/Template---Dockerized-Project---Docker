@@ -67,6 +67,16 @@ if [[ ${CMD} = "ssh-upload" ]]; then
   exit
 fi
 
+if [[ ${CMD} = "ssh-scp-download" ]]; then
+  bash ${THIS} run "scp -i ${SSH_FILE} -P ${SSH_PORT:-22} ${SSH_USER}:${ARG1} ${ARG2}"
+  exit
+fi
+
+if [[ ${CMD} = "ssh-scp-upload" ]]; then
+  bash ${THIS} run "scp -i ${SSH_FILE} -P ${SSH_PORT:-22} ${ARG1} ${SSH_USER}:${ARG2}"
+  exit
+fi
+
 if [[ ${CMD} = "echo-ssh-download" ]]; then
   echo "$(bash ${THIS} ssh "cat ${ARG1}")" > "${ARG2}"
   exit
