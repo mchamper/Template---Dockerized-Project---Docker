@@ -4,6 +4,7 @@ import { delay, firstValueFrom, of } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { versionName } from 'src/version';
 import { AuthService } from './auth.service';
+import { AuthSystemUserHttpService } from './http/auth-system-user-http.service';
 import { StorageService } from './storage.service';
 
 export const initializeApp = (initS: InitService) => {
@@ -21,6 +22,7 @@ export class InitService {
     @Inject(DOCUMENT) private _dom: Document,
     private _storageS: StorageService,
     private _authS: AuthService,
+    private _authSystemUserHttpS: AuthSystemUserHttpService,
   ) { }
 
   /* -------------------- */
@@ -32,7 +34,7 @@ export class InitService {
     this.checkStorage();
 
     return Promise.all([
-      this.checkAuthUser(),
+      this.checkAuthSystemUser(),
       // this._delay(1),
     ])
     .then(() => this.continue())
@@ -68,9 +70,9 @@ export class InitService {
 
   /* -------------------- */
 
-  async checkAuthUser(): Promise<void> {
-    if (this._authS.isLoggedIn('user')) {
-      await firstValueFrom(of('this._authUserHttpS.me()')).catch(() => null);
+  async checkAuthSystemUser(): Promise<void> {
+    if (this._authS.isLoggedIn('systemUser')) {
+      await firstValueFrom(this._authSystemUserHttpS.me()).catch(() => null);
     }
 
     return Promise.resolve();
