@@ -6,9 +6,9 @@ import { AuthService, TGuard } from "../services/auth.service";
 import { AUTH_GUARD, AUTH_LOGIN, AUTH_UPDATE, RES, RES_MAP, URL } from "./contexts";
 
 export interface IHttpResponse<T1 = any, T2 = any> {
-  body: T1,
-  message: string,
   status: number,
+  message: string,
+  body: T1,
   bodyMapped?: T2,
 }
 
@@ -27,11 +27,13 @@ export class SuccessInterceptor implements HttpInterceptor {
     return next.handle(req).pipe(
       map((event: HttpEvent<any>) => {
         if (event instanceof HttpResponse) {
+          const resBody = event.body;
+
           let res: IHttpResponse = {
-            body: event.body,
-            message: event.statusText,
-            status: event.status,
-          };
+            status: typeof resBody?.status !== 'undefined' ? resBody?.status : event.status,
+            message: typeof resBody?.message !== 'undefined' ? resBody?.message : event.statusText,
+            body: typeof resBody?.body !== 'undefined' ? resBody?.body : event.body,
+          }
 
           const urlContext = req.context.get(URL);
           const resContext = req.context.get(RES);
@@ -40,22 +42,13 @@ export class SuccessInterceptor implements HttpInterceptor {
           if (resContext) {
             res = {
               ...res,
-              body: resContext.body ? get(event.body, resContext.body) : res.body,
               message: resContext.message ? get(event.body, resContext.message) : res.message,
+              body: resContext.body ? get(event.body, resContext.body) : res.body,
             };
           }
-          else if (urlContext === 'api') {
+          else if (urlContext === 'backendLaravel') {
             res = {
-              ...res,
-              body: event.body?.payload,
-              message: event.body?.message || res.message,
-            };
-          }
-          else if (urlContext === 'backend') {
-            res = {
-              ...res,
-              body: event.body?.body,
-              message: event.body?.message || res.message,
+              ...res
             };
           }
 
@@ -64,22 +57,24 @@ export class SuccessInterceptor implements HttpInterceptor {
           }
 
           if (guard) {
-            const authLoginPaths = req.context.get(AUTH_LOGIN);
-            const authUpdatePaths = req.context.get(AUTH_UPDATE);
+            const authLoginContext = req.context.get(AUTH_LOGIN);
+            const authUpdateContext = req.context.get(AUTH_UPDATE);
 
-            if (authLoginPaths) {
-              this._authS.login({
-                data: get(res.bodyMapped || res.body, authLoginPaths?.data || '') || null,
-                token: get(res.bodyMapped || res.body, authLoginPaths?.token || '') || null,
-                tokenExpiresAt: get(res.bodyMapped || res.body, authLoginPaths?.tokenExpiresAt || '') || null,
-              });
+            if (authLoginContext) {
+              this._authS.login(authLoginContext(res));
             }
-            else if (authUpdatePaths) {
-              this._authS.login({
-                data: get(res.bodyMapped || res.body, authUpdatePaths?.data || '') || this._authS.guard$(guard).value?.data || null,
-                token: get(res.bodyMapped || res.body, authUpdatePaths?.token || '') || this._authS.guard$(guard).value?.token || null,
-                tokenExpiresAt: get(res.bodyMapped || res.body, authUpdatePaths?.tokenExpiresAt || '') || this._authS.guard$(guard).value?.tokenExpiresAt || null,
-              });
+            else if (authUpdateContext) {
+              const auth = this._authS.guard$(guard).value;
+
+              if (auth) {
+                this._authS.login({
+                  ...auth,
+                  data: {
+                    ...auth.data,
+                    ...authUpdateContext(res),
+                  },
+                });
+              }
             }
           }
 

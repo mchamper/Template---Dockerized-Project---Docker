@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { SharedModule } from 'src/app/shared.module';
 import { RouterModule } from '@angular/router';
-import { MinWidthComponent } from '../../elementals/min-width/min-width.component';
-import { RiveAnimationComponent } from '../../commons/rive-animation/rive-animation.component';
+import { SvgCoffeeBreakLogoComponent } from '../../svg/svg.components';
 
 @Component({
   selector: 'app-auth-tpl',
@@ -10,8 +9,7 @@ import { RiveAnimationComponent } from '../../commons/rive-animation/rive-animat
   imports: [
     SharedModule,
     RouterModule,
-    MinWidthComponent,
-    RiveAnimationComponent
+    SvgCoffeeBreakLogoComponent,
   ],
   templateUrl: './auth-tpl.component.html',
   styleUrls: ['./auth-tpl.component.scss'],

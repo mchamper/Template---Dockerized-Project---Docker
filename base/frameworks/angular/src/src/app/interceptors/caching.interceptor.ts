@@ -34,7 +34,6 @@ export class CachingInterceptor implements HttpInterceptor {
     const cachedResponse: HttpResponse<any> = cachedResponseRaw;
 
     if (cachedResponse) {
-      console.log(cachedResponse);
       return of(cloneDeep(cachedResponse));
     }
 
@@ -58,7 +57,7 @@ export class CachingInterceptor implements HttpInterceptor {
     }
 
     return req.method === 'GET' && (false
-      || req.url.startsWith(`${environment.apiUrl}`)
+      || req.url.startsWith(`${environment.backendLaravelUrl}`)
       )
       ;
   }

@@ -14,9 +14,19 @@ const routes: Routes = [
   {
     path: '',
     component: MainTplComponent,
-    canActivateChild: [AuthUserIsLoggedInGuard],
+    canActivateChild: [AuthSystemUserIsLoggedInGuard],
     children: [
-      { path: '', loadComponent: () => import('./pages/home-page/home-page.component'), data: { name: 'HomePage' } },
+      {
+        path: '',
+        canActivateChild: [AuthSystemUserIsVerifiedGuard],
+        children: [
+          { path: '', loadComponent: () => import('./pages/home-page/home-page.component'), data: { name: 'HomePage' } },
+          { path: 'usuarios', loadComponent: () => import('./pages/system-users-page/system-users-page.component'), data: { name: 'SystemUsersPage' } },
+          { path: 'usuarios/crear', loadComponent: () => import('./pages/system-user-create-page/system-user-create-page.component'), data: { name: 'SystemUserCreatePage' } },
+          { path: 'usuarios/:systemUserId', loadComponent: () => import('./pages/system-user-detail-page/system-user-detail-page.component'), data: { name: 'SystemUserDetailPage' } },
+        ],
+      },
+      { path: 'cuenta', loadComponent: () => import('./pages/account-page/account-page.component'), data: { name: 'AccountPage' } },
     ],
     data: { groupName: 'MainTpl' }
   },
@@ -24,9 +34,9 @@ const routes: Routes = [
   {
     path: '',
     component: AuthTplComponent,
-    canActivateChild: [AuthUserIsNotLoggedInGuard],
+    canActivateChild: [AuthSystemUserIsNotLoggedInGuard],
     children: [
-      { path: 'ingresar', loadComponent: () => import('./pages/@auth/login-page/login-page.component'), data: { name: 'AuthLoginPage' } },
+      { path: 'bienvenido', loadComponent: () => import('./pages/@auth/auth-page/auth-page.component'), data: { name: 'AuthPage' } },
     ],
     data: { groupName: 'AuthTpl' }
   },
@@ -67,15 +77,13 @@ export class AppRoutingModule {
       }
     });
 
-    routeS.onNavigationEnd$().subscribe((value) => {
+    routeS.currentPage$.subscribe((value) => {
+      taxonomyS.resolve(value);
+
       gtmService.pushTag({
         event: 'page',
         pageName: value.url
       });
-    });
-
-    routeS.currentPage$.subscribe((value) => {
-      taxonomyS.resolve(value);
     });
   }
 }

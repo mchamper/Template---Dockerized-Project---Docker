@@ -1,8 +1,8 @@
-import { SocialUser } from '@abacritt/angularx-social-login';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import * as moment from 'moment';
+import { Moment } from 'moment';
 import { BehaviorSubject, map, Observable, skip } from 'rxjs';
-import { environment } from 'src/environments/environment';
 import { StorageService } from './storage.service';
 
 export interface IAuthLoginContext {
@@ -12,20 +12,29 @@ export interface IAuthLoginContext {
 }
 
 export interface IAuth {
-  data: any,
-  token?: string,
-  tokenExpiresAt?: Date,
+  data: {
+    id: number,
+    email: string,
+    name: string,
+    isVerified: boolean,
+    firstName?: string,
+    lastName?: string,
+    picture?: string,
+    _raw?: any,
+  },
+  token: string,
+  tokenExpiresAt?: Moment,
 }
 
-export type TGuard = 'local' | 'client' | 'user';
+export type TGuard = 'local' | 'client' | 'user' | 'systemUser';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  guardDefault: TGuard = environment.authGuard;
-  guards: TGuard[] = ['local', 'user'];
+  guardDefault: TGuard = 'systemUser';
+  guards: TGuard[] = ['systemUser'];
 
   auths: { [key: string]: BehaviorSubject<IAuth | null> } = {};
 
@@ -40,10 +49,10 @@ export class AuthService {
       if (guard === 'local') {
         authGuard = new BehaviorSubject<IAuth | null>(null);
       } else {
-        const defaultValue = this._storageS.getSecure(`auth.${guard}`);
+        const defaultValue = this._storageS.get(`auth.${guard}`);
         authGuard = new BehaviorSubject<IAuth | null>(defaultValue);
 
-        authGuard.pipe(skip(1)).subscribe(value => this._storageS.setSecure(`auth.${guard}`, value));
+        authGuard.pipe(skip(1)).subscribe(value => this._storageS.set(`auth.${guard}`, value));
       }
 
       this.auths[guard] = authGuard;
@@ -58,36 +67,29 @@ export class AuthService {
 
   /* -------------------- */
 
-  data<T = any>(guard: TGuard = this.guardDefault): T | undefined {
+  data(guard: TGuard = this.guardDefault): IAuth['data'] | undefined {
     if (!this.isLoggedIn(guard)) return;
     return this.guard$(guard).value?.data;
   }
-  data$<T = any>(guard: TGuard = this.guardDefault): Observable<T | undefined> {
-    return this.guard$(guard).pipe(map(() => this.data<T>(guard)));
-  }
-
-  socialData(guard: TGuard = this.guardDefault): SocialUser | undefined {
-    return this.data<SocialUser>(guard);
-  }
-  socialData$(guard: TGuard = this.guardDefault): Observable<SocialUser | undefined> {
-    return this.data$<SocialUser>(guard);
+  data$(guard: TGuard = this.guardDefault): Observable<IAuth['data'] | undefined> {
+    return this.guard$(guard).pipe(map(() => this.data(guard)));
   }
 
   /* -------------------- */
 
-  token(guard: TGuard = this.guardDefault): string | undefined {
+  token(guard: TGuard = this.guardDefault): IAuth['token'] | undefined {
     if (!this.isLoggedIn(guard)) return;
     return this.guard$(guard).value?.token;
   }
-  token$(guard: TGuard = this.guardDefault): Observable<string | undefined> {
+  token$(guard: TGuard = this.guardDefault): Observable<IAuth['token'] | undefined> {
     return this.guard$(guard).pipe(map(() => this.token(guard)));
   }
 
-  tokenExpiresAt(guard: TGuard = this.guardDefault): Date | undefined {
+  tokenExpiresAt(guard: TGuard = this.guardDefault): IAuth['tokenExpiresAt'] | undefined {
     if (!this.isLoggedIn(guard)) return;
     return this.guard$(guard).value?.tokenExpiresAt;
   }
-  tokenExpiresAt$(guard: TGuard = this.guardDefault): Observable<Date | undefined> {
+  tokenExpiresAt$(guard: TGuard = this.guardDefault): Observable<IAuth['tokenExpiresAt'] | undefined> {
     return this.guard$(guard).pipe(map(() => this.tokenExpiresAt(guard)));
   }
 
@@ -95,36 +97,37 @@ export class AuthService {
 
   isLoggedIn(guard: TGuard = this.guardDefault): boolean {
     const auth = this.guard$(guard).value;
-
-    return !!auth?.data
-      && (
-        !auth.token
-        || !auth.tokenExpiresAt
-        || auth.tokenExpiresAt < new Date()
-      );
+    return !!auth?.data && (!auth.token || !auth.tokenExpiresAt || auth.tokenExpiresAt < moment());
   }
   isLoggedIn$(guard: TGuard = this.guardDefault): Observable<boolean> {
     return this.guard$(guard).pipe(map(() => this.isLoggedIn(guard)));
+  }
+
+  isVerified(guard: TGuard = this.guardDefault): boolean {
+    const auth = this.guard$(guard).value;
+    return !!auth?.data.isVerified;
+  }
+  isVerified$(guard: TGuard = this.guardDefault): Observable<boolean> {
+    return this.guard$(guard).pipe(map(() => this.isVerified(guard)));
   }
 
   /* -------------------- */
 
   login(auth: IAuth, guard: TGuard = this.guardDefault, cb?: () => any): void {
     this.guard$(guard).next(auth);
-
-    if (cb) {
-      cb();
-    }
+    if (cb) cb();
   }
 
-  logout(guard: TGuard = this.guardDefault): void {
+  logout(guard: TGuard = this.guardDefault, cb?: () => any): void {
     this.guard$(guard).next(null);
 
     switch (guard) {
       case 'local':
-      case 'user': {
-        this._router.navigateByUrl('/ingresar', { replaceUrl: true }); break;
+      case 'systemUser': {
+        this._router.navigateByUrl('/bienvenido', { replaceUrl: true }); break;
       }
     }
+
+    if (cb) cb();
   }
 }
