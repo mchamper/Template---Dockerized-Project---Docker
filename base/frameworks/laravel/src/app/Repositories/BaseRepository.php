@@ -6,6 +6,8 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
+use Spatie\LaravelData\Data;
 
 abstract class BaseRepository
 {
@@ -53,9 +55,13 @@ abstract class BaseRepository
 
     /* -------------------- */
 
-    protected static function _fill(array|string $keys, array $input, Model $model): void
+    protected static function _fill(array|string $keys, Data|array $input, Model $model): void
     {
         $keys = (array) $keys;
+
+        if ($input instanceof Data) {
+            $input = $input->toArray();
+        }
 
         foreach ($keys as $key => $repo) {
             if (is_numeric($key)) {

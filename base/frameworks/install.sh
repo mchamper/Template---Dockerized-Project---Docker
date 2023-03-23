@@ -2,8 +2,8 @@
 
 . .env || exit 1
 
-FRAMEWORK=${1}
-SERVICE=${2}
+SERVICE=${1}
+FRAMEWORK=${2}
 
 DIR=$(dirname ${0})
 SOURCE="${DIR}/${FRAMEWORK}/src"

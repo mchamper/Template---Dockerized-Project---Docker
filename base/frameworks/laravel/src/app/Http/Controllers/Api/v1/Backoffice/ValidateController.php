@@ -4,20 +4,20 @@ namespace Teatrix\Http\Controllers\Common\API;
 
 use Exception;
 use Illuminate\Support\Facades\Validator;
-use Teatrix\Commons\Response\Response;
-use Teatrix\Http\Requests\GiftCardRequestCreateRequest;
+use App\Commons\Response\Response;
 
 class ValidateController
 {
-    public function validate(string $concept)
+    public function validate()
     {
+        $concept = request()->query('concept');
         $input = request()->post();
         $rules = [];
 
         switch ($concept) {
-            case 'gift_card_request_create': $rules = (new GiftCardRequestCreateRequest())->rulesFrom($input); break;
+            // case 'example_entity_create': $rules = (new ExampleEntityCreateRequest())->rulesFrom($input); break;
 
-            default: throw new Exception('Concepto de validación inválido.');
+            default: throw new Exception('Invalid request concept.');
         }
 
         $validated = Validator::make($input, $rules)->validate();

@@ -2,48 +2,52 @@
 
 namespace App\Commons\Response;
 
-use Exception;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
 class Error
 {
-    public static function parse(Throwable $e, $rendered = null)
+    public static function parse(Throwable $e, ?Response $response)
     {
-        $status = $rendered ? $rendered->getStatusCode() : $e->getCode();
-        $code = 0;
-        $message = $e->getMessage();
-        $type = 'Uncatched';
+        $status = $response
+            ? $response->getStatusCode()
+            : ($e instanceof HttpException ? $e->getStatusCode() : $e->getCode());
 
-        if ($status === 500 && method_exists($e, 'getCode')) {
-            $status = $e->getCode() ?? 500;
-        }
+        $message = $e->getMessage();
+        $body = $e->body ?? null;
+        $name = $e->errorName ?? 'LARAVEL_DEFAULT_ERROR';
+        $exception = class_basename($e);
+        $code = 0;
+        $validation = $e instanceof ValidationException ? $e->errors() : null;
+        $trace = $e->getTrace() ?? null;
 
         if ($status < 200 || $status > 599) {
             $status = 500;
         }
 
-        if ($e instanceof ValidationException) {
-            $status = $e->status;
-            $validation = $e->errors();
-        }
+        $index = explode('.', $e->getMessage())[0];
 
-        $errorIndex = explode('.', $e->getMessage())[0];
-
-        if ($error = json_decode(Lang::get('errors.' . $errorIndex))) {
+        if ($error = json_decode(Lang::get('errors.' . $index))) {
             $status = $error->status;
-            $code = $error->code;
             $message = $error->message . (explode('.', $e->getMessage())[1] ?? '');
-            $type = $errorIndex;
+            $name = $index;
+            $code = $error->code;
         }
 
         return [
+            'time' => round(microtime(true) - LARAVEL_START, 4),
             'status' => $status,
-            'code' => $code,
             'message' => $message,
-            'type' => $type,
-            'errors' => $validation ?? null,
+            'body' => $body,
+            'name' => $name,
+            'exception' => $exception,
+            'code' => $code,
+            'validation' => $validation,
+            'trace' => config('app.debug') ? $trace : null,
         ];
     }
 }

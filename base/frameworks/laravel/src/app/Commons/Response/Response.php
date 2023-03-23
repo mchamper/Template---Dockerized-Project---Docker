@@ -8,6 +8,7 @@ class Response
     {
         return response()->json([
             'time' => round(microtime(true) - LARAVEL_START, 4),
+            'status' => $status,
             'message' => $message,
             'body' => $data,
         ], $status, $headers, $options);
