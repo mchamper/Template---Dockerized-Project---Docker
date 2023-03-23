@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  master:
+    build:
+      context: base/apps/swagger
+      args:
+        SWAGGER_VERSION: "v4.18.0"
+    environment:
+      - SWAGGER_JSON=/mnt/swagger/${SWAGGER_JSON}
+    ports:
+     - 8080:8080
+    volumes:
+      - ${PWD}/swagger:/mnt/swagger
+
