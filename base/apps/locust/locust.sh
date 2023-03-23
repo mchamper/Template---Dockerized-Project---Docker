@@ -5,7 +5,7 @@ THIS=${0}; CMD=${1}; ARG1=${2}; ARG2=${3}; ARG3=${4}; ARG4=${5}; ARG5=${6}; ARG6
 ARGS=(
   -p dp-locust
   -f base/apps/locust/docker-compose.yml
-  --env-file .env
+  --env-file base/apps/locust/.env
 )
 
 if [[ ${CMD} = "start" ]]; then
