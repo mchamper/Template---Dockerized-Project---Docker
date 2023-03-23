@@ -6,12 +6,13 @@ import { AuthService, TGuard } from "../services/auth.service";
 import { AUTH_GUARD, AUTH_LOGOUT_ON_ERROR, ERR, ERR_AS_200, URL } from "./contexts";
 
 export interface IHttpErrorResponse {
-  code: number,
-  type: string,
   status: number,
-  body: any,
   message: string,
-  errors: any,
+  body: any,
+  name: string,
+  exception: string,
+  code: number,
+  validation: any,
 }
 
 @Injectable()
@@ -29,37 +30,33 @@ export class ErrorInterceptor implements HttpInterceptor {
     return next.handle(req).pipe(
       catchError((event: HttpEvent<any>) => {
         if (event instanceof HttpErrorResponse) {
+          const resError = event.error;
+
           let error: IHttpErrorResponse = {
-            code: typeof event.error?.code !== 'undefined' ? event.error?.code : -1,
-            type: typeof event.error?.type !== 'undefined' ? event.error?.type : 'UNHANDLED_FORMAT',
-            status: typeof event.error?.status !== 'undefined' ? event.error?.status : event.status,
-            body: typeof event.error?.body !== 'undefined' ? event.error?.body : null,
-            message: typeof event.error?.message !== 'undefined' ? event.error?.message : event.statusText,
-            errors: typeof event.error?.errors !== 'undefined' ? event.error?.errors : null,
+            status: typeof resError?.status !== 'undefined' ? resError?.status : event.status,
+            message: typeof resError?.message !== 'undefined' ? resError?.message : event.statusText,
+            body: typeof resError?.body !== 'undefined' ? resError?.body : null,
+            name: typeof resError?.name !== 'undefined' ? resError?.name : 'UNKNOWN_ERROR',
+            exception: typeof resError?.exception !== 'undefined' ? resError?.exception : '',
+            code: typeof resError?.code !== 'undefined' ? resError?.code : -1,
+            validation: typeof resError?.validation !== 'undefined' ? resError?.validation : null,
           }
 
           const urlContext = req.context.get(URL);
-          const resContext = req.context.get(ERR);
+          const errContext = req.context.get(ERR);
           const errAs200Context = req.context.get(ERR_AS_200);
 
-          if (resContext) {
+          if (errContext) {
             error = {
               ...error,
-              body: resContext.body ? get(event.error, resContext.body) : error.body,
-              message: resContext.message ? get(event.error, resContext.message) : error.message,
-              errors: resContext.errors ? get(event.error, resContext.errors) : error.errors,
+              message: errContext.message ? get(event.error, errContext.message) : error.message,
+              body: errContext.body ? get(event.error, errContext.body) : error.body,
+              validation: errContext.validation ? get(event.error, errContext.validation) : error.validation,
             };
           }
-          else if (urlContext === 'api') {
+          else if (urlContext === 'backendLaravel') {
             error = {
               ...error,
-              body: event.error,
-            };
-          }
-          else if (urlContext === 'backend') {
-            error = {
-              ...error,
-              body: event.error?.body,
             };
           }
 
@@ -72,8 +69,8 @@ export class ErrorInterceptor implements HttpInterceptor {
           if (errAs200Context && errAs200Context(error)) {
             return of(new HttpResponse({
               status: 200,
-              body: error.body,
               statusText: error.message,
+              body: error.body,
             }));
           }
 

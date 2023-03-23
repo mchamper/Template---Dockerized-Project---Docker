@@ -1,6 +1,6 @@
 import { HttpContext, HttpEvent, HttpHandler, HttpHeaders, HttpInterceptor, HttpRequest } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { delay, Observable, of } from "rxjs";
+import { delay, Observable } from "rxjs";
 import { environment } from "src/environments/environment";
 import { AuthService, TGuard } from "../services/auth.service";
 import { AUTH_GUARD, URL, URL_ORIGINAL } from "./contexts";
@@ -21,7 +21,7 @@ export class RequestInterceptor implements HttpInterceptor {
     headers = req.headers.set('Accept-Language', 'es');
 
     if (guard) {
-      headers = req.headers.set('Authorization', `bearer ${this._authS.token(guard)}`);
+      headers = req.headers.set('Authorization', `Bearer ${this._authS.token(guard)}`);
     }
 
     let url: string = req.url;
@@ -29,13 +29,9 @@ export class RequestInterceptor implements HttpInterceptor {
 
     context = context.set(URL_ORIGINAL, url);
 
-    if (req.url.startsWith('api:')) {
-      url = environment.apiUrl + req.url.replace('api:', '');
-      context = req.context.set(URL, 'api');
-    }
-    else if (req.url.startsWith('backend:')) {
-      url = environment.backendUrl + req.url.replace('backend:', '');
-      context = req.context.set(URL, 'backend');
+    if (req.url.startsWith('backendLaravel:')) {
+      url = environment.backendLaravelUrl + req.url.replace('backendLaravel:', '');
+      context = req.context.set(URL, 'backendLaravel');
     }
 
     return next.handle(req.clone({

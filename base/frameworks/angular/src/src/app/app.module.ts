@@ -20,7 +20,7 @@ import { ErrorInterceptor } from './interceptors/error.interceptor';
 import { CachingInterceptor } from './interceptors/caching.interceptor';
 import { NzMessageModule } from 'ng-zorro-antd/message';
 import { NzNotificationModule } from 'ng-zorro-antd/notification';
-import { provideNgxMask } from 'ngx-mask';
+import { provideEnvironmentNgxMask } from 'ngx-mask';
 import { NgxWebstorageModule } from 'ngx-webstorage';
 import { AuthService } from './services/auth.service';
 import { StorageService } from './services/storage.service';
@@ -31,11 +31,18 @@ import { GoogleTagManagerModule } from 'angular-google-tag-manager';
 import { PixelModule } from 'ngx-pixel';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { GoogleLoginProvider, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
+import { NzConfig, NZ_CONFIG } from 'ng-zorro-antd/core/config';
 
 // import SwiperCore, { Pagination, Navigation, Virtual } from 'swiper';
 // SwiperCore.use([Pagination, Navigation, Virtual]);
 
 registerLocaleData(localeEs, 'es');
+
+const ngZorroConfig: NzConfig = {
+  theme: {
+    primaryColor: '#4B259A',
+  },
+};
 
 @NgModule({
   declarations: [
@@ -73,6 +80,7 @@ registerLocaleData(localeEs, 'es');
       } as SocialAuthServiceConfig,
     },
     provideEnvironmentNgxMask({ validation: true, thousandSeparator: '.' }),
+    { provide: NZ_CONFIG, useValue: ngZorroConfig },
     { provide: LOCALE_ID, useValue: 'es' },
     { provide: NZ_I18N, useValue: es_ES },
     { provide: APP_INITIALIZER, useFactory: initializeApp, deps: [InitService], multi: true },

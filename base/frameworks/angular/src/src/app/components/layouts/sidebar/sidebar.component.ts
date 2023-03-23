@@ -1,20 +1,22 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { SharedModule } from 'src/app/shared.module';
+import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { RouterModule } from '@angular/router';
-import { SvgCoffeeBreakLogoComponent } from '../../svg/svg.components';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 
 @Component({
-  selector: 'app-auth-tpl',
+  selector: 'app-sidebar',
   standalone: true,
   imports: [
     SharedModule,
     RouterModule,
-    SvgCoffeeBreakLogoComponent,
+    NzMenuModule,
+    NzIconModule,
   ],
-  templateUrl: './auth-tpl.component.html',
-  styleUrls: ['./auth-tpl.component.scss'],
+  templateUrl: './sidebar.component.html',
+  styleUrls: ['./sidebar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AuthTplComponent {
+export class SidebarComponent {
 
 }

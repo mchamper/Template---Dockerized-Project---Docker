@@ -1,13 +1,14 @@
 <main>
-  <div class="bg-animation">
-    <app-min-width class="birds" [value]="1024">
-      <app-rive-animation name="pajaro_ultimo2" [fullWidth]="true" [height]="300"></app-rive-animation>
-    </app-min-width>
+  <div class="d-flex align-items-center justify-content-center h-100">
+    <div class="container text-center">
+      <div class="d-inline-flex align-items-center mx-auto mb-3">
+        <svg-coffee-break-logo style="width: 4rem;"></svg-coffee-break-logo>
+        <strong class="app-fs-36 ms-2">CoffeeBreak</strong>
+      </div>
 
-    <app-min-width class="clouds" [value]="1024">
-      <app-rive-animation name="nubes" [fullWidth]="true" [height]="300"></app-rive-animation>
-    </app-min-width>
+      <p class="text-muted app-fs-12">Experiencia lúdica con contenidos a la medida de tus objetivos</p>
+
+      <router-outlet></router-outlet>
+    </div>
   </div>
-
-  <router-outlet></router-outlet>
 </main>

@@ -1,5 +1,5 @@
 <header class="border-bottom">
-  <div class="d-flex">
+  <div class="d-flex bg-white">
     <button class="d-none d-md-block btn-styless app-fs-20 ps-3 pe-1" (click)="sidebarVisible = !sidebarVisible">
       <span nz-icon [nzType]="sidebarVisible ? 'menu-fold' : 'menu-unfold'" nzTheme="outline"></span>
     </button>
@@ -8,12 +8,12 @@
   </div>
 </header>
 
-<aside class="border-end" [class.hide]="!sidebarVisible">
+<aside class="border-end bg-white" [class.hide]="!sidebarVisible">
   <app-sidebar></app-sidebar>
 </aside>
 
-<main class="bg-app-lilac">
-  <div class="main-content py-3 px-md-3">
+<main>
+  <div class="main-content py-3 px-1">
     <router-outlet></router-outlet>
   </div>
 

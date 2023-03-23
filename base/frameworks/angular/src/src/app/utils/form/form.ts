@@ -55,7 +55,7 @@ export class Form {
   private _nzNotificationS: NzNotificationService = inject(NzNotificationService);
 
   constructor(
-    public group: FormGroup,
+    public group: FormGroup = new FormGroup({}),
     public options: {
       onInit?: (form: Form) => any,
       arrays?: {
@@ -325,7 +325,12 @@ export class Form {
 
   /* -------------------- */
 
-  prepare(group?: FormGroup | FormArray, mustResetErrors: boolean = true): {
+  prepare(
+    group?: FormGroup | FormArray,
+    options: {
+      strict?: boolean,
+      mustResetErrors?: boolean
+    } = { strict: true, mustResetErrors: true }): {
     status: boolean,
     reason?: FormUnpreparedReasonEnum
   } {
@@ -340,11 +345,13 @@ export class Form {
       };
     }
 
-    if (this.requestH.isSuccess() && formGroup.pristine) {
-      return {
-        status: false,
-        reason: FormUnpreparedReasonEnum.IS_SUCCESS_AND_PRISTINE,
-      };
+    if (options?.strict) {
+      if (this.requestH.isSuccess() && formGroup.pristine) {
+        return {
+          status: false,
+          reason: FormUnpreparedReasonEnum.IS_SUCCESS_AND_PRISTINE,
+        };
+      }
     }
 
     if (formGroup.invalid) {
@@ -354,7 +361,7 @@ export class Form {
       };
     };
 
-    if (mustResetErrors) {
+    if (options?.mustResetErrors) {
       this.resetErrors();
     }
 
@@ -383,6 +390,10 @@ export class Form {
   send(
     observable: Observable<any>,
     options?: {
+      prepareOptions?: {
+        strict?: boolean,
+        mustResetErrors?: boolean
+      },
       unprepared?: (reason: FormUnpreparedReasonEnum) => void,
       before?: () => void,
       success?: (res: IHttpResponse) => void,
@@ -408,7 +419,9 @@ export class Form {
       notifyError: typeof options?.notifyError !== 'undefined' ? options?.notifyError : true,
     }
 
-    const prepare = this.prepare();
+    const prepare = options?.prepareOptions
+      ? this.prepare(undefined, options?.prepareOptions)
+      : this.prepare();
 
     if (!prepare.status && prepare.reason) {
       if (defaultOptions.unprepared) {
@@ -433,7 +446,7 @@ export class Form {
 
           if (defaultOptions.notify || defaultOptions.notifySuccess) {
             let title: string = 'Solicitud enviada';
-            let content: string = 'Su solicitud ha sido enviada con éxito.';
+            let content: string = res.message || 'Su solicitud ha sido enviada con éxito.';
 
             if (Array.isArray(defaultOptions.notifySuccess)) {
               if (defaultOptions.notifySuccess[0]) title = defaultOptions.notifySuccess[0];
@@ -451,7 +464,7 @@ export class Form {
           }
         },
         error: (err: IHttpErrorResponse) => {
-          this.setErrors(err.errors);
+          this.setErrors(err.validation);
 
           if (defaultOptions.notify || defaultOptions.notifyError) {
             let title: string = 'Mmm...';
