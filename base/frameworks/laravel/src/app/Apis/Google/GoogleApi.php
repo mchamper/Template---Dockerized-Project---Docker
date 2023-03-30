@@ -12,6 +12,11 @@ abstract class GoogleApi extends BaseApi
 
     public function __construct(?string $subject = null)
     {
+        parent::__construct(
+            _maxTries: 3,
+            _retryStatuses: [503]
+        );
+
         $jsonKey = json_decode(config('services.google.application_credentials'), true);
 
         $this->_client = new Google\Client();

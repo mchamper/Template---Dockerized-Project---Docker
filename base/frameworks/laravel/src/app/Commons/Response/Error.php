@@ -2,8 +2,6 @@
 
 namespace App\Commons\Response;
 
-use Illuminate\Support\Facades\Lang;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -29,13 +27,11 @@ class Error
             $status = 500;
         }
 
-        $index = explode('.', $e->getMessage())[0];
-
-        if ($error = json_decode(Lang::get('errors.' . $index))) {
-            $status = $error->status;
-            $message = $error->message . (explode('.', $e->getMessage())[1] ?? '');
-            $name = $index;
-            $code = $error->code;
+        if ($e instanceof ErrorEnumException) {
+            $status = (int) (explode('|', $e->error->value)[1] ?? $status);
+            $message = $e->error->message($e->args);
+            $name = $e->error->name;
+            $code = (int) (explode('|', $e->error->value)[0] ?? 0);
         }
 
         return [
@@ -47,7 +43,7 @@ class Error
             'exception' => $exception,
             'code' => $code,
             'validation' => $validation,
-            'trace' => config('app.debug') ? $trace : null,
+            // 'trace' => config('app.debug') ? $trace : null,
         ];
     }
 }
