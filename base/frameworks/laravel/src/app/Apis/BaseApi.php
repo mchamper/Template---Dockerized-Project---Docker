@@ -63,7 +63,6 @@ abstract class BaseApi
         $body = null;
         $exceptionMessage = null;
         $exceptionCode = $e instanceof Throwable ? (int) $e->getCode() : 0;
-        $exceptionName = $e instanceof Throwable ? class_basename($e) : null;
 
         if ($e instanceof GuzzleException) {
             $body = json_decode((string) $e->getResponse()->getBody(), true);
@@ -85,7 +84,6 @@ abstract class BaseApi
             'status' => $exceptionCode,
             'message' => $exceptionMessage,
             'content' => $body,
-            'exception' => $exceptionName,
         ], Str::upper(Str::snake($apiName)) . '_DEFAULT_ERROR');
 
         if ($return) {
@@ -138,8 +136,8 @@ abstract class BaseApi
                 $retryError = true;
 
                 if ($tries === 1 && $onError) {
-                    if ((bool) call_user_func($onError, $this->_throw($e, tries: $tries, return: true)) === true) {
-                        sleep($sleep);
+                    if (call_user_func($onError, $this->_throw($e, tries: $tries, return: true)) === true) {
+                        sleep(1);
                         continue;
                     }
                 }
@@ -155,8 +153,8 @@ abstract class BaseApi
         return $res;
     }
 
-    protected function _tryOne(Closure $callable, ?Closure $onError = null)
+    protected function _tryOne(Closure $callback, ?Closure $onError = null)
     {
-        return $this->_try($callable, $onError, 1, 0);
+        return $this->_try($callback, $onError, 1, 0);
     }
 }

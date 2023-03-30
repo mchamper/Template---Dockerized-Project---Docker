@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Commons\Response\ErrorEnum;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -27,12 +28,18 @@ class PipedriveWebhookLog
 
         if (app()->environment() !== 'local') {
             if ($responseContent['status'] !== 200) {
-                $responseContent['message'] = str_replace('`', '\'', $responseContent['message']);
-                $responseContent['trace'] = null;
+                $error = ErrorEnum::tryFromName($responseContent['name']);
 
-                Log::channel('pipedrive_webhook_discord')->error('('. app()->environment() . ') /' . request()->path(), [
-                    'response' => $responseContent,
-                ]);
+                if (!in_array($error, [
+                    ErrorEnum::PIPEDRIVE_WEBHOOK_DATA_SOURCE_CHECK_ERROR
+                ])) {
+                    $responseContent['message'] = str_replace('`', '\'', $responseContent['message']);
+                    $responseContent['trace'] = null;
+
+                    Log::channel('pipedrive_webhook_discord')->error('('. app()->environment() . ') /' . request()->path(), [
+                        'response' => $responseContent,
+                    ]);
+                }
             }
         }
 
