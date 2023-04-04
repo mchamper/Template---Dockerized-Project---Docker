@@ -6,6 +6,7 @@ import { versionName } from 'src/version';
 import { AuthService } from './auth.service';
 import { AuthSystemUserHttpService } from './http/auth-system-user-http.service';
 import { StorageService } from './storage.service';
+import { AuthAppClientHttpService } from './http/auth-app-client-http.service';
 
 export const initializeApp = (initS: InitService) => {
   return () => initS.init();
@@ -22,6 +23,7 @@ export class InitService {
     @Inject(DOCUMENT) private _dom: Document,
     private _storageS: StorageService,
     private _authS: AuthService,
+    private _authAppClientHttpS: AuthAppClientHttpService,
     private _authSystemUserHttpS: AuthSystemUserHttpService,
   ) { }
 
@@ -33,12 +35,17 @@ export class InitService {
 
     this.checkStorage();
 
-    return Promise.all([
-      this.checkAuthSystemUser(),
-      // this._delay(1),
-    ])
-    .then(() => this.continue())
-    .catch(() => this.throwError());
+    try {
+      await this.checkAuthAppClient();
+
+      await Promise.all([
+        this.checkAuthSystemUser(),
+      ]);
+
+      return this.continue();
+    } catch (err) {
+      return this.throwError();
+    }
   }
 
   continue() {
@@ -70,6 +77,20 @@ export class InitService {
 
   /* -------------------- */
 
+  async checkAuthAppClient(): Promise<void> {
+    if (this._authS.isLoggedIn('appClient')) {
+      await firstValueFrom(this._authAppClientHttpS.me());
+    }
+    else {
+      await firstValueFrom(this._authAppClientHttpS.login({
+        key: environment.backendLaravelAppClientKey,
+        secret: environment.backendLaravelAppClientSecret,
+      }));
+    }
+
+    return Promise.resolve();
+  }
+
   async checkAuthSystemUser(): Promise<void> {
     if (this._authS.isLoggedIn('systemUser')) {
       await firstValueFrom(this._authSystemUserHttpS.me()).catch(() => null);
@@ -77,6 +98,8 @@ export class InitService {
 
     return Promise.resolve();
   }
+
+  /* -------------------- */
 
   async _delay(seconds: number = 3): Promise<void> {
     if (!environment.production) {

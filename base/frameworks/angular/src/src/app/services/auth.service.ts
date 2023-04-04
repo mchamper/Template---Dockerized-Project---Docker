@@ -13,10 +13,10 @@ export interface IAuthLoginContext {
 
 export interface IAuth {
   data: {
-    id: number,
-    email: string,
-    name: string,
-    isVerified: boolean,
+    id?: number,
+    email?: string,
+    name?: string,
+    isVerified?: boolean,
     firstName?: string,
     lastName?: string,
     picture?: string,
@@ -26,7 +26,7 @@ export interface IAuth {
   tokenExpiresAt?: Moment,
 }
 
-export type TGuard = 'local' | 'client' | 'user' | 'systemUser';
+export type TGuard = 'appClient' | 'systemUser';
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +34,7 @@ export type TGuard = 'local' | 'client' | 'user' | 'systemUser';
 export class AuthService {
 
   guardDefault: TGuard = 'systemUser';
-  guards: TGuard[] = ['systemUser'];
+  guards: TGuard[] = ['appClient', 'systemUser'];
 
   auths: { [key: string]: BehaviorSubject<IAuth | null> } = {};
 
@@ -44,16 +44,10 @@ export class AuthService {
   ) {
 
     this.guards.forEach(guard => {
-      let authGuard;
+      const defaultValue = this._storageS.getSecure(`auth.${guard}`);
+      const authGuard = new BehaviorSubject<IAuth | null>(defaultValue);
 
-      if (guard === 'local') {
-        authGuard = new BehaviorSubject<IAuth | null>(null);
-      } else {
-        const defaultValue = this._storageS.get(`auth.${guard}`);
-        authGuard = new BehaviorSubject<IAuth | null>(defaultValue);
-
-        authGuard.pipe(skip(1)).subscribe(value => this._storageS.set(`auth.${guard}`, value));
-      }
+      authGuard.pipe(skip(1)).subscribe(value => this._storageS.setSecure(`auth.${guard}`, value));
 
       this.auths[guard] = authGuard;
     });
@@ -119,12 +113,19 @@ export class AuthService {
   }
 
   logout(guard: TGuard = this.guardDefault, cb?: () => any): void {
+    if (!this.isLoggedIn(guard)) return;
+
     this.guard$(guard).next(null);
 
     switch (guard) {
-      case 'local':
+      case 'appClient': {
+        window.location.reload();
+        break;
+      }
+
       case 'systemUser': {
-        this._router.navigateByUrl('/bienvenido', { replaceUrl: true }); break;
+        this._router.navigateByUrl('/bienvenido', { replaceUrl: true });
+        break;
       }
     }
 

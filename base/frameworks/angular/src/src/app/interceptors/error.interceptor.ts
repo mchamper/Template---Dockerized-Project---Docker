@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { get } from "lodash";
 import { catchError, Observable, of, tap, throwError } from "rxjs";
 import { AuthService, TGuard } from "../services/auth.service";
-import { AUTH_GUARD, AUTH_LOGOUT_ON_ERROR, ERR, ERR_AS_200, URL } from "./contexts";
+import { AUTH_GUARD, AUTH_LOGIN_GUARD, AUTH_LOGOUT_ON_ERROR, AUTH_UPDATE_GUARD, ERR, ERR_AS_200, URL } from "./contexts";
 
 export interface IHttpErrorResponse {
   status: number,
@@ -25,7 +25,7 @@ export class ErrorInterceptor implements HttpInterceptor {
   /* -------------------- */
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const guard: TGuard | null = req.context.get(AUTH_GUARD);
+    let guard: TGuard | null = req.context.get(AUTH_GUARD);
 
     return next.handle(req).pipe(
       catchError((event: HttpEvent<any>) => {
@@ -54,13 +54,22 @@ export class ErrorInterceptor implements HttpInterceptor {
               validation: errContext.validation ? get(event.error, errContext.validation) : error.validation,
             };
           }
-          else if (urlContext === 'backendLaravel') {
+          else if (urlContext === 'backend') {
             error = {
               ...error,
             };
           }
 
           if (guard) {
+            const authLoginGuard: TGuard | null = req.context.get(AUTH_LOGIN_GUARD);
+            const authUpdateGuard: TGuard | null = req.context.get(AUTH_UPDATE_GUARD);
+
+            if (error.status === 401) {
+              if (authLoginGuard) this._authS.logout(authLoginGuard);
+              else if (authUpdateGuard) this._authS.logout(authUpdateGuard);
+              else this._authS.logout(guard);
+            }
+
             if (req.context.get(AUTH_LOGOUT_ON_ERROR)) {
               this._authS.logout(guard);
             }

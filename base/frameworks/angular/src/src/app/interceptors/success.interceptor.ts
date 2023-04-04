@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { get } from "lodash";
 import { map, Observable } from "rxjs";
 import { AuthService, TGuard } from "../services/auth.service";
-import { AUTH_GUARD, AUTH_LOGIN, AUTH_UPDATE, RES, RES_MAP, URL } from "./contexts";
+import { AUTH_GUARD, AUTH_LOGIN, AUTH_LOGIN_GUARD, AUTH_LOGOUT, AUTH_UPDATE, AUTH_UPDATE_GUARD, RES, RES_MAP, URL } from "./contexts";
 
 export interface IHttpResponse<T1 = any, T2 = any> {
   status: number,
@@ -22,7 +22,7 @@ export class SuccessInterceptor implements HttpInterceptor {
   /* -------------------- */
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const guard: TGuard | null = req.context.get(AUTH_GUARD);
+    let guard: TGuard | null = req.context.get(AUTH_GUARD);
 
     return next.handle(req).pipe(
       map((event: HttpEvent<any>) => {
@@ -46,7 +46,7 @@ export class SuccessInterceptor implements HttpInterceptor {
               body: resContext.body ? get(event.body, resContext.body) : res.body,
             };
           }
-          else if (urlContext === 'backendLaravel') {
+          else if (urlContext === 'backend') {
             res = {
               ...res
             };
@@ -57,11 +57,20 @@ export class SuccessInterceptor implements HttpInterceptor {
           }
 
           if (guard) {
+            if (req.context.get(AUTH_LOGOUT)) {
+              this._authS.logout(guard);
+            }
+
             const authLoginContext = req.context.get(AUTH_LOGIN);
             const authUpdateContext = req.context.get(AUTH_UPDATE);
+            const authLoginGuard: TGuard | null = req.context.get(AUTH_LOGIN_GUARD);
+            const authUpdateGuard: TGuard | null = req.context.get(AUTH_UPDATE_GUARD);
+
+            if (authLoginGuard) guard = authLoginGuard;
+            if (authUpdateGuard) guard = authUpdateGuard;
 
             if (authLoginContext) {
-              this._authS.login(authLoginContext(res));
+              this._authS.login(authLoginContext(res), guard);
             }
             else if (authUpdateContext) {
               const auth = this._authS.guard$(guard).value;
@@ -73,7 +82,7 @@ export class SuccessInterceptor implements HttpInterceptor {
                     ...auth.data,
                     ...authUpdateContext(res),
                   },
-                });
+                }, guard);
               }
             }
           }

@@ -17,14 +17,14 @@ export class SystemUserHttpService {
   getList(params: any) {
     const queryParams = parseQueryParams(params);
 
-    return this._httpClient.get(`backendLaravel:/system-users?${queryParams}`, {
+    return this._httpClient.get(`backend:/api/v1/backoffice/system-users?${queryParams}`, {
       context: new HttpContext()
         .set(AUTH_GUARD, 'systemUser')
     });
   }
 
   create(input: any) {
-    return this._httpClient.post(`backendLaravel:/system-users`, input, {
+    return this._httpClient.post(`backend:/api/v1/backoffice/system-users`, input, {
       context: new HttpContext()
         .set(AUTH_GUARD, 'systemUser')
     });

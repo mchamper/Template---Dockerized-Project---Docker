@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -13,6 +13,8 @@ export class CombosHttpService {
   /* -------------------- */
 
   get(concepts: string) {
-    return this._httpClient.get(`backend:/combos/${concepts}`);
+    return this._httpClient.get(`backend:/api/v1/backoffice/combos/${concepts}`, {
+      context: new HttpContext()
+    });
   }
 }

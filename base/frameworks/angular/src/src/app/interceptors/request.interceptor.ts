@@ -20,7 +20,7 @@ export class RequestInterceptor implements HttpInterceptor {
     headers = req.headers.set('Accept', 'application/json');
     headers = req.headers.set('Accept-Language', 'es');
 
-    if (guard) {
+    if (guard && this._authS.token(guard)) {
       headers = req.headers.set('Authorization', `Bearer ${this._authS.token(guard)}`);
     }
 
@@ -29,9 +29,9 @@ export class RequestInterceptor implements HttpInterceptor {
 
     context = context.set(URL_ORIGINAL, url);
 
-    if (req.url.startsWith('backendLaravel:')) {
-      url = environment.backendLaravelUrl + req.url.replace('backendLaravel:', '');
-      context = req.context.set(URL, 'backendLaravel');
+    if (req.url.startsWith('backend:')) {
+      url = environment.backendLaravelUrl + req.url.replace('backend:', '');
+      context = req.context.set(URL, 'backend');
     }
 
     return next.handle(req.clone({
