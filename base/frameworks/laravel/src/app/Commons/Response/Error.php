@@ -21,7 +21,6 @@ class Error
         $exception = class_basename($e);
         $code = 0;
         $validation = $e instanceof ValidationException ? $e->errors() : null;
-        $trace = $e->getTrace() ?? null;
 
         if ($status < 200 || $status > 599) {
             $status = 500;
@@ -43,7 +42,6 @@ class Error
             'exception' => $exception,
             'code' => $code,
             'validation' => $validation,
-            // 'trace' => config('app.debug') ? $trace : null,
         ];
     }
 }

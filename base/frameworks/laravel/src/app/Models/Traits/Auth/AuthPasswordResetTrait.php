@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Models\Traits\SystemUser;
+namespace App\Models\Traits\Auth;
 
+use App\Commons\Response\ErrorEnum;
+use App\Commons\Response\ErrorEnumException;
 use App\Commons\Response\ErrorException;
-use App\Mail\SystemUserPasswordResetEmail;
+use App\Mail\AuthPasswordResetEmail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
@@ -12,17 +14,17 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 
-trait SysemUserPasswordResetTrait
+trait AuthPasswordResetTrait
 {
     public function sendPasswordResetEmail()
     {
         if (!$this->email) {
-            throw new ErrorException('Este usuario no tiene una dirección de correo para enviar.', 400);
+            throw new ErrorEnumException(ErrorEnum::NO_USER_EMAIL_ERROR);
         }
 
         $token = $this->id . '|' . Str::random(40);
 
-        $this->token_for_password_reset = $token;
+        $this->token_for_password_reset = bcrypt($token);
         $this->saveOrFail();
 
         $hash = Crypt::encrypt([
@@ -35,7 +37,7 @@ trait SysemUserPasswordResetTrait
             . '/bienvenido?passwordResetHash='
             . $hash;
 
-        Mail::to($this->email)->send(new SystemUserPasswordResetEmail($this, $url));
+        Mail::to($this->email)->send(new AuthPasswordResetEmail($url));
     }
 
     public static function requestPasswordResetEmail(array $input): void
@@ -44,11 +46,11 @@ trait SysemUserPasswordResetTrait
             'email' => 'bail|required|email',
         ])->validate();
 
-        if (!$systemUser = static::where('email', $validated['email'])->first()) {
-            throw new ErrorException('No se ha encontrado ningún usuario con esta dirección de correo.', 404);
+        if (!$user = static::where('email', $validated['email'])->first()) {
+            throw new ErrorEnumException(ErrorEnum::NOT_USER_FOUND_WITH_EMAIL_ERROR);
         }
 
-        $systemUser->sendPasswordResetEmail();
+        $user->sendPasswordResetEmail();
     }
 
     public static function getHashDataFromPasswordResetRequest(array $input): array
@@ -60,20 +62,20 @@ trait SysemUserPasswordResetTrait
         $hashData = Crypt::decrypt($validated['hash']);
 
         if (Carbon::now() > $hashData['exp']) {
-            throw new ErrorException('Este hash ha expirado.', 403);
+            throw new ErrorEnumException(ErrorEnum::EXPIRED_HASH_ERROR);
         }
 
-        if (!$systemUser = static::where('id', $hashData['sum'])->first()) {
-            throw new ErrorException('No se ha encontrado ningún usuario correspondiente a este hash.', 404);
+        if (!$user = static::where('id', $hashData['sum'])->first()) {
+            throw new ErrorEnumException(ErrorEnum::NOT_USER_FOUND_IN_HASH);
         }
 
-        if (!Hash::check($hashData['tkn'], $systemUser->token_for_password_reset)) {
-            throw new ErrorException('El token del hash es incorrecto o ha caducado.', 400);
+        if (!Hash::check($hashData['tkn'], $user->token_for_password_reset)) {
+            throw new ErrorEnumException(ErrorEnum::INVALID_HASH_TOKEN_ERROR);
         }
 
         return [
             'data' => $hashData,
-            'system_user' => $systemUser,
+            'user' => $user,
         ];
     }
 
@@ -85,10 +87,10 @@ trait SysemUserPasswordResetTrait
         ])->validate();
 
         $hashData = self::getHashDataFromPasswordResetRequest($input);
-        $systemUser = $hashData['system_user'];
+        $user = $hashData['user'];
 
-        $systemUser->password = $validated['password'];
-        $systemUser->token_for_password_reset = null;
-        $systemUser->saveOrFail();
+        $user->password = $validated['password'];
+        $user->token_for_password_reset = null;
+        $user->saveOrFail();
     }
 }

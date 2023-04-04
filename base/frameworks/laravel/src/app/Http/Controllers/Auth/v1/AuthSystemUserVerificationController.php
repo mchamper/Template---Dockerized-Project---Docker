@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\v1\Backoffice\Auth;
+namespace App\Http\Controllers\Auth\v1;
 
 use App\Commons\Auth\Auth;
 use App\Commons\Response\Response;
@@ -11,7 +11,7 @@ class AuthSystemUserVerificationController extends Controller
 {
     public function request()
     {
-        Auth::apiSystemUser()->requestVerificationEmail(request()->post());
+        Auth::systemUser()->requestVerificationEmail(request()->post());
 
         return Response::json(null, 'El email de verificación ha sido enviado con éxito.');
     }
@@ -20,7 +20,7 @@ class AuthSystemUserVerificationController extends Controller
     {
         DB::beginTransaction();
 
-        Auth::apiSystemUser()->verifyFromVerificationRequest(request()->query());
+        Auth::systemUser()->verifyFromVerificationRequest(request()->query());
 
         DB::commit();
 

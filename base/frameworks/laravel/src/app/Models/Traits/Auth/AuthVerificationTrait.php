@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Models\Traits\SystemUser;
+namespace App\Models\Traits\Auth;
 
-use App\Commons\Response\ErrorException;
-use App\Mail\SystemUserVerificationEmail;
+use App\Commons\Response\ErrorEnum;
+use App\Commons\Response\ErrorEnumException;
+use App\Mail\AuthVerificationEmail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
@@ -11,17 +12,17 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
-trait SysemUserVerificationTrait
+trait AuthVerificationTrait
 {
     public function sendVerificationEmail(): void
     {
         if (!$this->email) {
-            throw new ErrorException('Este usuario no tiene una dirección de correo para enviar.', 400);
+            throw new ErrorEnumException(ErrorEnum::NO_USER_EMAIL_ERROR);
         }
 
         $token = $this->id . '|' . Str::random(40);
 
-        $this->token_for_email_verification = $token;
+        $this->token_for_email_verification = bcrypt($token);
         $this->saveOrFail();
 
         $hash = Crypt::encrypt([
@@ -34,13 +35,13 @@ trait SysemUserVerificationTrait
             . '/cuenta?verificationHash='
             . $hash;
 
-        Mail::to($this->email)->send(new SystemUserVerificationEmail($this, $url));
+        Mail::to($this->email)->send(new AuthVerificationEmail($url));
     }
 
     public function requestVerificationEmail(): void
     {
         if ($this->email_verified_at) {
-            throw new ErrorException('Esta dirección de correo ya ha sido verificada.', 400);
+            throw new ErrorEnumException(ErrorEnum::ALREADY_VERIFIED_EMAIL_ADDRESS_ERROR);
         }
 
         $this->sendVerificationEmail();
@@ -55,15 +56,15 @@ trait SysemUserVerificationTrait
         $hashData = Crypt::decrypt($validated['hash']);
 
         if (Carbon::now() > $hashData['exp']) {
-            throw new ErrorException('Este hash ha expirado.', 403);
+            throw new ErrorEnumException(ErrorEnum::EXPIRED_HASH_ERROR);
         }
 
         if (!Hash::check($hashData['tkn'], $this->token_for_email_verification)) {
-            throw new ErrorException('El token del hash es incorrecto o ha caducado.', 400);
+            throw new ErrorEnumException(ErrorEnum::INVALID_HASH_TOKEN_ERROR);
         }
 
         if ($this->email_verified_at) {
-            throw new ErrorException('Esta dirección de correo ya ha sido verificada.', 400);
+            throw new ErrorEnumException(ErrorEnum::ALREADY_VERIFIED_EMAIL_ADDRESS_ERROR);
         }
 
         return [

@@ -14,8 +14,8 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'api_system_user',
-        'passwords' => 'system_users',
+        'guard' => 'app_client',
+        'passwords' => '',
     ],
 
     /*
@@ -36,7 +36,11 @@ return [
     */
 
     'guards' => [
-        'api_system_user' => [
+        'app_client' => [
+            'driver' => 'sanctum',
+            'provider' => 'app_clients',
+        ],
+        'system_user' => [
             'driver' => 'sanctum',
             'provider' => 'system_users',
         ],
@@ -60,6 +64,10 @@ return [
     */
 
     'providers' => [
+        'app_clients' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\AppClient::class,
+        ],
         'system_users' => [
             'driver' => 'eloquent',
             'model' => App\Models\SystemUser::class,
@@ -86,12 +94,7 @@ return [
     */
 
     'passwords' => [
-        'system_users' => [
-            'provider' => 'system_users',
-            'table' => 'password_reset_tokens',
-            'expire' => 60,
-            'throttle' => 60,
-        ],
+        //
     ],
 
     /*

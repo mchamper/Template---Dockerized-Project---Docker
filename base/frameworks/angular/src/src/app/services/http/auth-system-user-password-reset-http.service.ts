@@ -13,13 +13,13 @@ export class AuthSystemUserPasswordResetHttpService {
   /* -------------------- */
 
   request(input: any) {
-    return this._httpClient.post(`backendLaravel:/auth/system-user/password-reset/request`, input, {
+    return this._httpClient.post(`backend:/auth/v1/system-user/password-reset/request`, input, {
       context: new HttpContext()
     });
   }
 
   update(hash: string, input: any) {
-    return this._httpClient.patch(`backendLaravel:/auth/system-user/password-reset/update?hash=${hash}`, input, {
+    return this._httpClient.patch(`backend:/auth/v1/system-user/password-reset/update?hash=${hash}`, input, {
       context: new HttpContext()
     });
   }

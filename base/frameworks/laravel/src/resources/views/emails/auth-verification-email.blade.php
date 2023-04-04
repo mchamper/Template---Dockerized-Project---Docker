@@ -1,5 +1,5 @@
 <x-mail::message>
-# ¡Bienvenido {{ $systemUser->first_name }}!
+# ¡Bienvenido!
 
 Haz click en el siguiente link para verificar tu dirección de correo y comenzar a usar todos los servicios de tu nueva cuenta:
 

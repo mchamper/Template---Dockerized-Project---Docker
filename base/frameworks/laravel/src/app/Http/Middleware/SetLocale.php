@@ -4,9 +4,10 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Lang;
 use Symfony\Component\HttpFoundation\Response;
 
-class ReturnJson
+class SetLocale
 {
     /**
      * Handle an incoming request.
@@ -15,7 +16,7 @@ class ReturnJson
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $request->headers->set('Accept', 'application/json');
+        Lang::setLocale($request->headers->get('Accept-Language') ?: config('app.locale'));
         return $next($request);
     }
 }
