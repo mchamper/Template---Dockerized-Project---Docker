@@ -34,13 +34,10 @@ return [
     /* -------------------- */
 
     'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => '',
         'application_credentials' => env('GOOGLE_APPLICATION_CREDENTIALS'),
-        'contact_api_subject' => env('GOOGLE_CONTACT_API_SUBJECT'),
-    ],
-
-    'pipedrive' => [
-        'api_token' => env('PIPEDRIVE_API_TOKEN'),
-        'google_contact_sync_account' => env('PIPEDRIVE_GOOGLE_CONTACT_SYNC_ACCOUNT'),
     ],
 
 ];

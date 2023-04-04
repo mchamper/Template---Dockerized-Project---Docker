@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\v1\Backoffice\Auth;
+namespace App\Http\Controllers\Auth\v1;
 
 use App\Commons\Response\Response;
 use App\Http\Controllers\Controller;

@@ -25,13 +25,8 @@ class RolesAndPermissionsSeeder extends Seeder
             ['id' => 3, 'name' => 'system-user.delete'],
             ['id' => 4, 'name' => 'system-user.activate'],
             ['id' => 5, 'name' => 'system-user.deactivate'],
-            ['id' => 6, 'name' => 'channel.create'],
-            ['id' => 7, 'name' => 'channel.update'],
-            ['id' => 8, 'name' => 'channel.delete'],
-            ['id' => 9, 'name' => 'channel.activate'],
-            ['id' => 10, 'name' => 'channel.deactivate'],
         ])->map(function ($item) {
-            return Arr::add($item, 'guard_name', 'api_system_user');
+            return Arr::add($item, 'guard_name', 'system_user');
         })->each(function ($item) {
             DB::table(config('permission.table_names.permissions'))->updateOrInsert(['id' => $item['id']], $item);
         });
@@ -41,14 +36,14 @@ class RolesAndPermissionsSeeder extends Seeder
             ['id' => 2, 'name' => 'admin'],
             ['id' => 3, 'name' => 'client'],
         ])->map(function ($item) {
-            return Arr::add($item, 'guard_name', 'api_system_user');
+            return Arr::add($item, 'guard_name', 'system_user');
         })->each(function ($item) {
             DB::table(config('permission.table_names.roles'))->updateOrInsert(['id' => $item['id']], $item);
         });
 
         /* -------------------- */
 
-        Role::findByName('root')->givePermissionTo(Permission::all());
-        // Role::findByName('Client')->givePermissionTo(['publish articles', 'unpublish articles']);
+        Role::findByName('root', 'system_user')->givePermissionTo(Permission::all());
+        // Role::findByName('Client', 'system_user')->givePermissionTo(['publish articles', 'unpublish articles']);
     }
 }

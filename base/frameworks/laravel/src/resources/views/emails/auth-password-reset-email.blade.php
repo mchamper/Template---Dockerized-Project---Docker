@@ -1,5 +1,5 @@
 <x-mail::message>
-# Cambio de contraseña solicitado para {{ $systemUser->full_name }}
+# Cambio de contraseña solicitado
 
 Haz click en el siguiente link para cambiar tu contraseña en tu cuenta:
 

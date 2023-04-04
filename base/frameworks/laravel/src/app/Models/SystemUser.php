@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-use App\Models\Traits\SystemUser\SystemUserTrait;
+use App\Models\Traits\Auth\AuthTrait;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -23,7 +22,7 @@ class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
         Notifiable,
         SoftDeletes,
         InteractsWithMedia,
-        SystemUserTrait;
+        AuthTrait;
 
     /**
      * The attributes that should be hidden for serialization.
@@ -33,6 +32,8 @@ class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
     protected $hidden = [
         'media',
         'password',
+        'token_for_email_verification',
+        'token_for_password_reset',
     ];
 
     /**
@@ -64,27 +65,6 @@ class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
     {
         return Attribute::make(
             get: fn (mixed $value, array $attributes) => trim($attributes['first_name'] . ' ' . $attributes['last_name']),
-        );
-    }
-
-    protected function password(): Attribute
-    {
-        return Attribute::make(
-            set: fn ($value) => !empty($value) ? bcrypt($value) : null,
-        );
-    }
-
-    protected function tokenForEmailVerification(): Attribute
-    {
-        return Attribute::make(
-            set: fn ($value) => !empty($value) ? bcrypt($value) : null,
-        );
-    }
-
-    protected function tokenForPasswordReset(): Attribute
-    {
-        return Attribute::make(
-            set: fn ($value) => !empty($value) ? bcrypt($value) : null,
         );
     }
 
