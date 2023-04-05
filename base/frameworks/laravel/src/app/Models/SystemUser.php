@@ -40,6 +40,7 @@ class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
     protected $appends = [
         'full_name',
         'picture',
+        'status_enum',
     ];
 
     /**
@@ -64,6 +65,13 @@ class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
     {
         return Attribute::make(
             get: fn () => $this->getFirstMediaUrl('picture'),
+        );
+    }
+
+    public function statusEnum(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->status->value(),
         );
     }
 }

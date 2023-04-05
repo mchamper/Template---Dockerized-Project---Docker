@@ -13,17 +13,23 @@ enum AppClientStatusEnum
 
     /* -------------------- */
 
-    public function value(array $args): string
+    public function value(): array
     {
         return match($this) {
-            self::Active => match(Lang::getLocale()) {
-                'es' => 'Activo',
-                'en' => 'Active',
-            },
-            self::Inactive => match(Lang::getLocale()) {
-                'es' => 'Inactivo',
-                'en' => 'Inactive',
-            },
+            self::Active => [
+                'label' => match(Lang::getLocale()) {
+                    'es' => 'Activo',
+                    'en' => 'Active',
+                },
+                'color' => 'green',
+            ],
+            self::Inactive => [
+                'label' => match(Lang::getLocale()) {
+                    'es' => 'Inactivo',
+                    'en' => 'Inactive',
+                },
+                'color' => '',
+            ],
         };
     }
 }

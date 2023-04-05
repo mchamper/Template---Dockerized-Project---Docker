@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1\Backoffice;
 
 use App\Commons\Response\Response;
+use App\Enums\SystemUserStatusEnum;
 use App\Http\Controllers\Controller;
 
 class CombosController extends Controller
@@ -14,10 +15,10 @@ class CombosController extends Controller
 
         foreach ($concepts as $concept) {
             switch ($concept) {
-                // case 'example_entity': {
-                //     $combos[$concept] = ExampleEntity::get();
-                //     break;
-                // }
+                case 'system_user_statuses': {
+                    $combos[$concept] = SystemUserStatusEnum::all();
+                    break;
+                }
             }
         }
 
