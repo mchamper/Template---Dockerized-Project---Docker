@@ -4,6 +4,20 @@ namespace App\Enums;
 
 trait BaseEnum
 {
+    public static function all(): array
+    {
+        $values = [];
+
+        foreach (static::cases() as $case) {
+            $values[] = [
+                'name' => $case->name,
+                'value' => $case->value(),
+            ];
+        }
+
+        return $values;
+    }
+
     public static function names(): array
     {
         $names = [];
