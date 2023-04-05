@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\AppClientStatusEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,7 +19,7 @@ return new class extends Migration
             $table->string('secret')->unique();
             $table->json('scopes');
             $table->json('hosts');
-            $table->boolean('is_active')->default(true);
+            $table->enum('status', AppClientStatusEnum::names())->default(AppClientStatusEnum::Active->name);
             $table->timestamps();
             $table->softDeletes();
         });

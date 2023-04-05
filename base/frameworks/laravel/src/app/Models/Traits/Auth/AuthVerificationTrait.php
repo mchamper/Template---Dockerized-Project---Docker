@@ -3,7 +3,6 @@
 namespace App\Models\Traits\Auth;
 
 use App\Commons\Response\ErrorEnum;
-use App\Commons\Response\ErrorEnumException;
 use App\Mail\AuthVerificationEmail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Crypt;
@@ -17,7 +16,7 @@ trait AuthVerificationTrait
     public function sendVerificationEmail(): void
     {
         if (!$this->email) {
-            throw new ErrorEnumException(ErrorEnum::NO_USER_EMAIL_ERROR);
+            ErrorEnum::NO_USER_EMAIL_ERROR->throw();
         }
 
         $token = $this->id . '|' . Str::random(40);
@@ -28,7 +27,7 @@ trait AuthVerificationTrait
         $hash = Crypt::encrypt([
             'sum' => $this->id,
             'tkn' => $token,
-            'exp' => Carbon::now()->addHour(1),
+            'exp' => Carbon::now()->addHours(1),
         ]);
 
         $url = config('app.backoffice_url')
@@ -41,7 +40,7 @@ trait AuthVerificationTrait
     public function requestVerificationEmail(): void
     {
         if ($this->email_verified_at) {
-            throw new ErrorEnumException(ErrorEnum::ALREADY_VERIFIED_EMAIL_ADDRESS_ERROR);
+            ErrorEnum::ALREADY_VERIFIED_EMAIL_ADDRESS_ERROR->throw();
         }
 
         $this->sendVerificationEmail();
@@ -56,15 +55,15 @@ trait AuthVerificationTrait
         $hashData = Crypt::decrypt($validated['hash']);
 
         if (Carbon::now() > $hashData['exp']) {
-            throw new ErrorEnumException(ErrorEnum::EXPIRED_HASH_ERROR);
+            ErrorEnum::EXPIRED_HASH_ERROR->throw();
         }
 
         if (!Hash::check($hashData['tkn'], $this->token_for_email_verification)) {
-            throw new ErrorEnumException(ErrorEnum::INVALID_HASH_TOKEN_ERROR);
+            ErrorEnum::INVALID_HASH_TOKEN_ERROR->throw();
         }
 
         if ($this->email_verified_at) {
-            throw new ErrorEnumException(ErrorEnum::ALREADY_VERIFIED_EMAIL_ADDRESS_ERROR);
+            ErrorEnum::ALREADY_VERIFIED_EMAIL_ADDRESS_ERROR->throw();
         }
 
         return [

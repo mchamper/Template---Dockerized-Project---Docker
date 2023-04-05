@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\SystemUserStatusEnum;
 use App\Models\Traits\Auth\AuthTrait;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -24,11 +25,6 @@ class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
         InteractsWithMedia,
         AuthTrait;
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'media',
         'password',
@@ -36,13 +32,9 @@ class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
         'token_for_password_reset',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'status' => SystemUserStatusEnum::class,
     ];
 
     protected $appends = [

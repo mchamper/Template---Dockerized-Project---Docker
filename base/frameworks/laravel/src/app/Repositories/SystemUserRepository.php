@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Enums\SystemUserStatusEnum;
 use App\Models\SystemUser;
 
 class SystemUserRepository extends BaseRepository
@@ -12,7 +13,7 @@ class SystemUserRepository extends BaseRepository
 
         if (!$systemUser) {
             $systemUser = new SystemUser();
-            // $systemUser->status()->associate(1);
+            $systemUser->status = SystemUserStatusEnum::Active;
 
             $isNew = true;
         }
@@ -23,8 +24,8 @@ class SystemUserRepository extends BaseRepository
             'email',
             'password',
             'picture',
+            'status',
             /* -------------------- */
-            // 'status',
         ], $input, $systemUser);
 
         $systemUser->saveOrFail();
