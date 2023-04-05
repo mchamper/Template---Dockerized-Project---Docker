@@ -27,10 +27,12 @@ class Error
         }
 
         if ($e instanceof ErrorEnumException) {
-            $status = (int) (explode('|', $e->error->value)[1] ?? $status);
-            $message = $e->error->value('message', $e->args);
+            $errorValue = $e->error->value($e->args);
+
+            $status = $errorValue['status'] ?? $status;
+            $message = $errorValue['message'];
             $name = $e->error->name;
-            $code = (int) (explode('|', $e->error->value)[0] ?? 0);
+            $code = $errorValue['code'] ?? 0;
         }
 
         return [
