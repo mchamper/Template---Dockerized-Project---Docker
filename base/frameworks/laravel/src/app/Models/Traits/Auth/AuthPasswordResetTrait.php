@@ -3,8 +3,6 @@
 namespace App\Models\Traits\Auth;
 
 use App\Commons\Response\ErrorEnum;
-use App\Commons\Response\ErrorEnumException;
-use App\Commons\Response\ErrorException;
 use App\Mail\AuthPasswordResetEmail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Crypt;
@@ -19,7 +17,7 @@ trait AuthPasswordResetTrait
     public function sendPasswordResetEmail()
     {
         if (!$this->email) {
-            throw new ErrorEnumException(ErrorEnum::NO_USER_EMAIL_ERROR);
+            ErrorEnum::NO_USER_EMAIL_ERROR->throw();
         }
 
         $token = $this->id . '|' . Str::random(40);
@@ -30,7 +28,7 @@ trait AuthPasswordResetTrait
         $hash = Crypt::encrypt([
             'sum' => $this->id,
             'tkn' => $token,
-            'exp' => Carbon::now()->addHour(1),
+            'exp' => Carbon::now()->addHours(1),
         ]);
 
         $url = config('app.backoffice_url')
@@ -47,7 +45,7 @@ trait AuthPasswordResetTrait
         ])->validate();
 
         if (!$user = static::where('email', $validated['email'])->first()) {
-            throw new ErrorEnumException(ErrorEnum::NOT_USER_FOUND_WITH_EMAIL_ERROR);
+            ErrorEnum::NOT_USER_FOUND_WITH_EMAIL_ERROR->throw();
         }
 
         $user->sendPasswordResetEmail();
@@ -62,15 +60,15 @@ trait AuthPasswordResetTrait
         $hashData = Crypt::decrypt($validated['hash']);
 
         if (Carbon::now() > $hashData['exp']) {
-            throw new ErrorEnumException(ErrorEnum::EXPIRED_HASH_ERROR);
+            ErrorEnum::EXPIRED_HASH_ERROR->throw();
         }
 
         if (!$user = static::where('id', $hashData['sum'])->first()) {
-            throw new ErrorEnumException(ErrorEnum::NOT_USER_FOUND_IN_HASH);
+            ErrorEnum::NOT_USER_FOUND_IN_HASH->throw();
         }
 
         if (!Hash::check($hashData['tkn'], $user->token_for_password_reset)) {
-            throw new ErrorEnumException(ErrorEnum::INVALID_HASH_TOKEN_ERROR);
+            ErrorEnum::INVALID_HASH_TOKEN_ERROR->throw();
         }
 
         return [

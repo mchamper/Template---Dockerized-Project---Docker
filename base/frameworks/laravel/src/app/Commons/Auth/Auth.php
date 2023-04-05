@@ -4,6 +4,8 @@ namespace App\Commons\Auth;
 
 use App\Commons\Response\ErrorEnum;
 use App\Commons\Response\ErrorEnumException;
+use App\Enums\AppClientStatusEnum;
+use App\Enums\SystemUserStatusEnum;
 use App\Models\AppClient;
 use App\Models\SystemUser;
 use Illuminate\Support\Facades\Auth as BaseAuth;
@@ -33,12 +35,12 @@ class Auth extends BaseAuth
         }
 
         if ($appClient) {
-            if (!$appClient->is_active) {
-                throw new ErrorEnumException(ErrorEnum::INACTIVE_APP_CLIENT_ERROR);
+            if (!$appClient->status->is(AppClientStatusEnum::Active)) {
+                ErrorEnum::INACTIVE_APP_CLIENT_ERROR->throw();
             }
 
             if ($appClient->scopes !== '*' && !Str::startsWith(Str::finish(request()->path(), '/'), $appClient->scopes)) {
-                throw new ErrorEnumException(ErrorEnum::UNAUTHORIZED_SCOPE_ERROR);
+                ErrorEnum::UNAUTHORIZED_SCOPE_ERROR->throw();
             }
         }
     }
@@ -63,13 +65,15 @@ class Auth extends BaseAuth
 
         if ($systemUser) {
             if ($token = $systemUser->currentAccessToken()) {
-                if ($appClientId = explode('|', $token->name)[1] ?? null) {
+                $tokenName = explode('|', $token->name);
+
+                if ($tokenName[0] === 'app_client' && $appClientId = $tokenName[1] ?? null) {
                     self::appClientCheck(AppClient::findOrFail($appClientId));
                 }
             }
 
-            if (!$systemUser->is_active) {
-                throw new ErrorEnumException(ErrorEnum::INACTIVE_USER_ERROR);
+            if (!$systemUser->status->is(SystemUserStatusEnum::Active)) {
+                ErrorEnum::INACTIVE_USER_ERROR->throw();
             }
         }
     }

@@ -2,12 +2,12 @@
 
 namespace App\Commons\Response;
 
-use App\Enums\BaseEnumTrait;
+use App\Enums\BaseEnum;
 use Illuminate\Support\Facades\Lang;
 
 enum ErrorEnum
 {
-    use BaseEnumTrait;
+    use BaseEnum;
 
     case INVALID_CREDENTIALS_ERROR;
     case INACTIVE_APP_CLIENT_ERROR;
