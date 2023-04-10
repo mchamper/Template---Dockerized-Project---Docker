@@ -9,3 +9,16 @@ nz-avatar {
   top: -1px!important;
   vertical-align: unset!important;
 }
+
+.ant-collapse-header {
+  padding: 1rem !important;
+}
+.ant-collapse-content-box {
+  padding: 0 !important;
+}
+
+.headless {
+  .ant-collapse-header {
+    display: none !important;
+  }
+}

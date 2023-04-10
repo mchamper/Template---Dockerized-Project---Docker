@@ -84,8 +84,17 @@ export class Form {
     }
   }
 
-  set(value: any) {
+  persist(value: any) {
     this.state.persist({
+      ...this.group.getRawValue(),
+      ...value
+    });
+
+    this.restore();
+  }
+
+  set(value: any) {
+    this.state.set({
       ...this.group.getRawValue(),
       ...value
     });

@@ -1,6 +1,6 @@
 import { EventEmitter, inject } from "@angular/core";
 import { ActivatedRoute, Params, Router } from "@angular/router";
-import { difference, get, xor } from "lodash";
+import { difference, get, isEqual, xor } from "lodash";
 import { NzTableQueryParams } from "ng-zorro-antd/table";
 import { BehaviorSubject, debounceTime, distinctUntilChanged, Observable, of, skip, Subscription, tap } from "rxjs";
 import { scrollTo, stringToObject } from "../helper";
@@ -53,6 +53,7 @@ export class List<T = any> {
   extras: any = null;
 
   filtersForm!: Form;
+  queryParamsValue!: Object;
 
   requestH: RequestHandler = new RequestHandler();
   combosRequestH: RequestHandler = new RequestHandler();
@@ -114,11 +115,24 @@ export class List<T = any> {
 
         this._router.navigate([], {
           queryParams: stringToObject(queryParams, true),
+          replaceUrl: true,
           state: { reset },
         });
       }));
 
       subscriptions.push(this._route.queryParams.subscribe((queryParams: Params) => {
+        const queryParamsValue = {
+          ...this.filtersForm?.group.value,
+          ...queryParams,
+          showMoreFilters: null,
+        };
+
+        if (isEqual(queryParamsValue, this.queryParamsValue)) {
+          return;
+        }
+
+        this.queryParamsValue = { ...queryParamsValue };
+
         const page: number = parseInt(queryParams['page'] || '1') || this.currentPage;
         this.limit = parseInt(queryParams['limit'] || '0') || this.limit;
         this.sort = queryParams['sort'] || this.sort;
