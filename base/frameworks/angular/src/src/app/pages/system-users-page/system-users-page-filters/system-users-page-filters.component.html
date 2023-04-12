@@ -1,0 +1,67 @@
+<div class="box mb-3">
+  <app-request-handler [requestH]="list.filters.combosRequestH">
+    <form nz-form nzLayout="vertical" [formGroup]="list.filters.group">
+      <h3 class="fs-6 mb-0">Filtros</h3>
+      <nz-divider class="my-3"></nz-divider>
+
+      <div class="row">
+        <nz-form-item class="col-60 col-lg-30 col-xl-15">
+          <nz-form-control>
+            <nz-form-label>Estados</nz-form-label>
+            <nz-select formControlName="statuses" [compareWith]="list.filters.compareFn" nzMode="multiple">
+              <ng-container *ngFor="let status of list.filters.getCombo('system_user_statuses')">
+                <nz-option [nzValue]="status.name" [nzLabel]="status.value.label"></nz-option>
+              </ng-container>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <nz-collapse class="headless" nzGhost>
+        <nz-collapse-panel [nzActive]="list.moreFiltersControl.value">
+          <nz-divider class="mt-0 mb-3"></nz-divider>
+
+          <div class="row">
+            <nz-form-item class="col-60 col-lg-30 col-xl-15">
+              <nz-form-control>
+                <nz-form-label>Nombre</nz-form-label>
+                <input nz-input formControlName="name" placeholder="&nbsp;">
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item class="col-60 col-lg-30 col-xl-15">
+              <nz-form-control>
+                <nz-form-label>Email</nz-form-label>
+                <input nz-input formControlName="email" placeholder="&nbsp;">
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item class="col-60 col-lg-30 col-xl-15">
+              <nz-form-control>
+                <nz-form-label>Creado</nz-form-label>
+                <nz-range-picker class="w-100" formControlName="createdAt" nzFormat="dd/MM/yyyy"></nz-range-picker>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div class="row">
+            <nz-form-item class="col-60 col-lg-30 col-xl-15">
+              <label class="m-0 my-1" nz-checkbox formControlName="emailVerified">Email verificado</label>
+              <label class="m-0 my-1" nz-checkbox formControlName="emailNotVerified">Email NO verificado</label>
+            </nz-form-item>
+          </div>
+        </nz-collapse-panel>
+      </nz-collapse>
+
+      <nz-divider class="mt-0 mb-3"></nz-divider>
+
+      <div class="d-flex align-items-center">
+        <a href="javascript:;" (click)="list.filters.reset(true)">
+          <span nz-icon nzType="clear" nzTheme="outline"></span> Limpiar
+        </a>
+
+        <nz-label class="ms-auto" nz-checkbox [formControl]="list.moreFiltersControl">Mostrar filtros avanzados</nz-label>
+      </div>
+    </form>
+  </app-request-handler>
+</div>

@@ -1,4 +1,4 @@
-import { AbstractControl, FormArray, FormControl, FormGroup } from "@angular/forms";
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from "@angular/forms";
 import { cloneDeep, isDate } from "lodash";
 import { formValidatorMessages } from "./form-validators";
 import { RequestHandler } from "../handlers/request-handler/request-handler";
@@ -9,6 +9,8 @@ import { NzNotificationService } from "ng-zorro-antd/notification";
 import { inject } from "@angular/core";
 import { environment } from "src/environments/environment";
 import { IHttpResponse } from "src/app/interceptors/success.interceptor";
+
+type TRequestType = 'data' | 'combos';
 
 export enum FormUnpreparedReasonEnum {
   IS_LOADING = 'IS_LOADING',
@@ -45,17 +47,20 @@ export class Form {
     },
   };
 
-  groupInit!: FormGroup;
+  group: FormGroup;
+  groupMain: FormGroup;
+  groupInit: FormGroup;
   combos: { [key: string]: any[] } = {};
 
-  requestH: RequestHandler = new RequestHandler();
-  dataRequestH: RequestHandler = new RequestHandler();
-  combosRequestH: RequestHandler = new RequestHandler();
+  requestH: RequestHandler = new RequestHandler('formRequest');
+  dataRequestH: RequestHandler = new RequestHandler('dataRequest');
+  combosRequestH: RequestHandler = new RequestHandler('combosRequest');
 
+  private _fb: FormBuilder = inject(FormBuilder);
   private _nzNotificationS: NzNotificationService = inject(NzNotificationService);
 
   constructor(
-    public group: FormGroup = new FormGroup({}),
+    group: FormGroup = new FormGroup({}),
     public options: {
       onInit?: (form: Form) => any,
       arrays?: {
@@ -68,11 +73,13 @@ export class Form {
     } = {},
   ) {
 
+    this.groupMain = this._fb.group({ main: group });
+    this.group = this.castFG(this.groupMain.get('main'));
+
     this.state.set(!environment.production ? options?.mock : null);
     this.reset(true);
 
-    this.groupInit = cloneDeep(this.group);
-
+    this.groupInit = cloneDeep(this.groupMain);
     this._init();
   }
 
@@ -103,7 +110,7 @@ export class Form {
   }
 
   restore(withInit?: boolean): void {
-    this.group = cloneDeep(this.groupInit);
+    this.groupMain = cloneDeep(this.groupInit);
     this._init();
 
     if (withInit) {
@@ -156,6 +163,22 @@ export class Form {
   }
 
   /* -------------------- */
+
+  isFormRequest(type?: TRequestType): boolean {
+    switch (type) {
+      case 'data':
+      case 'combos': return false;
+      default: return true;
+    }
+  }
+
+  getRequest(type?: TRequestType): RequestHandler {
+    switch (type) {
+      case 'data': return this.dataRequestH;
+      case 'combos': return this.combosRequestH;
+      default: return this.requestH;
+    }
+  }
 
   getValue(key: string, field?: string): any {
     let value = this.group.get(key)?.value;
@@ -336,13 +359,19 @@ export class Form {
 
   prepare(
     group?: FormGroup | FormArray,
-    options: {
+    options?: {
       strict?: boolean,
       mustResetErrors?: boolean
-    } = { strict: true, mustResetErrors: true }): {
+    },
+  ): {
     status: boolean,
     reason?: FormUnpreparedReasonEnum
   } {
+    const defaultOptions = {
+      strict: typeof options?.strict !== 'undefined' ? options?.strict : true,
+      mustResetErrors: typeof options?.mustResetErrors !== 'undefined' ? options?.mustResetErrors : true,
+    };
+
     const formGroup = group || this.group;
 
     this.validate(formGroup);
@@ -354,7 +383,7 @@ export class Form {
       };
     }
 
-    if (options?.strict) {
+    if (defaultOptions?.strict) {
       if (this.requestH.isSuccess() && formGroup.pristine) {
         return {
           status: false,
@@ -370,7 +399,7 @@ export class Form {
       };
     };
 
-    if (options?.mustResetErrors) {
+    if (defaultOptions?.mustResetErrors) {
       this.resetErrors();
     }
 
@@ -399,14 +428,15 @@ export class Form {
   send(
     observable: Observable<any>,
     options?: {
+      request?: TRequestType,
       prepareOptions?: {
         strict?: boolean,
         mustResetErrors?: boolean
       },
       unprepared?: (reason: FormUnpreparedReasonEnum) => void,
       before?: () => void,
-      success?: (res: IHttpResponse) => void,
-      error?: (err: IHttpErrorResponse) => void,
+      success?: (res: IHttpResponse, notify: NzNotificationService) => void,
+      error?: (err: IHttpErrorResponse, notify: NzNotificationService) => void,
       after?: () => void,
       reset?: boolean,
       persist?: boolean,
@@ -426,25 +456,29 @@ export class Form {
       notify: typeof options?.notify !== 'undefined' ? options?.notify : false,
       notifySuccess: typeof options?.notifySuccess !== 'undefined' ? options?.notifySuccess : false,
       notifyError: typeof options?.notifyError !== 'undefined' ? options?.notifyError : true,
-    }
+    };
 
-    const prepare = options?.prepareOptions
-      ? this.prepare(undefined, options?.prepareOptions)
-      : this.prepare();
+    const requestH = this.getRequest(options?.request);
 
-    if (!prepare.status && prepare.reason) {
-      if (defaultOptions.unprepared) {
-        defaultOptions.unprepared(prepare.reason);
+    if (this.isFormRequest(options?.request)) {
+      const prepare = options?.prepareOptions
+        ? this.prepare(undefined, options?.prepareOptions)
+        : this.prepare();
+
+      if (!prepare.status && prepare.reason) {
+        if (defaultOptions.unprepared) {
+          defaultOptions.unprepared(prepare.reason);
+        }
+
+        return of();
       }
-
-      return of();
     }
 
     if (defaultOptions.before) {
       defaultOptions.before();
     }
 
-    return this.requestH.send(observable).pipe(
+    return requestH.send(observable).pipe(
       tap({
         next: (res: IHttpResponse) => {
           if (defaultOptions.reset) {
@@ -454,7 +488,7 @@ export class Form {
           }
 
           if (defaultOptions.notify || defaultOptions.notifySuccess) {
-            let title: string = 'Solicitud enviada';
+            let title: string = '¡Perfecto!';
             let content: string = res.message || 'Su solicitud ha sido enviada con éxito.';
 
             if (Array.isArray(defaultOptions.notifySuccess)) {
@@ -469,7 +503,7 @@ export class Form {
           }
 
           if (defaultOptions.success) {
-            defaultOptions.success(res);
+            defaultOptions.success(res, this._nzNotificationS);
           }
         },
         error: (err: IHttpErrorResponse) => {
@@ -491,7 +525,7 @@ export class Form {
           }
 
           if (defaultOptions.error) {
-            defaultOptions.error(err);
+            defaultOptions.error(err, this._nzNotificationS);
           }
         },
         complete: () => {

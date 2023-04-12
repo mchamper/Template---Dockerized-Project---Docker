@@ -17,13 +17,13 @@ export class AuthSystemUserHttpService {
   /* -------------------- */
 
   register(input: any) {
-    return this._httpClient.post(`backend:/auth/v1/system-user/register`, input, {
+    return this._httpClient.post(`backendLaravel:/auth/v1/system-user/register`, input, {
       context: new HttpContext()
     });
   }
 
   login(input: { email: string, password: string, remember_me: boolean }) {
-    return this._httpClient.post(`backend:/auth/v1/system-user/login`, input, {
+    return this._httpClient.post(`backendLaravel:/auth/v1/system-user/login`, input, {
       context: new HttpContext()
         .set(AUTH_LOGIN_GUARD, 'systemUser')
         .set(AUTH_LOGIN, (res: IHttpResponse) => {
@@ -52,14 +52,14 @@ export class AuthSystemUserHttpService {
   logout() {
     this._authS.logout('systemUser');
 
-    return this._httpClient.post(`backend:/auth/v1/system-user/logout`, null, {
+    return this._httpClient.post(`backendLaravel:/auth/v1/system-user/logout`, null, {
       context: new HttpContext()
         .set(AUTH_GUARD, 'systemUser')
     });
   }
 
   me() {
-    return this._httpClient.get(`backend:/auth/v1/system-user/me`, {
+    return this._httpClient.get(`backendLaravel:/auth/v1/system-user/me`, {
       context: new HttpContext()
         .set(AUTH_GUARD, 'systemUser')
         .set(AUTH_LOGOUT_ON_ERROR, true)
@@ -83,7 +83,7 @@ export class AuthSystemUserHttpService {
   /* -------------------- */
 
   update(input: any) {
-    return this._httpClient.put(`backend:/auth/v1/system-user/update`, input, {
+    return this._httpClient.put(`backendLaravel:/auth/v1/system-user/update`, input, {
       context: new HttpContext()
         .set(AUTH_GUARD, 'systemUser')
         .set(AUTH_UPDATE, (res: IHttpResponse) => {

@@ -7,6 +7,6 @@ export interface IModalService {
 
   /* -------------------- */
 
-  open: (...params: unknown[]) => void;
-  close: (...params: unknown[]) => void;
+  open: (...params: any[]) => void;
+  close: (...params: any[]) => void;
 }

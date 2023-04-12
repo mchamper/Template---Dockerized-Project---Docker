@@ -2,10 +2,10 @@
 @import "node_modules/bootstrap/scss/functions";
 
 // 2. Include any default variable overrides here
-$body-bg: #FFF;
+$body-bg: #F5F5F5;
 $body-color: #0F0054;
-$primary: #FF366C;
-$secondary: #0F0054;
+// $primary: #4B259A;
+// $secondary: #FA6E95;
 
 $font-family-base: "Arial", sans-serif;
 $font-size-base: 1rem;
@@ -19,6 +19,9 @@ $enable-smooth-scroll: false;
 
 // 4. Include any default map overrides here
 $custom-colors: (
+  "app-pink": #FA6E95,
+  "app-purple": #4B259A,
+  "app-lilac": #9D79FF,
   /* -------------------- */
   "app-facebook": #3b5998,
   "app-instagram": #dd2a7b,

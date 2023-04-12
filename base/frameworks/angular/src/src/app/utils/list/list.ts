@@ -3,11 +3,12 @@ import { ActivatedRoute, Params, Router } from "@angular/router";
 import { difference, get, isEqual, xor } from "lodash";
 import { NzTableQueryParams } from "ng-zorro-antd/table";
 import { BehaviorSubject, debounceTime, distinctUntilChanged, Observable, of, skip, Subscription, tap } from "rxjs";
-import { scrollTo, stringToObject } from "../helper";
-import { IHttpErrorResponse } from "../interceptors/error.interceptor";
-import { IHttpResponse } from "../interceptors/success.interceptor";
-import { Form } from "./form/form";
-import { RequestHandler } from "./handlers/request-handler/request-handler";
+import { Form } from "../form/form";
+import { RequestHandler } from "../handlers/request-handler/request-handler";
+import { scrollTo, stringToObject } from "src/app/helper";
+import { IHttpResponse } from "src/app/interceptors/success.interceptor";
+import { IHttpErrorResponse } from "src/app/interceptors/error.interceptor";
+import { FormControl } from "@angular/forms";
 
 export enum ListUnpreparedReasonEnum {
   IS_LOADING = 'IS_LOADING',
@@ -52,11 +53,12 @@ export class List<T = any> {
   selected: any[] = [];
   extras: any = null;
 
-  filtersForm!: Form;
+  action: Form = new Form();
+  filters: Form = new Form();
+  moreFiltersControl: FormControl = new FormControl<boolean>(false);
   queryParamsValue!: Object;
 
   requestH: RequestHandler = new RequestHandler();
-  combosRequestH: RequestHandler = new RequestHandler();
 
   nzExpandSet = new Set<number>();
 
@@ -90,7 +92,8 @@ export class List<T = any> {
     const subscriptions: Subscription[] = [];
 
     if (options?.persistOnUrl) {
-      this.filtersForm?.setValuesFromQueryParams(this._route.snapshot.queryParams);
+      this.filters.setValuesFromQueryParams(this._route.snapshot.queryParams);
+      this.moreFiltersControl.setValue(!!this._route.snapshot.queryParams['moreFilters']);
 
       subscriptions.push(this.changes$.pipe(skip(this._setPageMethod !== 'NoPage' ? 1 : 0)).subscribe(({ page, reset, refresh }) => {
         if (refresh) {
@@ -105,11 +108,13 @@ export class List<T = any> {
             page,
             limit: this.limit,
             sort: this.sort,
-            ...this.filtersForm?.getValuesForQueryParams(),
+            moreFilters: this.moreFiltersControl.value,
+            ...this.filters.getValuesForQueryParams(),
           };
         } else {
           queryParams = {
-            ...this.filtersForm?.getValuesForQueryParams(),
+            moreFilters: this.moreFiltersControl.value,
+            ...this.filters.getValuesForQueryParams(),
           };
         }
 
@@ -122,9 +127,12 @@ export class List<T = any> {
 
       subscriptions.push(this._route.queryParams.subscribe((queryParams: Params) => {
         const queryParamsValue = {
-          ...this.filtersForm?.group.value,
+          ...this.filters.group.value,
+          page: '1',
+          limit: this.limit + '',
+          sort: this.sort,
           ...queryParams,
-          showMoreFilters: null,
+          moreFilters: null,
         };
 
         if (isEqual(queryParamsValue, this.queryParamsValue)) {
@@ -145,10 +153,19 @@ export class List<T = any> {
       }));
     }
 
-    subscriptions.push(this.filtersForm?.group.valueChanges.pipe(
+    subscriptions.push(this.filters.group.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-    ).subscribe(() => this.changes$.emit({ page: 1, reset: true })));
+    ).subscribe(value => {
+      this.changes$.emit({ page: 1, reset: true });
+    }));
+
+    subscriptions.push(this.moreFiltersControl.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+    ).subscribe(value => {
+      this.changes$.emit({ page: this.currentPage, reset: false });
+    }));
 
     return subscriptions;
   }
@@ -163,6 +180,18 @@ export class List<T = any> {
     this.total = 0;
     this.selected = [];
     this.extras = null;
+  }
+
+  setItem(item: any): void {
+    this.data = [...this.data].map((itemData: any) => {
+      if (itemData.id === item.id) {
+        return item;
+      }
+
+      return itemData;
+    });
+
+    this.data$.next(this.data);
   }
 
   set(page: IPage | ILaravelPage | INestJsPage | INoPage, options?: { extras?: any }): void {
@@ -321,6 +350,7 @@ export class List<T = any> {
       success?: (res: IHttpResponse) => void,
       error?: (err: IHttpErrorResponse) => void,
       after?: () => void,
+      scrollToTop?: boolean,
     }
   ): Observable<IHttpResponse> {
     const defaultOptions = {
@@ -329,6 +359,7 @@ export class List<T = any> {
       success: typeof options?.success !== 'undefined' ? options?.success : null,
       error: typeof options?.error !== 'undefined' ? options?.error : null,
       after: typeof options?.after !== 'undefined' ? options?.after : null,
+      scrollToTop: typeof options?.scrollToTop !== 'undefined' ? options?.scrollToTop : true,
     }
 
     const prepare = this.prepare();
@@ -341,7 +372,9 @@ export class List<T = any> {
       return of();
     }
 
-    scrollTo(0);
+    if (defaultOptions.scrollToTop) {
+      scrollTo(0);
+    }
 
     if (defaultOptions.before) {
       defaultOptions.before();
