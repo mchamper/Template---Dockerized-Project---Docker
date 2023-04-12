@@ -44,6 +44,21 @@ export class AuthPageLoginComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     //
+
+    // this._sh.add(
+    //   this._socialAuthService.authState.pipe(
+    //     skip(1),
+    //     filter(socialUser => !!socialUser)
+    //   ).subscribe(async socialUser => {
+    //     // this.authS.login({ data: socialUser });
+
+    //     // this._router.navigateByUrl(this._route.snapshot.queryParamMap.get('redirectTo') || '/', {
+    //     //   replaceUrl: true,
+    //     // });
+
+    //     this.login(socialUser.idToken);
+    //   })
+    // );
   }
 
   ngOnDestroy(): void {
