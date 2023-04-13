@@ -17,11 +17,11 @@ export class RequestInterceptor implements HttpInterceptor {
 
     let headers: HttpHeaders = req.headers;
 
-    headers = req.headers.set('Accept', 'application/json');
-    headers = req.headers.set('Accept-Language', 'es');
+    headers = headers.set('Accept', 'application/json');
+    headers = headers.set('Accept-Language', 'es');
 
     if (guard && this._authS.token(guard)) {
-      headers = req.headers.set('Authorization', `Bearer ${this._authS.token(guard)}`);
+      headers = headers.set('Authorization', `Bearer ${this._authS.token(guard)}`);
     }
 
     let url: string = req.url;

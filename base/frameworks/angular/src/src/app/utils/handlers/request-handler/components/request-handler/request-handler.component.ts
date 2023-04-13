@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RequestHandler } from '../../request-handler';
 import { NzResultModule } from 'ng-zorro-antd/result';
 import { Form } from 'src/app/utils/form/form';
+import { List } from 'src/app/utils/list/list';
 
 @Component({
   selector: 'app-request-handler',
@@ -19,7 +20,9 @@ export class RequestHandlerComponent implements OnInit {
 
   @Input() requestH!: RequestHandler;
   @Input() form!: Form;
-  @Input() type: 'data' | 'form' = 'data';
+  @Input() list!: List;
+  @Input() listAction!: Form;
+  @Input() type: 'data' | 'form' | 'listAction' = 'data';
   @Input() theme: 'light' | 'dark' = 'light';
   @Input() errorInfo: boolean = true;
 
@@ -32,6 +35,14 @@ export class RequestHandlerComponent implements OnInit {
     if (this.form) {
       this.requestH = this.form.requestH;
       this.type = 'form';
+    }
+    else if (this.list) {
+      this.requestH = this.list.requestH;
+      this.type = 'data';
+    }
+    else if (this.listAction) {
+      this.requestH = this.listAction.requestH;
+      this.type = 'listAction';
     }
   }
 

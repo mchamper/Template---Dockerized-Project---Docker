@@ -1,5 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
-@import "node_modules/ng-zorro-antd/ng-zorro-antd.min.css";
+// @import "node_modules/ng-zorro-antd/ng-zorro-antd.min.css";
+@import "node_modules/ng-zorro-antd/ng-zorro-antd.variable.min.css";
 @import "node_modules/simplebar/dist/simplebar.min.css";
 
 @import "theme/_root.scss";
@@ -9,6 +10,8 @@
 @import "theme/ant.scss";
 @import "theme/buttons.scss";
 @import "theme/forms.scss";
+@import "theme/layouts.scss";
+@import "theme/tables.scss";
 @import "theme/texts.scss";
 @import "theme/titles.scss";
 

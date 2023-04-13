@@ -14,14 +14,14 @@ export class AuthSystemUserVerificationHttpService {
   /* -------------------- */
 
   request() {
-    return this._httpClient.post(`backend:/auth/v1/system-user/verification/request`, null, {
+    return this._httpClient.post(`backendLaravel:/auth/v1/system-user/verification/request`, null, {
       context: new HttpContext()
         .set(AUTH_GUARD, 'systemUser')
     });
   }
 
   verify(hash: string) {
-    return this._httpClient.patch(`backend:/auth/v1/system-user/verification/verify?hash=${hash}`, null, {
+    return this._httpClient.patch(`backendLaravel:/auth/v1/system-user/verification/verify?hash=${hash}`, null, {
       context: new HttpContext()
         .set(AUTH_GUARD, 'systemUser')
         .set(AUTH_UPDATE, () => {

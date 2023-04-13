@@ -119,12 +119,12 @@ export class AuthService {
 
     switch (guard) {
       case 'appClient': {
-        window.location.reload();
+        // window.location.reload();
         break;
       }
 
       case 'systemUser': {
-        this._router.navigateByUrl('/bienvenido', { replaceUrl: true });
+        this._router.navigate(['/bienvenido'], { replaceUrl: true });
         break;
       }
     }

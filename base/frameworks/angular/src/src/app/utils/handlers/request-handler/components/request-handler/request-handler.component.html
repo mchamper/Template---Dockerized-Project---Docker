@@ -30,7 +30,7 @@
 
   <ng-container *ngIf="!vm.res">
     <ng-container *ngTemplateOutlet="
-      loadingTpl || (type === 'data' ? defaultLoadingTpl : null) || null;
+      loadingTpl || (['data', 'listAction'].includes(type) ? defaultLoadingTpl : null) || null;
       context: { $implicit: vm.isLoading || false }
     "></ng-container>
 

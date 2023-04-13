@@ -20,7 +20,6 @@ import { ErrorInterceptor } from './interceptors/error.interceptor';
 import { CachingInterceptor } from './interceptors/caching.interceptor';
 import { NzMessageModule } from 'ng-zorro-antd/message';
 import { NzNotificationModule } from 'ng-zorro-antd/notification';
-import { provideEnvironmentNgxMask } from 'ngx-mask';
 import { NgxWebstorageModule } from 'ngx-webstorage';
 import { AuthService } from './services/auth.service';
 import { StorageService } from './services/storage.service';
@@ -30,11 +29,8 @@ import { environment } from 'src/environments/environment';
 import { GoogleTagManagerModule } from 'angular-google-tag-manager';
 import { PixelModule } from 'ngx-pixel';
 import { NzModalModule } from 'ng-zorro-antd/modal';
-import { GoogleLoginProvider, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
+import { provideEnvironmentNgxMask } from 'ngx-mask';
 import { NzConfig, NZ_CONFIG } from 'ng-zorro-antd/core/config';
-
-// import SwiperCore, { Pagination, Navigation, Virtual } from 'swiper';
-// SwiperCore.use([Pagination, Navigation, Virtual]);
 
 registerLocaleData(localeEs, 'es');
 
@@ -62,23 +58,23 @@ const ngZorroConfig: NzConfig = {
     PixelModule.forRoot({ enabled: true, pixelId: environment.fbPixelId }),
   ],
   providers: [
-    {
-      provide: 'SocialAuthServiceConfig',
-      useValue: {
-        autoLogin: true,
-        providers: [
-          {
-            id: GoogleLoginProvider.PROVIDER_ID,
-            provider: new GoogleLoginProvider(environment.authGoogleClientId, {
-              oneTapEnabled: environment.authGuard === 'local',
-            })
-          },
-        ],
-        onError: (err) => {
-          console.error(err);
-        }
-      } as SocialAuthServiceConfig,
-    },
+    // {
+    //   provide: 'SocialAuthServiceConfig',
+    //   useValue: {
+    //     autoLogin: true,
+    //     providers: [
+    //       {
+    //         id: GoogleLoginProvider.PROVIDER_ID,
+    //         provider: new GoogleLoginProvider(environment.authGoogleClientId, {
+    //           oneTapEnabled: environment.authGuard === 'local',
+    //         })
+    //       },
+    //     ],
+    //     onError: (err) => {
+    //       console.error(err);
+    //     }
+    //   } as SocialAuthServiceConfig,
+    // },
     provideEnvironmentNgxMask({ validation: true, thousandSeparator: '.' }),
     { provide: NZ_CONFIG, useValue: ngZorroConfig },
     { provide: LOCALE_ID, useValue: 'es' },

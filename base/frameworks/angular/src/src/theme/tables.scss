@@ -1,0 +1,26 @@
+nz-table {
+  a {
+    text-decoration: none;
+  }
+
+  .ant-table-cell {
+    line-height: 1.25;
+  }
+
+  tr {
+    position: relative;
+
+    .row-deleted {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      left: 0;
+      top: 0;
+      background: rgba(255,255,255,0.75);
+      z-index: 10;
+    }
+  }
+}

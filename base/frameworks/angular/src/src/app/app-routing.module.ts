@@ -5,8 +5,9 @@ import { GoogleTagManagerService } from 'angular-google-tag-manager';
 import { filter } from 'rxjs';
 import { AuthTplComponent } from './components/templates/auth-tpl/auth-tpl.component';
 import { MainTplComponent } from './components/templates/main-tpl/main-tpl.component';
-import { AuthUserIsLoggedInGuard } from './guards/auth-user-is-logged-in.guard';
-import { AuthUserIsNotLoggedInGuard } from './guards/auth-user-is-not-logged-in.guard';
+import { AuthSystemUserIsLoggedInGuard } from './guards/auth-system-user-is-logged-in.guard';
+import { AuthSystemUserIsNotLoggedInGuard } from './guards/auth-system-user-is-not-logged-in.guard';
+import { AuthSystemUserIsVerifiedGuard } from './guards/auth-system-user-is-verified.guard';
 import { RouteService } from './services/route.service';
 import { TaxonomyService } from './taxonomies/taxonomy.service';
 

@@ -17,14 +17,53 @@ export class SystemUserHttpService {
   getList(params: any) {
     const queryParams = parseQueryParams(params);
 
-    return this._httpClient.get(`backend:/api/v1/backoffice/system-users?${queryParams}`, {
+    return this._httpClient.get(`backendLaravel:/api/v1/backoffice/system-users?${queryParams}`, {
+      context: new HttpContext()
+        .set(AUTH_GUARD, 'systemUser')
+    });
+  }
+
+  getOne(systemUserId: number, params: any) {
+    const queryParams = parseQueryParams(params);
+
+    return this._httpClient.get(`backendLaravel:/api/v1/backoffice/system-users/${systemUserId}?${queryParams}`, {
       context: new HttpContext()
         .set(AUTH_GUARD, 'systemUser')
     });
   }
 
   create(input: any) {
-    return this._httpClient.post(`backend:/api/v1/backoffice/system-users`, input, {
+    return this._httpClient.post(`backendLaravel:/api/v1/backoffice/system-users`, input, {
+      context: new HttpContext()
+        .set(AUTH_GUARD, 'systemUser')
+    });
+  }
+
+  update(systemUserId: number, input: any) {
+    return this._httpClient.put(`backendLaravel:/api/v1/backoffice/system-users/${systemUserId}`, input, {
+      context: new HttpContext()
+        .set(AUTH_GUARD, 'systemUser')
+    });
+  }
+
+  delete(systemUserId: number) {
+    return this._httpClient.delete(`backendLaravel:/api/v1/backoffice/system-users/${systemUserId}`, {
+      context: new HttpContext()
+        .set(AUTH_GUARD, 'systemUser')
+    });
+  }
+
+  /* -------------------- */
+
+  activate(systemUserId: number) {
+    return this._httpClient.patch(`backendLaravel:/api/v1/backoffice/system-users/${systemUserId}/activate`, null, {
+      context: new HttpContext()
+        .set(AUTH_GUARD, 'systemUser')
+    });
+  }
+
+  deactivate(systemUserId: number) {
+    return this._httpClient.patch(`backendLaravel:/api/v1/backoffice/system-users/${systemUserId}/deactivate`, null, {
       context: new HttpContext()
         .set(AUTH_GUARD, 'systemUser')
     });

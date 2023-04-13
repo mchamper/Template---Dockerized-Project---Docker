@@ -4,8 +4,23 @@ nz-avatar {
   justify-content: center;
 }
 
-.anticon:not(.ant-input-number-handler-up-inner,.ant-input-number-handler-down-inner,.ant-notification-notice-icon) {
-  position: relative!important;
-  top: -1px!important;
-  vertical-align: unset!important;
+:not(.ant-popover-message) {
+  > .anticon:not(.ant-input-number-handler-up-inner,.ant-input-number-handler-down-inner,.ant-notification-notice-icon) {
+    position: relative !important;
+    top: -1px !important;
+    vertical-align: unset !important;
+  }
+}
+
+.ant-collapse-header {
+  padding: 1rem !important;
+}
+.ant-collapse-content-box {
+  padding: 0 !important;
+}
+
+.headless {
+  .ant-collapse-header {
+    display: none !important;
+  }
 }

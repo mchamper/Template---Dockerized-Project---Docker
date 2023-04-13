@@ -8,9 +8,9 @@
       overflow: hidden;
 
       .nav-link {
-        font-size: var(--app-px-16);
-        font-weight: normal;
-        color: var(--bs-primary);
+        font-size: var(--app-px-14);
+        font-weight: 500;
+        color: var(--bs-secondary);
 
         [nz-icon] {
           margin-right: 0.5rem;
@@ -25,7 +25,7 @@
         left: 0;
         width: 5px;
         height: 100%;
-        background-color: var(--bs-secondary);
+        background-color: var(--bs-primary);
         opacity: 0;
         transform: translateY(101%);
         transition: opacity 0.2s ease, transform 0.2s ease;
@@ -40,7 +40,8 @@
 
       &.active {
         .nav-link {
-          color: var(--bs-secondary);
+          color: var(--bs-primary);
+          font-weight: 700;
         }
       }
     }

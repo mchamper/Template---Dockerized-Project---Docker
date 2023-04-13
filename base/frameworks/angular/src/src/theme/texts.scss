@@ -33,7 +33,7 @@ th {
 /* -------------------- */
 
 a {
-  &.no-link {
+  &.no-link, &.link-styless {
     color: inherit;
     text-decoration: none;
   }

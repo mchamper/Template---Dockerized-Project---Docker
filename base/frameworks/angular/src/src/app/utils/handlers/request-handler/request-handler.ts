@@ -9,7 +9,7 @@ export class RequestHandler {
   res$: BehaviorSubject<IHttpResponse | null> = new BehaviorSubject<IHttpResponse | null>(null);
   err$: BehaviorSubject<IHttpErrorResponse | null> = new BehaviorSubject<IHttpErrorResponse | null>(null);
 
-  constructor() { }
+  constructor(public name?: string) { }
 
   /* -------------------- */
 
