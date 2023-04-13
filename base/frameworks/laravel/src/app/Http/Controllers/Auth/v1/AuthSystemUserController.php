@@ -4,11 +4,10 @@ namespace App\Http\Controllers\Auth\v1;
 
 use App\Commons\Auth\Auth;
 use App\Commons\Response\ErrorEnum;
-use App\Commons\Response\ErrorEnumException;
 use App\Commons\Response\Response;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SystemUser\AuthSystemUserUpdateRequest;
 use App\Http\Requests\SystemUser\SystemUserLoginRequest;
-use App\Http\Requests\SystemUser\SystemUserLoginWithGoogleRequest;
 use App\Http\Requests\SystemUser\SystemUserRegisterRequest;
 use App\Models\SystemUser;
 use App\Repositories\SystemUserRepository;
@@ -17,7 +16,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Laravel\Socialite\Two\User as SocialiteUser;
 
 class AuthSystemUserController extends Controller
 {
@@ -50,10 +48,10 @@ class AuthSystemUserController extends Controller
         $systemUser = SystemUser::whereEmail($validated['email'])->first();
 
         if (!$systemUser || !Hash::check($validated['password'], $systemUser->password)) {
-            throw new ErrorEnumException(ErrorEnum::INVALID_CREDENTIALS_ERROR);
+            ErrorEnum::INVALID_CREDENTIALS_ERROR->throw();
         }
 
-        Auth::systemUserCheck();
+        Auth::systemUserCheck($systemUser);
 
         $expiresAt = Carbon::now()->addMinutes(60);
 
@@ -78,61 +76,6 @@ class AuthSystemUserController extends Controller
         ]);
     }
 
-    public function loginWithGoogle()
-    {
-        $input = request()->post();
-        $validated = Validator::make($input, SystemUserLoginWithGoogleRequest::rules())->validate();
-
-        $googleClient = new Google\Client([
-            'client_id' => config('services.google.client_id'),
-        ]);
-
-        if (!$payload = $googleClient->verifyIdToken($validated['token'])) {
-            throw new ErrorEnumException(ErrorEnum::INVALID_CREDENTIALS_ERROR);
-        }
-
-        $socialUser = (new SocialiteUser)->setRaw($payload)->map([
-            'id' => Arr::get($payload, 'sub'),
-            'name' => Arr::get($payload, 'name'),
-            'email' => Arr::get($payload, 'email'),
-            'avatar' => $avatarUrl = Arr::get($payload, 'picture'),
-            'avatar_original' => $avatarUrl,
-        ]);
-
-        if (!$systemUser = SystemUser::whereEmail($socialUser->getEmail())->first()) {
-            $systemUser = new SystemUser();
-            $systemUser->email = $socialUser->getEmail();
-            $systemUser->socialite_driver = 'google';
-        }
-
-        DB::beginTransaction();
-
-        $systemUser->name = $socialUser->getName();
-        $systemUser->picture = $socialUser->getAvatar();
-        $systemUser->socialite_id = $socialUser->getId();
-        $systemUser->saveOrFail();
-
-        $expiresAt = Carbon::now()->addMinutes(60);
-
-        if ($validated['remember_me']) {
-            $expiresAt = Carbon::now()->addDays(7);
-        }
-
-        $systemUser->tokens()->delete();
-
-        $token = $systemUser->createToken(
-            name: 'app_client|' . Auth::appClient()->id,
-            expiresAt: $expiresAt,
-        );
-
-        DB::commit();
-
-        return Response::json([
-            'data' => $authSystemUser,
-            'token' => $token->plainTextToken,
-        ]);
-    }
-
     public function logout()
     {
         Auth::systemUser()->currentAccessToken()->delete();
@@ -144,5 +87,25 @@ class AuthSystemUserController extends Controller
         return Response::json([
             'data' => Auth::systemUser(),
         ]);
+    }
+
+    public function update()
+    {
+        $input = request()->post();
+        $validated = Validator::make($input, AuthSystemUserUpdateRequest::rules())->validate();
+
+        if (empty($validated['password'])) {
+            $validated = collect($validated)->except(['password'])->toArray();
+        }
+
+        DB::beginTransaction();
+
+        $systemUser = SystemUserRepository::save($validated, Auth::systemUser());
+
+        DB::commit();
+
+        return Response::json([
+            'data' => $systemUser,
+        ], 'Tu usuario ha sido actualizado con éxito.');
     }
 }

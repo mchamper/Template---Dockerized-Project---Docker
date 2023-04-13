@@ -4,7 +4,7 @@ namespace App\Http\Requests\SystemUser;
 
 use App\Http\Requests\BaseRequest;
 
-class SystemUserLoginWithGoogleRequest extends BaseRequest
+class SystemUserUpdateRequest extends BaseRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -14,8 +14,8 @@ class SystemUserLoginWithGoogleRequest extends BaseRequest
     public static function rules(?array $params = []): array
     {
         return [
-            'token' => ['bail', 'required', 'string'],
-            'remember_me' => ['bail', 'nullable', 'boolean'],
+            'first_name' => ['bail', 'required', 'string'],
+            'last_name' => ['bail', 'required', 'string'],
         ];
     }
 }

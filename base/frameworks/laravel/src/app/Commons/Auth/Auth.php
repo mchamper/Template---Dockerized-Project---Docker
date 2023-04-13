@@ -3,7 +3,6 @@
 namespace App\Commons\Auth;
 
 use App\Commons\Response\ErrorEnum;
-use App\Commons\Response\ErrorEnumException;
 use App\Enums\AppClientStatusEnum;
 use App\Enums\SystemUserStatusEnum;
 use App\Models\AppClient;

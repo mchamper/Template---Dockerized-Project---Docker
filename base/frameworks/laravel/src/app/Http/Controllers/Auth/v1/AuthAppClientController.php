@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth\v1;
 
 use App\Commons\Auth\Auth;
 use App\Commons\Response\ErrorEnum;
-use App\Commons\Response\ErrorEnumException;
 use App\Commons\Response\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AppClient\AppClientLoginRequest;
@@ -22,7 +21,7 @@ class AuthAppClientController extends Controller
         $appClient = AppClient::where('key', $validated['key'])->first();
 
         if (!$appClient || !Hash::check($validated['secret'], $appClient->secret)) {
-            throw new ErrorEnumException(ErrorEnum::INVALID_CREDENTIALS_ERROR);
+            ErrorEnum::INVALID_CREDENTIALS_ERROR->throw();
         }
 
         Auth::appClientCheck($appClient);

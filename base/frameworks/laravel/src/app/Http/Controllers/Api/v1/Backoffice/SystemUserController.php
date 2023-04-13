@@ -2,10 +2,18 @@
 
 namespace App\Http\Controllers\Api\v1\Backoffice;
 
+use App\Commons\Auth\Auth;
 use App\Commons\Response\Response;
 use App\Commons\RESTful\RESTful;
+use App\Enums\SystemUserStatusEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SystemUser\SystemUserCreateRequest;
+use App\Http\Requests\SystemUser\SystemUserUpdateRequest;
 use App\Models\SystemUser;
+use App\Repositories\SystemUserRepository;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class SystemUserController extends Controller
 {
@@ -19,5 +27,107 @@ class SystemUserController extends Controller
         return Response::json([
             'system_users' => $systemUsers,
         ]);
+    }
+
+    public function show(int $systemUserId)
+    {
+        $systemUser = (new RESTful(
+            SystemUser::query(),
+            request()->query(),
+        ))->findOrFail($systemUserId);
+
+        return Response::json([
+            'system_user' => $systemUser,
+        ]);
+    }
+
+    public function create()
+    {
+        $input = request()->post();
+        $validated = Validator::make($input, SystemUserCreateRequest::rules())->validate();
+
+        DB::beginTransaction();
+
+        if ($validated['password_input_type'] === 'random') {
+            $randomPassword = Str::password();
+            $validated['password'] = $randomPassword;
+        }
+
+        $systemUser = SystemUserRepository::save($validated);
+        $systemUser->sendVerificationEmail();
+
+        DB::commit();
+
+        return Response::json([
+            'system_user' => $systemUser,
+            'system_user_password' => $randomPassword ?? null,
+        ], 'El usuario ha sido creado con éxito.');
+
+    }
+    public function update(int $systemUserId)
+    {
+        $systemUser = SystemUser::where('id', '!=', Auth::systemUser()->id)->findOrFail($systemUserId);
+
+        $input = request()->post();
+        $validated = Validator::make($input, SystemUserUpdateRequest::rules())->validate();
+
+        DB::beginTransaction();
+
+        $systemUser = SystemUserRepository::save($validated, $systemUser);
+
+        DB::commit();
+
+        return Response::json([
+            'system_user' => $systemUser,
+        ], 'El usuario provisto ha sido actualizado con éxito.');
+    }
+
+    public function delete(int $systemUserId)
+    {
+        $systemUser = SystemUser::where('id', '!=', Auth::systemUser()->id)->findOrFail($systemUserId);
+
+        DB::beginTransaction();
+
+        $systemUser->delete();
+
+        DB::commit();
+
+        return Response::json([
+            'system_user' => $systemUser,
+        ], 'El usuario provisto ha sido eliminado con éxito.');
+    }
+
+    /* -------------------- */
+
+    public function activate(int $systemUserId)
+    {
+        $systemUser = SystemUser::findOrFail($systemUserId);
+
+        DB::beginTransaction();
+
+        $systemUser->status = SystemUserStatusEnum::Active;
+        $systemUser->saveOrFail();
+
+        DB::commit();
+
+        return Response::json([
+            'system_user' => $systemUser,
+        ], 'El usuario provisto ha sido activado con éxito.');
+    }
+
+    public function deactivate(int $systemUserId)
+    {
+        $systemUser = SystemUser::findOrFail($systemUserId);
+
+        DB::beginTransaction();
+
+        $systemUser->status = SystemUserStatusEnum::Inactive;
+        $systemUser->saveOrFail();
+
+        DB::commit();
+
+        return Response::json([
+            'system_user' => $systemUser,
+        ], 'El usuario provisto ha sido desactivado con éxito.');
     }
 }
