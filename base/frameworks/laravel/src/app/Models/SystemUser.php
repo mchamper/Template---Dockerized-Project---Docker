@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\SocialDriverEnum;
 use App\Enums\SystemUserStatusEnum;
 use App\Models\Traits\Auth\AuthTrait;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -34,12 +35,14 @@ class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
 
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'social_driver' => SocialDriverEnum::class,
         'status' => SystemUserStatusEnum::class,
     ];
 
     protected $appends = [
         'full_name',
         'picture',
+        'social_driver_enum',
         'status_enum',
     ];
 
@@ -68,10 +71,17 @@ class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
         );
     }
 
+    public function socialDriverEnum(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->social_driver->value() ?? null,
+        );
+    }
+
     public function statusEnum(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->status->value(),
+            get: fn () => $this->status->value() ?? null,
         );
     }
 }

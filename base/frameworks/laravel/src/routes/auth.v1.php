@@ -13,6 +13,7 @@ Route::middleware(['auth:app_client'])->group(function () {
     /* -------------------- */
     Route::post('/system-user/register', 'AuthSystemUserController@register')->middleware(['throttle:6,1']);
     Route::post('/system-user/login', 'AuthSystemUserController@login');
+    Route::post('/system-user/login/google', 'AuthSystemUserController@loginGoogle');
     Route::post('/system-user/password-reset/request', 'AuthSystemUserPasswordResetController@request')->middleware(['throttle:3,1']);
     Route::patch('/system-user/password-reset/update', 'AuthSystemUserPasswordResetController@update');
 });
