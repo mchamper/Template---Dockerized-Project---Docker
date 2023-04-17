@@ -5,17 +5,21 @@ namespace App\Http\Controllers\Auth\v1;
 use App\Commons\Auth\Auth;
 use App\Commons\Response\ErrorEnum;
 use App\Commons\Response\Response;
+use App\Enums\SocialDriverEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SystemUser\AuthSystemUserUpdateRequest;
+use App\Http\Requests\SystemUser\SystemUserLoginGoogleRequest;
 use App\Http\Requests\SystemUser\SystemUserLoginRequest;
 use App\Http\Requests\SystemUser\SystemUserRegisterRequest;
 use App\Models\SystemUser;
 use App\Repositories\SystemUserRepository;
 use Carbon\Carbon;
+use Google;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Laravel\Socialite\Two\User as SocialUser;
 
 class AuthSystemUserController extends Controller
 {
@@ -73,6 +77,67 @@ class AuthSystemUserController extends Controller
         return Response::json([
             'data' => $systemUser,
             'token' => $token->plainTextToken,
+            // 'token_expires_at' => $expiresAt,
+        ]);
+    }
+
+    public function loginGoogle()
+    {
+        $input = request()->post();
+        $validated = Validator::make($input, SystemUserLoginGoogleRequest::rules())->validate();
+
+        sleep(1);
+
+        $googleClient = new Google\Client([
+            'client_id' => config('services.google.client_id'),
+        ]);
+
+        if (!$payload = $googleClient->verifyIdToken($validated['token'])) {
+            ErrorEnum::INVALID_CREDENTIALS_ERROR->throw();
+        }
+
+        $socialUser = (new SocialUser)->setRaw($payload)->map([
+            'id' => Arr::get($payload, 'sub'),
+            'name' => Arr::get($payload, 'name'),
+            'email' => Arr::get($payload, 'email'),
+            'avatar' => $avatarUrl = Arr::get($payload, 'picture'),
+            'avatar_original' => $avatarUrl,
+        ]);
+
+        if (!$systemUser = SystemUser::whereEmail($socialUser->getEmail())->whereSocialDriver(SocialDriverEnum::Google->value())->first()) {
+            $systemUser = new SystemUser();
+            $systemUser->email = $socialUser->getEmail();
+            $systemUser->social_driver = SocialDriverEnum::Google;
+        } else {
+            Auth::systemUserCheck($systemUser);
+        }
+
+        DB::beginTransaction();
+
+        $expiresAt = Carbon::now()->addHours(12);
+
+        $socialUserRaw = $socialUser->getRaw();
+
+        $systemUser->first_name = $socialUserRaw['given_name'] ?? '';
+        $systemUser->last_name = $socialUserRaw['family_name'] ?? '';
+        $systemUser->email_verified_at = $socialUserRaw['email_verified'] ? now() : null;
+        $systemUser->social_id = $socialUser->getId();
+        $systemUser->social_avatar = $socialUser->getAvatar();
+        $systemUser->saveOrFail();
+
+        $systemUser->tokens()->delete();
+
+        $token = $systemUser->createToken(
+            name: 'app_client|' . Auth::appClient()->id,
+            expiresAt: $expiresAt,
+        );
+
+        DB::commit();
+
+        return Response::json([
+            'data' => $systemUser,
+            'token' => $token->plainTextToken,
+            // 'token_expires_at' => $expiresAt,
         ]);
     }
 
