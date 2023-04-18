@@ -91,7 +91,20 @@ export class AuthService {
 
   isLoggedIn(guard: TGuard = this.guardDefault): boolean {
     const auth = this.guard$(guard).value;
-    return !!auth?.data && (!auth.token || !auth.tokenExpiresAt || auth.tokenExpiresAt < moment());
+
+    if (!auth?.data) {
+      return false;
+    }
+
+    if (!auth?.token) {
+      return false;
+    }
+
+    if (!!auth?.tokenExpiresAt && auth.tokenExpiresAt < moment()) {
+      return false;
+    }
+
+    return true;
   }
   isLoggedIn$(guard: TGuard = this.guardDefault): Observable<boolean> {
     return this.guard$(guard).pipe(map(() => this.isLoggedIn(guard)));

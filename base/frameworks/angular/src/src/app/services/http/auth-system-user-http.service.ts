@@ -49,6 +49,33 @@ export class AuthSystemUserHttpService {
     });
   }
 
+  loginGoogle(input: any) {
+    return this._httpClient.post(`backendLaravel:/auth/v1/system-user/login/google`, input, {
+      context: new HttpContext()
+        .set(AUTH_LOGIN_GUARD, 'systemUser')
+        .set(AUTH_LOGIN, (res: IHttpResponse) => {
+          const data = res.body.data;
+          const token = res.body.token;
+          const tokenExpiresAt = res.body.token_expires_at;
+
+          return {
+            data: {
+              id: data.id,
+              email: data.email,
+              name: data.full_name,
+              isVerified: !!data.email_verified_at,
+              firstName: data.first_name,
+              lastName: data.last_name,
+              picture: data.social_avatar,
+              _raw: data,
+            },
+            token,
+            tokenExpiresAt,
+          };
+        })
+    });
+  }
+
   logout() {
     this._authS.logout('systemUser');
 
