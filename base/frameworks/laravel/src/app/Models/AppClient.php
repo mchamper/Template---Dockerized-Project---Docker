@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\AppClientStatusEnum;
+use App\Models\Traits\AppClient\AppClientTrait;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -13,7 +14,8 @@ class AppClient extends Authenticatable
 {
     use HasFactory,
         HasApiTokens,
-        SoftDeletes;
+        SoftDeletes,
+        AppClientTrait;
 
     protected $hidden = [
         'secret',
@@ -34,7 +36,7 @@ class AppClient extends Authenticatable
     /**
      * Accesors & Mutators.
      */
-    public function statusEnum(): Attribute
+    protected  function statusEnum(): Attribute
     {
         return Attribute::make(
             get: fn () => $this->status->value(),

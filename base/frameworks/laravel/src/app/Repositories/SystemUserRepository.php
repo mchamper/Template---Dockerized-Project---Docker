@@ -24,6 +24,9 @@ class SystemUserRepository extends BaseRepository
             'email',
             'password',
             'picture',
+            'social_id',
+            'social_driver',
+            'social_avatar',
             'status',
             /* -------------------- */
         ], $input, $systemUser);

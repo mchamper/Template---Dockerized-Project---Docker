@@ -34,80 +34,76 @@ class AppClientGenerate extends Command
             [
                 'id' => 1,
                 'name' => 'Root',
-                'key' => '1|local',
-                'secret' => 'local',
                 'scopes' => json_encode('*'),
                 'hosts' => json_encode('*'),
             ],
             [
                 'id' => 10,
-                'name' => 'Api v1 --- Public',
-                'key' => '10|local',
-                'secret' => 'local',
+                'name' => 'Api v1 --- External',
                 'scopes' => json_encode([
-                    'auth/v1/',
-                    'api/v1/public/',
+                    'api/v1/external',
                 ]),
                 'hosts' => json_encode('*'),
             ],
             [
                 'id' => 20,
-                'name' => 'Api v1 --- Private',
-                'key' => '20|local',
-                'secret' => 'local',
+                'name' => 'Api v1 --- Internal',
                 'scopes' => json_encode([
-                    'auth/v1/',
-                    'api/v1/private/',
+                    'api/v1/internal',
                 ]),
                 'hosts' => json_encode([
-                    'example.com',
-                    '*.example.com'
+                    '^https:\/\/example\.com$',
+                    '^https:\/\/(.+)\.example\.com$',
                 ]),
             ],
             [
                 'id' => 30,
-                'name' => 'Api v1 --- Web',
-                'key' => '30|local',
-                'secret' => 'local',
+                'name' => 'Api v1 --- Website',
                 'scopes' => json_encode([
-                    'auth/v1/',
-                    'api/v1/web/',
+                    'api/v1/website',
                 ]),
                 'hosts' => json_encode([
-                    'example.com',
-                    'www.example.com'
+                    '^https:\/\/example\.com$',
+                    '^https:\/\/www\.example\.com$',
                 ]),
             ],
             [
                 'id' => 40,
-                'name' => 'Api v1 --- Mobile',
-                'key' => '40|local',
-                'secret' => 'local',
+                'name' => 'Api v1 --- Webapp',
                 'scopes' => json_encode([
-                    'auth/v1/',
-                    'api/v1/mobile/',
+                    'api/v1/webapp',
                 ]),
                 'hosts' => json_encode([
-                    'localhost',
+                    '^https:\/\/app\.example\.com$',
                 ]),
             ],
             [
                 'id' => 50,
-                'name' => 'Api v1 --- Backoffice',
-                'key' => '50|local',
-                'secret' => 'local',
+                'name' => 'Api v1 --- Mobile',
                 'scopes' => json_encode([
-                    'auth/v1/',
-                    'api/v1/backoffice/',
+                    'api/v1/mobile',
                 ]),
                 'hosts' => json_encode([
-                    'backoffice.example.com'
+                    '^http:\/\/localhost$',
+                ]),
+            ],
+            [
+                'id' => 60,
+                'name' => 'Api v1 --- Backoffice',
+                'scopes' => json_encode([
+                    'api/v1/backoffice',
+                ]),
+                'hosts' => json_encode([
+                    '^https:\/\/backoffice\.example\.com$',
                 ]),
             ],
         ])->map(function ($item) {
             if (!app()->environment('local')) {
                 $item['key'] = Str::random();
                 $item['secret'] = Str::password();
+            } else {
+                $item['key'] = $item['id'] . '|' . 'local';
+                $item['secret'] = 'local';
             }
 
             $this->info($item['name'] . ': Key => "' . $item['key'] . '", Secret => "' . $item['secret'] . '"');

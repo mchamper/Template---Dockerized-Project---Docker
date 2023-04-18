@@ -26,7 +26,7 @@ class AuthAppClientController extends Controller
 
         Auth::appClientCheck($appClient);
 
-        $appClient->tokens()->delete();
+        // $appClient->tokens()->delete();
 
         $token = $appClient->createToken(
             name: '',

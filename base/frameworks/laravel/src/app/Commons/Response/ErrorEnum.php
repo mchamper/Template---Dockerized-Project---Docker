@@ -12,7 +12,8 @@ enum ErrorEnum
     case INVALID_CREDENTIALS_ERROR;
     case INACTIVE_APP_CLIENT_ERROR;
     case INACTIVE_USER_ERROR;
-    case UNAUTHORIZED_SCOPE_ERROR;
+    case PATH_NOT_ALLOWED_ERROR;
+    case ORIGIN_NOT_ALLOWED_ERROR;
     case NO_USER_EMAIL_ERROR;
     case NOT_USER_FOUND_WITH_EMAIL_ERROR;
     case NOT_USER_FOUND_IN_HASH;
@@ -56,16 +57,24 @@ enum ErrorEnum
                     'en' => 'The provided user is not active.',
                 }
             ],
-            self::UNAUTHORIZED_SCOPE_ERROR => [
+            self::PATH_NOT_ALLOWED_ERROR => [
                 'code' => 4,
-                'status' => 401,
+                'status' => 403,
                 'message' => match(Lang::getLocale()) {
-                    'es' => 'El token provisto no puede acceder al endpoint solicitado.',
-                    'en' => 'The provided token cannot access the requested endpoint.',
+                    'es' => 'El endpoint solicitado no está permitido.',
+                    'en' => 'The requested endpoint is not allowed.',
+                }
+            ],
+            self::ORIGIN_NOT_ALLOWED_ERROR => [
+                'code' => 5,
+                'status' => 403,
+                'message' => match(Lang::getLocale()) {
+                    'es' => 'El origen de la petición no está permitido.',
+                    'en' => 'The origin of the request is not allowed.',
                 }
             ],
             self::NO_USER_EMAIL_ERROR => [
-                'code' => 5,
+                'code' => 6,
                 'status' => 400,
                 'message' => match(Lang::getLocale()) {
                     'es' => 'Este usuario no tiene una dirección de correo para enviar.',
@@ -73,7 +82,7 @@ enum ErrorEnum
                 }
             ],
             self::NOT_USER_FOUND_WITH_EMAIL_ERROR => [
-                'code' => 6,
+                'code' => 7,
                 'status' => 404,
                 'message' => match(Lang::getLocale()) {
                     'es' => 'No se ha encontrado ningún usuario con esta dirección de correo.',
@@ -81,7 +90,7 @@ enum ErrorEnum
                 }
             ],
             self::NOT_USER_FOUND_IN_HASH => [
-                'code' => 7,
+                'code' => 8,
                 'status' => 404,
                 'message' => match(Lang::getLocale()) {
                     'es' => 'No se ha encontrado ningún usuario correspondiente a este hash.',
@@ -89,7 +98,7 @@ enum ErrorEnum
                 }
             ],
             self::EXPIRED_HASH_ERROR => [
-                'code' => 8,
+                'code' => 9,
                 'status' => 400,
                 'message' => match(Lang::getLocale()) {
                     'es' => 'Este hash ha expirado.',
@@ -97,7 +106,7 @@ enum ErrorEnum
                 }
             ],
             self::INVALID_HASH_TOKEN_ERROR => [
-                'code' => 9,
+                'code' => 10,
                 'status' => 400,
                 'message' => match(Lang::getLocale()) {
                     'es' => 'El token del hash es incorrecto o ha caducado.',
@@ -105,7 +114,7 @@ enum ErrorEnum
                 }
             ],
             self::ALREADY_VERIFIED_EMAIL_ADDRESS_ERROR => [
-                'code' => 10,
+                'code' => 11,
                 'status' => 400,
                 'message' => match(Lang::getLocale()) {
                     'es' => 'Esta dirección de correo ya ha sido verificada.',

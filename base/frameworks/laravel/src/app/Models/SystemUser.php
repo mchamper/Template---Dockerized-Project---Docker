@@ -64,24 +64,24 @@ class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
         );
     }
 
-    public function picture(): Attribute
+    protected function picture(): Attribute
     {
         return Attribute::make(
             get: fn () => $this->getFirstMediaUrl('picture'),
         );
     }
 
-    public function socialDriverEnum(): Attribute
+    protected function socialDriverEnum(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->social_driver->value() ?? null,
+            get: fn () => $this->social_driver ? $this->social_driver->value() : null,
         );
     }
 
-    public function statusEnum(): Attribute
+    protected function statusEnum(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->status->value() ?? null,
+            get: fn () => $this->status ? $this->status->value() : null,
         );
     }
 }
