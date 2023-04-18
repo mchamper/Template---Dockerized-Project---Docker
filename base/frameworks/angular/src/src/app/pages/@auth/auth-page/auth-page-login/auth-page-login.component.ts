@@ -8,6 +8,8 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { FormModule } from 'src/app/utils/form/components/form.module';
 import { RequestHandlerComponent } from 'src/app/utils/handlers/request-handler/components/request-handler/request-handler.component';
 import { AuthService } from 'src/app/services/auth.service';
+import { SocialAuthService, SocialLoginModule } from '@abacritt/angularx-social-login';
+import { filter, skip } from 'rxjs';
 
 @Component({
   selector: 'app-auth-page-login',
@@ -30,6 +32,7 @@ export class AuthPageLoginComponent implements OnInit, OnDestroy {
   constructor(
     public authS: AuthService,
     private _authSystemUserHttpS: AuthSystemUserHttpService,
+    private _socialAuthService: SocialAuthService,
     private _router: Router,
     private _route: ActivatedRoute,
     private _fb: FormBuilder,
@@ -43,22 +46,14 @@ export class AuthPageLoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    //
-
-    // this._sh.add(
-    //   this._socialAuthService.authState.pipe(
-    //     skip(1),
-    //     filter(socialUser => !!socialUser)
-    //   ).subscribe(async socialUser => {
-    //     // this.authS.login({ data: socialUser });
-
-    //     // this._router.navigateByUrl(this._route.snapshot.queryParamMap.get('redirectTo') || '/', {
-    //     //   replaceUrl: true,
-    //     // });
-
-    //     this.login(socialUser.idToken);
-    //   })
-    // );
+    this._sh.add(
+      this._socialAuthService.authState.pipe(
+        skip(1),
+        filter(socialUser => !!socialUser)
+      ).subscribe(socialUser => {
+        this.loginGoogle(socialUser.idToken);
+      })
+    );
   }
 
   ngOnDestroy(): void {
@@ -74,6 +69,23 @@ export class AuthPageLoginComponent implements OnInit, OnDestroy {
 
     this._sh.add(
       this.form.send(this._authSystemUserHttpS.login(input), {
+        success: (res) => {
+          this._router.navigateByUrl(this._route.snapshot.queryParamMap.get('redirectTo') || '/', {
+            replaceUrl: true,
+          });
+        },
+        reset: true,
+      })?.subscribe()
+    );
+  }
+
+  loginGoogle(token: string): void {
+    const input = {
+      token,
+    };
+
+    this._sh.add(
+      this.form.send(this._authSystemUserHttpS.loginGoogle(input), {
         success: (res) => {
           this._router.navigateByUrl(this._route.snapshot.queryParamMap.get('redirectTo') || '/', {
             replaceUrl: true,

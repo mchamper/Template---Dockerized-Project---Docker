@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use UnitEnum;
 
 abstract class BaseRepository
 {
@@ -65,6 +66,11 @@ abstract class BaseRepository
             }
 
             if (!array_key_exists($key, $input)) {
+                continue;
+            }
+
+            if ($input[$key] instanceof UnitEnum) {
+                $model->$key = $input[$key];
                 continue;
             }
 

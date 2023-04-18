@@ -3,12 +3,10 @@
 namespace App\Commons\Auth;
 
 use App\Commons\Response\ErrorEnum;
-use App\Enums\AppClientStatusEnum;
 use App\Enums\SystemUserStatusEnum;
 use App\Models\AppClient;
 use App\Models\SystemUser;
 use Illuminate\Support\Facades\Auth as BaseAuth;
-use Illuminate\Support\Str;
 
 class Auth extends BaseAuth
 {
@@ -34,13 +32,9 @@ class Auth extends BaseAuth
         }
 
         if ($appClient) {
-            if (!$appClient->status->is(AppClientStatusEnum::Active)) {
-                ErrorEnum::INACTIVE_APP_CLIENT_ERROR->throw();
-            }
-
-            if ($appClient->scopes !== '*' && !Str::startsWith(Str::finish(request()->path(), '/'), $appClient->scopes)) {
-                ErrorEnum::UNAUTHORIZED_SCOPE_ERROR->throw();
-            }
+            $appClient->checkStatus();
+            $appClient->checkHost();
+            $appClient->checkScope();
         }
     }
 

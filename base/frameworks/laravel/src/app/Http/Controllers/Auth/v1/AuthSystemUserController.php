@@ -6,6 +6,7 @@ use App\Commons\Auth\Auth;
 use App\Commons\Response\ErrorEnum;
 use App\Commons\Response\Response;
 use App\Enums\SocialDriverEnum;
+use App\Enums\SystemUserStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SystemUser\AuthSystemUserUpdateRequest;
 use App\Http\Requests\SystemUser\SystemUserLoginGoogleRequest;
@@ -77,7 +78,7 @@ class AuthSystemUserController extends Controller
         return Response::json([
             'data' => $systemUser,
             'token' => $token->plainTextToken,
-            // 'token_expires_at' => $expiresAt,
+            'token_expires_at' => $expiresAt,
         ]);
     }
 
@@ -104,25 +105,30 @@ class AuthSystemUserController extends Controller
             'avatar_original' => $avatarUrl,
         ]);
 
-        if (!$systemUser = SystemUser::whereEmail($socialUser->getEmail())->whereSocialDriver(SocialDriverEnum::Google->value())->first()) {
-            $systemUser = new SystemUser();
-            $systemUser->email = $socialUser->getEmail();
-            $systemUser->social_driver = SocialDriverEnum::Google;
+        $socialUserRaw = $socialUser->getRaw();
+
+        $input = [];
+        $systemUser = SystemUser::whereEmail($socialUser->getEmail())->whereSocialDriver(SocialDriverEnum::Google->value())->first();
+
+        if (!$systemUser) {
+            $input['email'] = $socialUser->getEmail();
+            $input['social_driver'] = SocialDriverEnum::Google;
         } else {
             Auth::systemUserCheck($systemUser);
         }
 
-        DB::beginTransaction();
+        $input['first_name'] = $socialUserRaw['given_name'] ?? '';
+        $input['last_name'] = $socialUserRaw['family_name'] ?? '';
+        $input['social_id'] = $socialUser->getId();
+        $input['social_avatar'] = $socialUser->getAvatar();
 
         $expiresAt = Carbon::now()->addHours(12);
 
-        $socialUserRaw = $socialUser->getRaw();
+        DB::beginTransaction();
 
-        $systemUser->first_name = $socialUserRaw['given_name'] ?? '';
-        $systemUser->last_name = $socialUserRaw['family_name'] ?? '';
+        $systemUser = SystemUserRepository::save($input, $systemUser);
+
         $systemUser->email_verified_at = $socialUserRaw['email_verified'] ? now() : null;
-        $systemUser->social_id = $socialUser->getId();
-        $systemUser->social_avatar = $socialUser->getAvatar();
         $systemUser->saveOrFail();
 
         $systemUser->tokens()->delete();
@@ -137,7 +143,7 @@ class AuthSystemUserController extends Controller
         return Response::json([
             'data' => $systemUser,
             'token' => $token->plainTextToken,
-            // 'token_expires_at' => $expiresAt,
+            'token_expires_at' => $expiresAt,
         ]);
     }
 

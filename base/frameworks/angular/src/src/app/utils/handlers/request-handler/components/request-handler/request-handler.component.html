@@ -30,13 +30,13 @@
 
   <ng-container *ngIf="!vm.res">
     <ng-container *ngTemplateOutlet="
-      loadingTpl || (['data', 'listAction'].includes(type) ? defaultLoadingTpl : null) || null;
+      loadingTpl || (!['form'].includes(type) ? defaultLoadingTpl : null) || null;
       context: { $implicit: vm.isLoading || false }
     "></ng-container>
 
     <ng-template #defaultLoadingTpl let-isLoading>
       <div *ngIf="isLoading" class="interaction-disabled has-content" [class]="theme">
-        <div class="spinner-border text-primary" style="width: 2rem; height: 2rem;" role="status">
+        <div class="spinner-border text-primary" style="width: 1.5rem; height: 1.5rem;" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
       </div>
