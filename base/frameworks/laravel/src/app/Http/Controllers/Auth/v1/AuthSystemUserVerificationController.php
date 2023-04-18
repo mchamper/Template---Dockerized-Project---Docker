@@ -11,7 +11,7 @@ class AuthSystemUserVerificationController extends Controller
 {
     public function request()
     {
-        Auth::systemUser()->requestVerificationEmail(request()->post());
+        Auth::systemUser()->requestVerificationEmail();
 
         return Response::json(null, 'El email de verificación ha sido enviado con éxito.');
     }

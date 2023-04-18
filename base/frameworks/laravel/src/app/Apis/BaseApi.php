@@ -21,6 +21,7 @@ abstract class BaseApi
     /* -------------------- */
 
     public function __construct(
+        protected bool $_retryAll = false,
         protected array $_retryStatusRange = [],
         protected array $_retryStatuses = [],
         protected int $_retryStatus = 0,
@@ -97,6 +98,10 @@ abstract class BaseApi
 
     private function _canTry(Throwable $e): bool
     {
+        if ($this->_retryAll) {
+            return true;
+        }
+
         $status = $this->_throw($e, return: true)->body['status'] ?? null;
 
         if (!empty($this->_retryStatusRange)) {
