@@ -30,7 +30,7 @@ enum ErrorEnum
 
     /* -------------------- */
 
-    public function value(array $args): array
+    public function value(array $args = []): array
     {
         return match($this) {
             self::INVALID_CREDENTIALS_ERROR => [
