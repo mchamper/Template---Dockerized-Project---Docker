@@ -6,7 +6,7 @@ use App\Commons\Response\ErrorException;
 use Carbon\Carbon;
 use Closure;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
@@ -21,6 +21,7 @@ abstract class BaseApi
     /* -------------------- */
 
     public function __construct(
+        protected bool $_retryAll = false,
         protected array $_retryStatusRange = [],
         protected array $_retryStatuses = [],
         protected int $_retryStatus = 0,
@@ -56,15 +57,16 @@ abstract class BaseApi
 
     /* -------------------- */
 
-    protected function _throw(GuzzleException|Throwable|string $e, int $tries = 1, bool $return = false)
+    protected function _throw(ClientException|Throwable|string $e, int $tries = 1, bool $return = false)
     {
         $apiName = class_basename($this);
         $message = 'Ha ocurrido un error con la API "' . $apiName . '"';
         $body = null;
         $exceptionMessage = null;
         $exceptionCode = $e instanceof Throwable ? (int) $e->getCode() : 0;
+        $exceptionCode = $exceptionCode === 401 ? 400 : $exceptionCode;
 
-        if ($e instanceof GuzzleException) {
+        if ($e instanceof ClientException) {
             $body = json_decode((string) $e->getResponse()->getBody(), true);
             $exceptionMessage = $e->getMessage();
         }
@@ -97,6 +99,10 @@ abstract class BaseApi
 
     private function _canTry(Throwable $e): bool
     {
+        if ($this->_retryAll) {
+            return true;
+        }
+
         $status = $this->_throw($e, return: true)->body['status'] ?? null;
 
         if (!empty($this->_retryStatusRange)) {

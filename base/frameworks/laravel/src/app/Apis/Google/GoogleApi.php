@@ -14,7 +14,7 @@ abstract class GoogleApi extends BaseApi
     {
         parent::__construct(
             _maxTries: 3,
-            _retryStatuses: [503]
+            _retryAll: true,
         );
 
         $jsonKey = json_decode(config('services.google.application_credentials'), true);

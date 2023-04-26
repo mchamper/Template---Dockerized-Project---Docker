@@ -2,16 +2,19 @@
 
 namespace App\Commons\Response;
 
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Exception;
 
-class ErrorException extends HttpException
+class ErrorException extends Exception
 {
     public $body;
     public $errorName;
 
     public function __construct(string $message = '', int $code = 400, ?array $body = null, ?string $errorName = 'DEFAULT_ERROR')
     {
-        parent::__construct($code, $message);
+        parent::__construct(
+            message: $message,
+            code: $code
+        );
 
         $this->body = $body;
         $this->errorName = $errorName;

@@ -2,15 +2,15 @@
 
 namespace App\Commons\Response;
 
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Exception;
 
-class ErrorEnumException extends HttpException
+class ErrorEnumException extends Exception
 {
     public function __construct(
         public ErrorEnum $error,
         public array $args = [],
     ) {
 
-        parent::__construct(400);
+        parent::__construct(code: 400);
     }
 }
