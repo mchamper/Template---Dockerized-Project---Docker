@@ -4,16 +4,17 @@ namespace App\Commons\Response;
 
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
 class Error
 {
-    public static function parse(Throwable $e, ?Response $response)
+    public static function parse(Throwable $e, ?Response $response = null)
     {
         $status = $response
             ? $response->getStatusCode()
-            : ($e instanceof HttpException ? $e->getStatusCode() : $e->getCode());
+            : $e->getCode();
+
+        $status = $response->getStatusCode() === 500 ? $e->getCode() : $status;
 
         $message = $e->getMessage();
         $body = $e->body ?? null;
@@ -35,7 +36,7 @@ class Error
             $code = $errorValue['code'] ?? 0;
         }
 
-        return [
+        $error = [
             'time' => round(microtime(true) - LARAVEL_START, 4),
             'status' => $status,
             'message' => $message,
@@ -45,5 +46,7 @@ class Error
             'code' => $code,
             'validation' => $validation,
         ];
+
+        return $error;
     }
 }
