@@ -20,20 +20,11 @@ class Error
         $body = $e->body ?? null;
         $name = $e->errorName ?? 'LARAVEL_DEFAULT_ERROR';
         $exception = class_basename($e);
-        $code = 0;
+        $code = $e instanceof ErrorEnumException ? $e->innerCode : 0;
         $validation = $e instanceof ValidationException ? $e->errors() : null;
 
         if ($status < 200 || $status > 599) {
             $status = 500;
-        }
-
-        if ($e instanceof ErrorEnumException) {
-            $errorValue = $e->error->value($e->args);
-
-            $status = $errorValue['status'] ?? $status;
-            $message = $errorValue['message'];
-            $name = $e->error->name;
-            $code = $errorValue['code'] ?? 0;
         }
 
         $error = [

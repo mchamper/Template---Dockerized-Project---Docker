@@ -2,15 +2,22 @@
 
 namespace App\Commons\Response;
 
-use Exception;
-
-class ErrorEnumException extends Exception
+class ErrorEnumException extends ErrorException
 {
+    public $innerCode;
+
     public function __construct(
         public ErrorEnum $error,
         public array $args = [],
     ) {
 
-        parent::__construct(code: 400);
+        $errorValue = $error->value($args);
+        $this->innerCode = $errorValue['code'];
+
+        parent::__construct(
+            message: $errorValue['message'],
+            code: $errorValue['status'],
+            errorName: $error->name,
+        );
     }
 }
