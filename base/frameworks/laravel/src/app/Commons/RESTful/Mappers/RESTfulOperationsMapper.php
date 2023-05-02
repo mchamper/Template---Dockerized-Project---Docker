@@ -12,7 +12,9 @@ class RESTfulOperationsMapper
         '>' => '>',
         '>eq' => '>=',
         'like' => 'like',
+        'ilike' => 'ilike',
         '!like' => 'not like',
+        '!ilike' => 'not ilike',
     ];
 
     public static function get(String $operation) {
