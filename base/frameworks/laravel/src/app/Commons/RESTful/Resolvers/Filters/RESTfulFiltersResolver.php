@@ -38,13 +38,17 @@ abstract class RESTfulFiltersResolver implements IRESTfulResolver
             case '>':
             case '>eq':
             case 'like':
-            case '!like': {
+            case 'ilike':
+            case '!like':
+            case '!ilike': {
                 $method = $isOr ? 'orWhere' : 'where';
                 return $query->$method($field, RESTfulOperationsMapper::get($operation), $value);
             }
 
             case '-like':
-            case '-!like': {
+            case '-ilike':
+            case '-!like':
+            case '-!ilike': {
                 $operation = Str::replace('-', '', $operation);
                 $method = $isOr ? 'orWhere' : 'where';
 
@@ -52,7 +56,9 @@ abstract class RESTfulFiltersResolver implements IRESTfulResolver
             }
 
             case 'like-':
-            case '!like-': {
+            case 'ilike-':
+            case '!like-':
+            case '!ilike-': {
                 $operation = Str::replace('-', '', $operation);
                 $method = $isOr ? 'orWhere' : 'where';
 
@@ -60,7 +66,9 @@ abstract class RESTfulFiltersResolver implements IRESTfulResolver
             }
 
             case '-like-':
-            case '-!like-': {
+            case '-ilike-':
+            case '-!like-':
+            case '-!ilike-': {
                 $operation = Str::replace('-', '', $operation);
                 $method = $isOr ? 'orWhere' : 'where';
 

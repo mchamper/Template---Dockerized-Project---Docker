@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Enums;
+use Illuminate\Support\Arr;
 
 trait BaseEnum
 {
@@ -29,10 +30,32 @@ trait BaseEnum
         return $names;
     }
 
+    public static function values(): array
+    {
+        $values = [];
+
+        foreach (static::cases() as $case) {
+            $values[] = $case->value;
+        }
+
+        return $values;
+    }
+
     public static function tryFromName(string $name): ?static
     {
         foreach (static::cases() as $case) {
             if ($case->name === $name) {
+                return $case;
+            }
+        }
+
+        return null;
+    }
+
+    public static function tryFromValue($value, string $key = ''): ?static
+    {
+        foreach (static::cases() as $case) {
+            if (Arr::get($case->value(), $key) === $value) {
                 return $case;
             }
         }
