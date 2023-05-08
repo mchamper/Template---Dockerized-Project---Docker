@@ -15,8 +15,9 @@ if [[ ${CMD} = "truncate" ]]; then
 fi
 
 if [[ ${CMD} = "install" ]]; then
+  bash ${THIS} truncate
+
   bash base/bin/docker/run.sh backend "
-    php artisan db:wipe --force
     php artisan migrate --force --seed
   "
 
@@ -53,9 +54,7 @@ if [[ ${CMD} = "export-remote" ]]; then
 fi
 
 if [[ ${CMD} = "import" ]]; then
-  bash base/bin/docker/run.sh backend "
-    php artisan db:wipe
-  "
+  bash ${THIS} truncate
 
   bash base/bin/docker/exec.sh database "
     cd /docker/bin
@@ -63,16 +62,17 @@ if [[ ${CMD} = "import" ]]; then
   "
 
   bash base/bin/docker/run.sh backend "
+    php artisan app-client:generate
+
     php artisan tinker --execute \"
       \DB::table('system_users')
-        ->where('username', 'root')
         ->update([
-          'password' => bcrypt(env('ROOT_PASSWORD', 'root'))
+          'password' => bcrypt('master')
         ])
     \"
-
-    php artisan migrate --force --seed
   "
+
+  bash ${THIS} update
 
   exit
 fi
