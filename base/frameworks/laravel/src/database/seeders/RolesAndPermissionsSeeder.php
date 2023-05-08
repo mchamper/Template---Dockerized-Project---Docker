@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Enums\PermissionEnum;
+use App\Enums\RoleEnum;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -19,31 +19,28 @@ class RolesAndPermissionsSeeder extends Seeder
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        collect([
-            ['id' => 1, 'name' => 'system-user.create'],
-            ['id' => 2, 'name' => 'system-user.update'],
-            ['id' => 3, 'name' => 'system-user.delete'],
-            ['id' => 4, 'name' => 'system-user.activate'],
-            ['id' => 5, 'name' => 'system-user.deactivate'],
-        ])->map(function ($item) {
-            return Arr::add($item, 'guard_name', 'system_user');
+        collect(PermissionEnum::names())->map(function ($item, $key) {
+            return [
+                'id' => $key + 1,
+                'name' => $item,
+                'guard_name' => 'system_user',
+            ];
         })->each(function ($item) {
             DB::table(config('permission.table_names.permissions'))->updateOrInsert(['id' => $item['id']], $item);
         });
 
-        collect([
-            ['id' => 1, 'name' => 'root'],
-            ['id' => 2, 'name' => 'admin'],
-            ['id' => 3, 'name' => 'client'],
-        ])->map(function ($item) {
-            return Arr::add($item, 'guard_name', 'system_user');
+        collect(RoleEnum::names())->map(function ($item, $key) {
+            return [
+                'id' => $key + 1,
+                'name' => $item,
+                'guard_name' => 'system_user',
+            ];
         })->each(function ($item) {
             DB::table(config('permission.table_names.roles'))->updateOrInsert(['id' => $item['id']], $item);
         });
 
         /* -------------------- */
 
-        Role::findByName('root', 'system_user')->givePermissionTo(Permission::all());
-        // Role::findByName('Client', 'system_user')->givePermissionTo(['publish articles', 'unpublish articles']);
+        Role::findByName(RoleEnum::Root->name, 'system_user')->givePermissionTo(Permission::all());
     }
 }
