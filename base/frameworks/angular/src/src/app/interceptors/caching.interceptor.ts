@@ -57,7 +57,7 @@ export class CachingInterceptor implements HttpInterceptor {
     }
 
     return req.method === 'GET' && (false
-      || req.url.startsWith(`${environment.backendLaravelUrl}`)
+      || req.url.startsWith(`${environment.backendUrl}`)
       )
       ;
   }

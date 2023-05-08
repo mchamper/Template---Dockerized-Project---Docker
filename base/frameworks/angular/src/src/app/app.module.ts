@@ -31,6 +31,7 @@ import { PixelModule } from 'ngx-pixel';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { provideEnvironmentNgxMask } from 'ngx-mask';
 import { NzConfig, NZ_CONFIG } from 'ng-zorro-antd/core/config';
+import { GoogleLoginProvider, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
 
 registerLocaleData(localeEs, 'es');
 
@@ -58,23 +59,23 @@ const ngZorroConfig: NzConfig = {
     PixelModule.forRoot({ enabled: true, pixelId: environment.fbPixelId }),
   ],
   providers: [
-    // {
-    //   provide: 'SocialAuthServiceConfig',
-    //   useValue: {
-    //     autoLogin: true,
-    //     providers: [
-    //       {
-    //         id: GoogleLoginProvider.PROVIDER_ID,
-    //         provider: new GoogleLoginProvider(environment.authGoogleClientId, {
-    //           oneTapEnabled: environment.authGuard === 'local',
-    //         })
-    //       },
-    //     ],
-    //     onError: (err) => {
-    //       console.error(err);
-    //     }
-    //   } as SocialAuthServiceConfig,
-    // },
+    {
+      provide: 'SocialAuthServiceConfig',
+      useValue: {
+        autoLogin: true,
+        providers: [
+          {
+            id: GoogleLoginProvider.PROVIDER_ID,
+            provider: new GoogleLoginProvider(environment.authGoogleClientId || '', {
+              oneTapEnabled: false,
+            })
+          },
+        ],
+        onError: (err) => {
+          console.error(err);
+        }
+      } as SocialAuthServiceConfig,
+    },
     provideEnvironmentNgxMask({ validation: true, thousandSeparator: '.' }),
     { provide: NZ_CONFIG, useValue: ngZorroConfig },
     { provide: LOCALE_ID, useValue: 'es' },

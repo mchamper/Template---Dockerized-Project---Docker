@@ -30,7 +30,7 @@ export class RequestInterceptor implements HttpInterceptor {
     context = context.set(URL_ORIGINAL, url);
 
     if (req.url.startsWith('backend:')) {
-      url = environment.backendLaravelUrl + req.url.replace('backend:', '');
+      url = environment.backendUrl + req.url.replace('backend:', '');
       context = req.context.set(URL, 'backend');
     }
 

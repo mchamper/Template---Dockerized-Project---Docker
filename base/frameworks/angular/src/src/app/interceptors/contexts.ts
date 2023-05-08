@@ -4,7 +4,7 @@ import { IHttpErrorResponse } from "./error.interceptor";
 import { IHttpResponse } from "./success.interceptor";
 
 export const URL_ORIGINAL = new HttpContextToken<string | null>(() => null);
-export const URL = new HttpContextToken<'backendNestjs' | 'backendLaravel' | null>(() => null);
+export const URL = new HttpContextToken<'backend' | null>(() => null);
 export const RES = new HttpContextToken<{ body?: string, message?: string } | null>(() => null);
 export const RES_MAP = new HttpContextToken<((res: IHttpResponse) => any) | null>(() => null);
 export const ERR = new HttpContextToken<{ body?: string, message?: string, validation?: string } | null>(() => null);

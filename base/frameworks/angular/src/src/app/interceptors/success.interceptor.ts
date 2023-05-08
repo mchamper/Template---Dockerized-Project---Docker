@@ -9,7 +9,6 @@ export interface IHttpResponse<T1 = any, T2 = any> {
   status: number,
   message: string,
   body: T1,
-  bodyMapped?: T2,
 }
 
 @Injectable()
@@ -53,7 +52,10 @@ export class SuccessInterceptor implements HttpInterceptor {
           }
 
           if (resMapContext) {
-            res.bodyMapped = resMapContext(res);
+            res.body = {
+              ...resMapContext(res),
+              _raw: res.body,
+            };
           }
 
           if (guard) {

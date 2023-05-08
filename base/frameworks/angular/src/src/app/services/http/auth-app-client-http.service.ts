@@ -17,7 +17,7 @@ export class AuthAppClientHttpService {
   /* -------------------- */
 
   login(input: { key: string, secret: string }) {
-    return this._httpClient.post(`backendLaravel:/auth/v1/app-client/login`, input, {
+    return this._httpClient.post(`backend:/auth/v1/app-client/login`, input, {
       context: new HttpContext()
         .set(AUTH_LOGIN, (res: IHttpResponse) => {
           const token = res.body.token;
@@ -35,13 +35,13 @@ export class AuthAppClientHttpService {
   logout() {
     this._authS.logout('appClient');
 
-    return this._httpClient.post(`backendLaravel:/auth/v1/app-client/logout`, null, {
+    return this._httpClient.post(`backend:/auth/v1/app-client/logout`, null, {
       context: new HttpContext()
     });
   }
 
   me() {
-    return this._httpClient.get(`backendLaravel:/auth/v1/app-client/me`, {
+    return this._httpClient.get(`backend:/auth/v1/app-client/me`, {
       context: new HttpContext()
         .set(AUTH_LOGOUT_ON_ERROR, true)
     });

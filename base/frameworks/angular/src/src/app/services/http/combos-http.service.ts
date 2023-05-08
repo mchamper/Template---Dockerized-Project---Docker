@@ -13,7 +13,7 @@ export class CombosHttpService {
   /* -------------------- */
 
   get(concepts: string) {
-    return this._httpClient.get(`backendLaravel:/api/v1/backoffice/combos?concepts=${concepts}`, {
+    return this._httpClient.get(`backend:/api/v1/backoffice/combos?concepts=${concepts}`, {
       context: new HttpContext()
     });
   }

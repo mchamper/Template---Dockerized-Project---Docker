@@ -83,8 +83,8 @@ export class InitService {
     }
     else {
       await firstValueFrom(this._authAppClientHttpS.login({
-        key: environment.backendLaravelAppClientKey,
-        secret: environment.backendLaravelAppClientSecret,
+        key: environment.backendAppClientKey,
+        secret: environment.backendAppClientSecret,
       }));
     }
 

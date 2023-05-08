@@ -9,6 +9,7 @@ export interface IEnvironment {
   backendUrl: string,
   backendAppClientKey: string,
   backendAppClientSecret: string,
-  gtmId: string,
-  fbPixelId: string,
+  authGoogleClientId?: string,
+  gtmId?: string,
+  fbPixelId?: string,
 }
