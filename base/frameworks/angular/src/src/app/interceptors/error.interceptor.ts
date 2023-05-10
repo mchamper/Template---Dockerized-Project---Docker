@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { get } from "lodash";
 import { catchError, Observable, of, tap, throwError } from "rxjs";
 import { AuthService, TGuard } from "../services/auth.service";
-import { AUTH_GUARD, AUTH_LOGIN_GUARD, AUTH_LOGOUT_ON_ERROR, AUTH_UPDATE_GUARD, ERR, ERR_AS_200, URL } from "./contexts";
+import { AUTH_GUARD, AUTH_LOGIN_AS, AUTH_LOGOUT_ON_ERROR, AUTH_UPDATE_AS, ERR, ERR_AS_200, URL } from "./contexts";
 
 export interface IHttpErrorResponse {
   status: number,
@@ -61,8 +61,8 @@ export class ErrorInterceptor implements HttpInterceptor {
           }
 
           if (guard) {
-            const authLoginGuard: TGuard | null = req.context.get(AUTH_LOGIN_GUARD);
-            const authUpdateGuard: TGuard | null = req.context.get(AUTH_UPDATE_GUARD);
+            const authLoginGuard: TGuard | null = req.context.get(AUTH_LOGIN_AS);
+            const authUpdateGuard: TGuard | null = req.context.get(AUTH_UPDATE_AS);
 
             if (error.status === 401 && error.exception === 'AuthenticationException') {
               if (authLoginGuard) this._authS.logout(authLoginGuard);

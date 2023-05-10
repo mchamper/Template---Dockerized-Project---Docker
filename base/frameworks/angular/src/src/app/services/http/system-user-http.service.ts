@@ -22,7 +22,7 @@ export class SystemUserHttpService {
       context: new HttpContext()
         .set(AUTH_GUARD, 'systemUser')
         .set(MAP, res => {
-          res.body.system_users.data = res.body.system_users.data.map((item: any) => new SystemUser(item));
+          res.body.system_users.data = res.body.system_users.data.map((item: any) => new SystemUser(item, 'backend'));
           return res.body;
         })
     });
@@ -34,20 +34,10 @@ export class SystemUserHttpService {
     return this._httpClient.get(`backend:/api/v1/backoffice/system-users/${systemUserId}?${queryParams}`, {
       context: new HttpContext()
         .set(AUTH_GUARD, 'systemUser')
-    });
-  }
-
-  create(input: any) {
-    return this._httpClient.post(`backend:/api/v1/backoffice/system-users`, input, {
-      context: new HttpContext()
-        .set(AUTH_GUARD, 'systemUser')
-    });
-  }
-
-  update(systemUserId: number, input: any) {
-    return this._httpClient.put(`backend:/api/v1/backoffice/system-users/${systemUserId}`, input, {
-      context: new HttpContext()
-        .set(AUTH_GUARD, 'systemUser')
+        .set(MAP, res => {
+          res.body.system_user = new SystemUser(res.body.system_user, 'backend');
+          return res.body;
+        })
     });
   }
 
@@ -55,6 +45,10 @@ export class SystemUserHttpService {
     return this._httpClient.delete(`backend:/api/v1/backoffice/system-users/${systemUserId}`, {
       context: new HttpContext()
         .set(AUTH_GUARD, 'systemUser')
+        .set(MAP, res => {
+          res.body.system_user = new SystemUser(res.body.system_user, 'backend');
+          return res.body;
+        })
     });
   }
 
@@ -64,6 +58,10 @@ export class SystemUserHttpService {
     return this._httpClient.patch(`backend:/api/v1/backoffice/system-users/${systemUserId}/activate`, null, {
       context: new HttpContext()
         .set(AUTH_GUARD, 'systemUser')
+        .set(MAP, res => {
+          res.body.system_user = new SystemUser(res.body.system_user, 'backend');
+          return res.body;
+        })
     });
   }
 
@@ -71,6 +69,10 @@ export class SystemUserHttpService {
     return this._httpClient.patch(`backend:/api/v1/backoffice/system-users/${systemUserId}/deactivate`, null, {
       context: new HttpContext()
         .set(AUTH_GUARD, 'systemUser')
+        .set(MAP, res => {
+          res.body.system_user = new SystemUser(res.body.system_user, 'backend');
+          return res.body;
+        })
     });
   }
 }

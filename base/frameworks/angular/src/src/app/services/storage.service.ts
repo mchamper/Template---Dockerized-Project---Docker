@@ -8,12 +8,22 @@ import { environment } from 'src/environments/environment';
 })
 export class StorageService {
 
-  private _cryptoKey: string = `qwerty.${environment.storageVersion}`;
+  private _cryptoKey: string = environment.storageKey;
 
   constructor(
     public localStorage: LocalStorageService,
     public sessionStorage: SessionStorageService,
-  ) { }
+  ) {
+
+    const storageVersion: number = this.get('storageVersion');
+
+    if (!storageVersion || storageVersion !== environment.storageVersion) {
+      this.clear();
+      this.clearSession();
+
+      this.set('storageVersion', environment.storageVersion);
+    }
+  }
 
   /* -------------------- */
 
@@ -23,11 +33,15 @@ export class StorageService {
       : this.localStorage.retrieve(key);
 
     if (value) {
-      if (options?.encrypt) {
-        value = this._decrypt(value);
-      }
+      try {
+        if (options?.encrypt) {
+          value = this._decrypt(value);
+        }
 
-      value = JSON.parse(value);
+        value = JSON.parse(value);
+      } catch (err) {
+        value = null;
+      }
     }
 
     return value;

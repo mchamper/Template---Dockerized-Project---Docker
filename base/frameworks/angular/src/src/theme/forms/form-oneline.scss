@@ -35,7 +35,8 @@ form[nz-form].form-oneline {
   nz-input-number input,
   nz-select:not(.ant-select-multiple) nz-select-item,
   nz-select:not(.ant-select-multiple) nz-select-search input,
-  nz-date-picker input
+  nz-date-picker input,
+  nz-range-picker input
   {
     @include input-value();
   }
@@ -43,7 +44,8 @@ form[nz-form].form-oneline {
   [nz-input],
   nz-input-number,
   nz-select nz-select-top-control,
-  nz-date-picker
+  nz-date-picker,
+  nz-range-picker
   {
     @include input-styles();
   }
