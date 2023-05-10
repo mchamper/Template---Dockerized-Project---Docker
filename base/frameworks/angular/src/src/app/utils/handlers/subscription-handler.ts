@@ -9,7 +9,9 @@ export class SubscriptionHandler {
 
   /* -------------------- */
 
-  add(s: Subscription | Subscription[], name?: string | number) {
+  add(s?: Subscription | Subscription[], name?: string | number) {
+    if (!s) return;
+
     if (Array.isArray(s)) {
       s.forEach(item => this.add(item));
     } else {

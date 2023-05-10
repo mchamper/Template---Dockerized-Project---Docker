@@ -3,9 +3,9 @@ import { Injectable } from "@angular/core";
 import { get } from "lodash";
 import { map, Observable } from "rxjs";
 import { AuthService, TGuard } from "../services/auth.service";
-import { AUTH_GUARD, AUTH_LOGIN, AUTH_LOGIN_GUARD, AUTH_LOGOUT, AUTH_UPDATE, AUTH_UPDATE_GUARD, RES, RES_MAP, URL } from "./contexts";
+import { AUTH_GUARD, AUTH_LOGIN, AUTH_LOGIN_AS, AUTH_LOGOUT, AUTH_UPDATE, AUTH_UPDATE_AS, RES, MAP, URL } from "./contexts";
 
-export interface IHttpResponse<T1 = any, T2 = any> {
+export interface IHttpResponse<T1 = any> {
   status: number,
   message: string,
   body: T1,
@@ -36,7 +36,7 @@ export class SuccessInterceptor implements HttpInterceptor {
 
           const urlContext = req.context.get(URL);
           const resContext = req.context.get(RES);
-          const resMapContext = req.context.get(RES_MAP);
+          const mapContext = req.context.get(MAP);
 
           if (resContext) {
             res = {
@@ -51,9 +51,9 @@ export class SuccessInterceptor implements HttpInterceptor {
             };
           }
 
-          if (resMapContext) {
+          if (mapContext) {
             res.body = {
-              ...resMapContext(res),
+              ...mapContext(res),
               _raw: res.body,
             };
           }
@@ -65,11 +65,11 @@ export class SuccessInterceptor implements HttpInterceptor {
 
             const authLoginContext = req.context.get(AUTH_LOGIN);
             const authUpdateContext = req.context.get(AUTH_UPDATE);
-            const authLoginGuard: TGuard | null = req.context.get(AUTH_LOGIN_GUARD);
-            const authUpdateGuard: TGuard | null = req.context.get(AUTH_UPDATE_GUARD);
+            const authLoginAs: TGuard | null = req.context.get(AUTH_LOGIN_AS);
+            const authUpdateAs: TGuard | null = req.context.get(AUTH_UPDATE_AS);
 
-            if (authLoginGuard) guard = authLoginGuard;
-            if (authUpdateGuard) guard = authUpdateGuard;
+            if (authLoginAs) guard = authLoginAs;
+            if (authUpdateAs) guard = authUpdateAs;
 
             if (authLoginContext) {
               this._authS.login(authLoginContext(res), guard);

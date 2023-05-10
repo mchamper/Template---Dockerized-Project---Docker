@@ -1,33 +1,33 @@
 .fw-lighter {
-  @include app-ff-nunitosans-l();
+  @include app-ff-primary-l();
 }
 
 .fw-light {
-  @include app-ff-nunitosans-l();
+  @include app-ff-primary-l();
 }
 
 .fw-normal {
-  @include app-ff-nunitosans-r();
+  @include app-ff-primary-r();
 }
 
 .fw-bold,
 strong,
 th {
-  @include app-ff-nunitosans-b();
+  @include app-ff-primary-b();
 }
 
 .fw-bolder {
-  @include app-ff-nunitosans-eb();
+  @include app-ff-primary-eb();
 }
 
 .fw-bolderest {
-  @include app-ff-nunitosans-eb();
+  @include app-ff-primary-eb();
 }
 
 /* -------------------- */
 
 .fw-default {
-  @include app-ff-nunitosans-r();
+  @include app-ff-primary-r();
 }
 
 /* -------------------- */

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { SharedModule } from 'src/app/shared.module';
-import { FormModule } from 'src/app/utils/form/components/form.module';
+import { FormModule } from 'src/app/utils/form/form.module';
 
 @Component({
   selector: 'app-searchbar',

@@ -248,49 +248,9 @@ export class Form {
 
   /* -------------------- */
 
-  getLocalError(key: string | any[], messages?: any): string {
-    let group = this.group;
-
-    if (Array.isArray(key)) {
-      group = key[1];
-      key = key[0];
-    }
-
-    for (const errorKey in group.get(key)?.errors) {
-      if (messages && messages[errorKey]) {
-        return messages[errorKey];
-      }
-
-      if (formValidatorMessages[errorKey]) {
-        const message: any = formValidatorMessages[errorKey];
-
-        if (errorKey === 'mask') {
-          const mask = (group.get(key)?.errors as any)[errorKey].requiredMask;
-          return message(mask);
-        }
-
-        return message;
-      }
-    }
-
-    return '';
-  }
-
-  getError(key: string | any[], localFirst: boolean = true): string {
-    let group = this.group;
-
-    if (Array.isArray(key)) {
-      group = key[1];
-      key = key[0];
-    }
-
-    const error = group.get(key)?.getError('apiError');
-
-    if (localFirst) {
-      return this.getLocalError(key) || error;
-    }
-
-    return error;
+  getError(key: string, group?: FormGroup): string {
+    group = group || this.group;
+    return group.get(key)?.getError('error');
   }
 
   setErrors(errors: any = null): void {
@@ -306,7 +266,7 @@ export class Form {
 
         if (control) {
           control.markAsDirty();
-          control.setErrors({ apiError: errors[key] });
+          control.setErrors({ error: errors[key] });
         }
       }
     }

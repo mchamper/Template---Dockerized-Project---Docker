@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { SharedModule } from 'src/app/shared.module';
-import { FormModule } from 'src/app/utils/form/components/form.module';
+import { FormModule } from 'src/app/utils/form/form.module';
 import { RequestHandlerComponent } from 'src/app/utils/handlers/request-handler/components/request-handler/request-handler.component';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { Form } from 'src/app/utils/form/form';
 import { SubscriptionHandler } from 'src/app/utils/handlers/subscription-handler';
 import { AuthSystemUserPasswordResetHttpService } from 'src/app/services/http/auth-system-user-password-reset-http.service';
 import { FormBuilder, Validators } from '@angular/forms';
+import { authPasswordResetRequestFormMock } from 'src/app/mocks/auth-password-reset-request-form.mock';
 
 @Component({
   selector: 'app-auth-page-password-reset-request',
@@ -33,8 +34,10 @@ export class AuthPagePasswordResetRequestComponent implements OnInit, OnDestroy 
   ) {
 
     this.form = new Form(this._fb.group({
-      email: ['marcelo@trescientosuno.com.ar', [Validators.required, Validators.email]],
-    }));
+      email: ['', [Validators.required, Validators.email]],
+    }), {
+      mock: authPasswordResetRequestFormMock(),
+    });
   }
 
   ngOnInit(): void {

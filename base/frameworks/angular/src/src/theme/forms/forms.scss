@@ -1,0 +1,212 @@
+form[nz-form] {
+  --default-input-height: var(--app-px-32);
+
+  --label-font-size: var(--app-px-14);
+  --input-font-size: var(--app-px-14);
+  --input-height: var(--default-input-height);
+  --input-padding-top: 4px;
+  --input-padding-bottom: 4px;
+
+  &.floating-label {
+    --input-height: calc(var(--default-input-height) * 1.5);
+    --input-padding-top: calc(var(--label-font-size) * 1.4);
+  }
+
+  @mixin input-height($offset: 0px) {
+    height: calc(var(--input-height) - $offset) !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  @mixin input-min-height($offset: 0px) {
+    min-height: calc(var(--input-height) - $offset) !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  @mixin input-padding {
+    padding-top: var(--input-padding-top) !important;
+    padding-bottom: var(--input-padding-bottom) !important;
+  }
+
+  @mixin input-height-with-padding($offset: 0px) {
+    height: calc(var(--input-height) - $offset) !important;
+    @include input-padding();
+  }
+
+  @mixin input-min-height-with-padding($offset: 0px) {
+    min-height: calc(var(--input-height) - $offset) !important;
+    @include input-padding();
+  }
+
+  /* -------------------- */
+
+  nz-form-item {
+    position: relative;
+  }
+
+  nz-form-label {
+    label {
+      font-size: var(--label-font-size);
+    }
+  }
+
+  [disabled] {
+    color: var(--bs-gray-500) !important;
+  }
+
+  .ant-form-item-with-help {
+    margin-bottom: 24px;
+  }
+
+  .ant-form-item-explain {
+    position: absolute;
+    top: 100%;
+    z-index: 100;
+
+    .ant-form-item-explain-error {
+      display: inline-block;
+      position: relative;
+      background: white;
+      padding: 0.125rem 0.5rem;
+      font-size: var(--app-px-13);
+      line-height: 1.25;
+      color: var(--bs-danger);
+      box-shadow: 0 0 5px rgba(0,0,0,0.25);
+      border-radius: 0.125rem;
+      transform: translate(11px, -5px);
+    }
+  }
+
+  /* -------------------- */
+
+  input[nz-input] {
+    @include input-height-with-padding();
+    font-size: var(--input-font-size);
+  }
+
+  textarea[nz-input] {
+    @include input-min-height-with-padding();
+    font-size: var(--input-font-size);
+  }
+
+  nz-input-number {
+    @include input-height-with-padding();
+    width: 100%;
+
+    input {
+      height: auto;
+      font-size: var(--input-font-size);
+      line-height: 1;
+    }
+  }
+
+  nz-select {
+    display: flex;
+    align-items: center;
+
+    &:not(.ant-select-multiple) {
+      nz-select-top-control {
+        @include input-height-with-padding();
+        width: 100%;
+        align-items: center;
+
+        nz-select-search {
+          input {
+            @include input-height-with-padding(2px);
+            font-size: var(--input-font-size);
+          }
+        }
+
+        nz-select-item {
+          font-size: var(--input-font-size);
+        }
+      }
+    }
+
+    &.ant-select-multiple {
+      nz-select-top-control {
+        min-height: var(--input-height);
+        width: 100%;
+        overflow: hidden;
+
+        &::after {
+          display: none;
+        }
+
+        nz-select-search {
+          input {
+            font-size: var(--input-font-size);
+          }
+        }
+
+        nz-select-item {
+          font-size: var(--input-font-size);
+          height: calc(var(--input-font-size) + 6px);
+          line-height: calc(var(--input-font-size) + 4px);
+        }
+      }
+    }
+  }
+
+  nz-date-picker {
+    @include input-height-with-padding();
+    width: 100%;
+
+    input {
+      font-size: var(--input-font-size);
+    }
+  }
+
+  nz-range-picker {
+    @include input-height-with-padding();
+    width: 100%;
+
+    input {
+      font-size: var(--input-font-size);
+    }
+  }
+
+  /* -------------------- */
+  /* -------------------- */
+  /* -------------------- */
+
+  &.floating-label {
+    nz-form-label {
+      pointer-events: none;
+      position: absolute;
+      top: 8px;
+      left: 11px;
+      padding: 0 !important;
+      line-height: 1;
+      z-index: 10;
+      transform-origin: top left;
+      transition: all 0.2s ease;
+      transform: scale(0.85);
+
+      label {
+        font-weight: bold;
+      }
+
+      &.floating {
+        top: calc(var(--input-height) / 2);
+        transform: translateY(-50%);
+      }
+    }
+
+    input::placeholder {
+      color: transparent;
+    }
+
+    nz-select {
+      &.ant-select-multiple {
+        nz-select-top-control {
+          padding-top: calc(var(--input-padding-top) - 1px) !important;
+        }
+      }
+    }
+  }
+}
+
+@import "form-default.scss";
+@import "form-oneline.scss";

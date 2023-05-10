@@ -1,33 +1,53 @@
 import { ViewportScroller } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { Event, Router, RouterModule, Routes, Scroll } from '@angular/router';
-import { GoogleTagManagerService } from 'angular-google-tag-manager';
 import { filter } from 'rxjs';
 import { AuthTplComponent } from './components/templates/auth-tpl/auth-tpl.component';
 import { MainTplComponent } from './components/templates/main-tpl/main-tpl.component';
-import { AuthSystemUserIsLoggedInGuard } from './guards/auth-system-user-is-logged-in.guard';
-import { AuthSystemUserIsNotLoggedInGuard } from './guards/auth-system-user-is-not-logged-in.guard';
-import { AuthSystemUserIsVerifiedGuard } from './guards/auth-system-user-is-verified.guard';
+import { authSystemUserIsLoggedInGuard } from './guards/auth-system-user-is-logged-in.guard';
+import { authSystemUserIsNotLoggedInGuard } from './guards/auth-system-user-is-not-logged-in.guard';
+import { authSystemUserIsVerifiedGuard } from './guards/auth-system-user-is-verified.guard';
 import { RouteService } from './services/route.service';
 import { TaxonomyService } from './taxonomies/taxonomy.service';
+// import { GoogleTagManagerService } from 'angular-google-tag-manager';
 
 const routes: Routes = [
   {
     path: '',
     component: MainTplComponent,
-    canActivateChild: [AuthSystemUserIsLoggedInGuard],
+    canActivateChild: [authSystemUserIsLoggedInGuard()],
     children: [
       {
         path: '',
-        canActivateChild: [AuthSystemUserIsVerifiedGuard],
+        canActivateChild: [authSystemUserIsVerifiedGuard()],
         children: [
-          { path: '', loadComponent: () => import('./pages/home-page/home-page.component'), data: { name: 'HomePage' } },
-          { path: 'usuarios', loadComponent: () => import('./pages/system-users-page/system-users-page.component'), data: { name: 'SystemUsersPage' } },
-          { path: 'usuarios/crear', loadComponent: () => import('./pages/system-user-create-page/system-user-create-page.component'), data: { name: 'SystemUserCreatePage' } },
-          { path: 'usuarios/:systemUserId', loadComponent: () => import('./pages/system-user-detail-page/system-user-detail-page.component'), data: { name: 'SystemUserDetailPage' } },
+          {
+            path: '',
+            loadComponent: () => import('./pages/home-page/home-page.component'),
+            data: { name: 'HomePage' }
+          },
+          {
+            path: 'usuarios',
+            loadComponent: () => import('./pages/system-users-page/system-users-page.component'),
+            data: { name: 'SystemUsersPage', permissions: ['SystemUserGet', 'SystemUserUpdate'] }
+          },
+          {
+            path: 'usuarios/crear',
+            loadComponent: () => import('./pages/system-user-create-page/system-user-create-page.component'),
+            data: { name: 'SystemUserCreatePage', permissions: ['SystemUserCreate'] },
+          },
+          {
+            path: 'usuarios/:systemUserId',
+            loadComponent: () => import('./pages/system-user-detail-page/system-user-detail-page.component'),
+            data: { name: 'SystemUserDetailPage', permissions: ['SystemUserGet', 'SystemUserUpdate'] }
+          },
         ],
       },
-      { path: 'cuenta', loadComponent: () => import('./pages/account-page/account-page.component'), data: { name: 'AccountPage' } },
+      {
+        path: 'cuenta',
+        loadComponent: () => import('./pages/account-page/account-page.component'),
+        data: { name: 'AccountPage' }
+      },
     ],
     data: { groupName: 'MainTpl' }
   },
@@ -35,14 +55,27 @@ const routes: Routes = [
   {
     path: '',
     component: AuthTplComponent,
-    canActivateChild: [AuthSystemUserIsNotLoggedInGuard],
+    canActivateChild: [authSystemUserIsNotLoggedInGuard()],
     children: [
-      { path: 'bienvenido', loadComponent: () => import('./pages/@auth/auth-page/auth-page.component'), data: { name: 'AuthPage' } },
+      {
+        path: 'bienvenido',
+        loadComponent: () => import('./pages/@auth/auth-page/auth-page.component'),
+        data: { name: 'AuthPage' }
+      },
     ],
     data: { groupName: 'AuthTpl' }
   },
   /* -------------------- */
-  { path: '**', loadComponent: () => import('./pages/@errors/not-found-page/not-found-page.component'), data: { name: 'ErrorNotFoundPage' } },
+  {
+    path: 'forbidden',
+    loadComponent: () => import('./pages/@errors/forbidden-page/forbidden-page.component'),
+    data: { name: 'ErrorForbiddenPage' }
+  },
+  {
+    path: '**',
+    loadComponent: () => import('./pages/@errors/not-found-page/not-found-page.component'),
+    data: { name: 'ErrorNotFoundPage' }
+  },
 ];
 
 @NgModule({
@@ -50,7 +83,7 @@ const routes: Routes = [
     initialNavigation: 'enabledBlocking',
     // Esta opción no restaura el scroll cuando se refresca la página.
     // scrollPositionRestoration: 'enabled',
-})],
+  })],
   exports: [RouterModule]
 })
 export class AppRoutingModule {
@@ -59,8 +92,8 @@ export class AppRoutingModule {
     viewportScroller: ViewportScroller,
     router: Router,
     routeS: RouteService,
-    gtmService: GoogleTagManagerService,
     taxonomyS: TaxonomyService,
+    // gtmService: GoogleTagManagerService,
   ) {
 
     router.events.pipe(
@@ -81,10 +114,10 @@ export class AppRoutingModule {
     routeS.currentPage$.subscribe((value) => {
       taxonomyS.resolve(value);
 
-      gtmService.pushTag({
-        event: 'page',
-        pageName: value.url
-      });
+      // gtmService.pushTag({
+      //   event: 'page',
+      //   pageName: value.url
+      // });
     });
   }
 }

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpContext } from '@angular/common/http';
-import { AUTH_LOGIN, AUTH_GUARD, AUTH_UPDATE, AUTH_LOGIN_GUARD, AUTH_LOGOUT, AUTH_LOGOUT_ON_ERROR } from 'src/app/interceptors/contexts';
+import { AUTH_LOGIN, AUTH_GUARD, AUTH_UPDATE, AUTH_LOGIN_AS, AUTH_LOGOUT, AUTH_LOGOUT_ON_ERROR } from 'src/app/interceptors/contexts';
 import { IHttpResponse } from 'src/app/interceptors/success.interceptor';
 import { AuthService } from '../auth.service';
+import { SystemUser } from 'src/app/models/system-user';
 
 @Injectable({
   providedIn: 'root'
@@ -25,23 +26,14 @@ export class AuthSystemUserHttpService {
   login(input: { email: string, password: string, remember_me: boolean }) {
     return this._httpClient.post(`backend:/auth/v1/system-user/login`, input, {
       context: new HttpContext()
-        .set(AUTH_LOGIN_GUARD, 'systemUser')
+        .set(AUTH_LOGIN_AS, 'systemUser')
         .set(AUTH_LOGIN, (res: IHttpResponse) => {
-          const data = res.body.data;
+          const systemUser = new SystemUser(res.body.data, 'backend');
           const token = res.body.token;
           const tokenExpiresAt = res.body.token_expires_at;
 
           return {
-            data: {
-              id: data.id,
-              email: data.email,
-              name: data.full_name,
-              isVerified: !!data.email_verified_at,
-              firstName: data.first_name,
-              lastName: data.last_name,
-              picture: data.picture,
-              _raw: data,
-            },
+            data: systemUser.getParsedForAuthData(),
             token,
             tokenExpiresAt,
           };
@@ -52,23 +44,14 @@ export class AuthSystemUserHttpService {
   loginGoogle(input: any) {
     return this._httpClient.post(`backend:/auth/v1/system-user/login/google`, input, {
       context: new HttpContext()
-        .set(AUTH_LOGIN_GUARD, 'systemUser')
+        .set(AUTH_LOGIN_AS, 'systemUser')
         .set(AUTH_LOGIN, (res: IHttpResponse) => {
-          const data = res.body.data;
+          const systemUser = new SystemUser(res.body.data, 'backend');
           const token = res.body.token;
           const tokenExpiresAt = res.body.token_expires_at;
 
           return {
-            data: {
-              id: data.id,
-              email: data.email,
-              name: data.full_name,
-              isVerified: !!data.email_verified_at,
-              firstName: data.first_name,
-              lastName: data.last_name,
-              picture: data.social_avatar,
-              _raw: data,
-            },
+            data: systemUser.getParsedForAuthData(),
             token,
             tokenExpiresAt,
           };
@@ -91,18 +74,8 @@ export class AuthSystemUserHttpService {
         .set(AUTH_GUARD, 'systemUser')
         .set(AUTH_LOGOUT_ON_ERROR, true)
         .set(AUTH_UPDATE, (res: IHttpResponse) => {
-          const data = res.body.data;
-
-          return {
-            id: data.id,
-            email: data.email,
-            name: data.full_name,
-            isVerified: !!data.email_verified_at,
-            firstName: data.first_name,
-            lastName: data.last_name,
-            picture: data.picture,
-            _raw: data,
-          };
+          const systemUser = new SystemUser(res.body.data, 'backend');
+          return systemUser.getParsedForAuthData();
         })
     });
   }
@@ -114,18 +87,8 @@ export class AuthSystemUserHttpService {
       context: new HttpContext()
         .set(AUTH_GUARD, 'systemUser')
         .set(AUTH_UPDATE, (res: IHttpResponse) => {
-          const data = res.body.data;
-
-          return {
-            id: data.id,
-            email: data.email,
-            name: data.full_name,
-            isVerified: !!data.email_verified_at,
-            firstName: data.first_name,
-            lastName: data.last_name,
-            picture: data.picture,
-            _raw: data,
-          };
+          const systemUser = new SystemUser(res.body.data, 'backend');
+          return systemUser.getParsedForAuthData();
         })
     });
   }

@@ -18,7 +18,7 @@ export class FormValidators {
   static email(control: FormControl<string>): { [key: string]: boolean } {
     const regex = /(.+)@(.+)\.(.{2,})/;
 
-    if (!regex.test(control.value)) {
+    if (!!control.value && !regex.test(control.value)) {
       return { _email: true };
     }
 

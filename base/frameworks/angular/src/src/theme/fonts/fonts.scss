@@ -1,7 +1,8 @@
-@import "nunitosans.scss";
-@import "hoggax-icons.scss";
+@import "primary.scss";
+@import "secondary.scss";
+@import "app-icons.scss";
 
-[class^="hoggax-icon-"], [class*=" hoggax-icon-"] {
+[class^="app-icon-"], [class*=" app-icon-"] {
   &.icon-fw {
     width: 2rem;
     display: inline-block;

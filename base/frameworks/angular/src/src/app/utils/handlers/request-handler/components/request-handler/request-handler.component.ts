@@ -22,7 +22,7 @@ export class RequestHandlerComponent implements OnInit {
   @Input() form!: Form;
   @Input() list!: List;
   @Input() listAction!: Form;
-  @Input() type: 'data' | 'form' | 'listAction' | 'button' = 'data';
+  @Input() type: 'data' | 'form' | 'listAction' | 'button' | 'loading' = 'data';
   @Input() theme: 'light' | 'dark' = 'light';
   @Input() errorInfo: boolean = true;
 

@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpContext } from '@angular/common/http';
-import { AUTH_GUARD } from 'src/app/interceptors/contexts';
+import { AUTH_GUARD, MAP } from 'src/app/interceptors/contexts';
 import { parseQueryParams } from 'src/app/helper';
+import { SystemUser } from 'src/app/models/system-user';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,10 @@ export class SystemUserHttpService {
     return this._httpClient.get(`backend:/api/v1/backoffice/system-users?${queryParams}`, {
       context: new HttpContext()
         .set(AUTH_GUARD, 'systemUser')
+        .set(MAP, res => {
+          res.body.system_users.data = res.body.system_users.data.map((item: any) => new SystemUser(item));
+          return res.body;
+        })
     });
   }
 

@@ -5,11 +5,12 @@ import { SubscriptionHandler } from 'src/app/utils/handlers/subscription-handler
 import { AuthSystemUserHttpService } from 'src/app/services/http/auth-system-user-http.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, Validators } from '@angular/forms';
-import { FormModule } from 'src/app/utils/form/components/form.module';
+import { FormModule } from 'src/app/utils/form/form.module';
 import { RequestHandlerComponent } from 'src/app/utils/handlers/request-handler/components/request-handler/request-handler.component';
 import { AuthService } from 'src/app/services/auth.service';
 import { SocialAuthService, SocialLoginModule } from '@abacritt/angularx-social-login';
 import { filter, skip } from 'rxjs';
+import { authLoginFormMock } from 'src/app/mocks/auth-login-form.mock';
 
 @Component({
   selector: 'app-auth-page-login',
@@ -17,6 +18,7 @@ import { filter, skip } from 'rxjs';
   imports: [
     SharedModule,
     FormModule,
+    SocialLoginModule,
     RequestHandlerComponent
   ],
   templateUrl: './auth-page-login.component.html',
@@ -39,10 +41,12 @@ export class AuthPageLoginComponent implements OnInit, OnDestroy {
   ) {
 
     this.form = new Form(this._fb.group({
-      email: ['marcelo@trescientosuno.com.ar', [Validators.required]],
-      password: ['123123', [Validators.required]],
-      remember_me: [true, [Validators.required]],
-    }));
+      email: ['', [Validators.required]],
+      password: ['', [Validators.required]],
+      remember_me: [false, [Validators.required]],
+    }), {
+      mock: authLoginFormMock(),
+    });
   }
 
   ngOnInit(): void {

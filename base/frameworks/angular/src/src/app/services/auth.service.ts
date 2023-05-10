@@ -1,15 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { isArray } from 'lodash';
 import * as moment from 'moment';
 import { Moment } from 'moment';
 import { BehaviorSubject, map, Observable, skip } from 'rxjs';
 import { StorageService } from './storage.service';
-
-export interface IAuthLoginContext {
-  data: string,
-  token?: string,
-  tokenExpiresAt?: string,
-}
+import { RouteService } from './route.service';
 
 export interface IAuth {
   data: {
@@ -20,6 +16,8 @@ export interface IAuth {
     firstName?: string,
     lastName?: string,
     picture?: string,
+    roles?: string[],
+    permissions?: string[],
     _raw?: any,
   },
   token: string,
@@ -40,6 +38,7 @@ export class AuthService {
 
   constructor(
     private _router: Router,
+    private _routeS: RouteService,
     private _storageS: StorageService,
   ) {
 
@@ -67,6 +66,14 @@ export class AuthService {
   }
   data$(guard: TGuard = this.guardDefault): Observable<IAuth['data'] | undefined> {
     return this.guard$(guard).pipe(map(() => this.data(guard)));
+  }
+
+  raw<T = any>(guard: TGuard = this.guardDefault): T | undefined {
+    if (!this.isLoggedIn(guard)) return;
+    return this.guard$(guard).value?.data._raw;
+  }
+  raw$<T = any>(guard: TGuard = this.guardDefault): Observable<T | undefined> {
+    return this.guard$(guard).pipe(map(() => this.raw(guard)));
   }
 
   /* -------------------- */
@@ -137,11 +144,43 @@ export class AuthService {
       }
 
       case 'systemUser': {
-        this._router.navigate(['/bienvenido'], { replaceUrl: true });
+        this._router.navigate(['/bienvenido'], {
+          replaceUrl: true,
+          queryParams: {
+            redirectTo: `${this._routeS.currentPage$.value.url || '/'}`
+          },
+        });
+
         break;
       }
     }
 
     if (cb) cb();
+  }
+
+  /* -------------------- */
+
+  hasRole(roles: string | string[], matchAll: boolean = true, guard: TGuard = this.guardDefault): boolean {
+    const auth = this.guard$(guard).value;
+
+    if (!isArray(roles)) {
+      roles = [roles];
+    }
+
+    return roles[matchAll ? 'every' : 'some'](role => {
+      return auth?.data.roles?.some(item => item === role) || false;
+    });
+  }
+
+  can(permissions: string | string[], matchAll: boolean = true, guard: TGuard = this.guardDefault): boolean {
+    const auth = this.guard$(guard).value;
+
+    if (!isArray(permissions)) {
+      permissions = [permissions];
+    }
+
+    return permissions[matchAll ? 'every' : 'some'](permission => {
+      return auth?.data.permissions?.some(item => item === permission) || false;
+    });
   }
 }

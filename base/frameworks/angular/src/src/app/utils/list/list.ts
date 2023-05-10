@@ -2,7 +2,7 @@ import { EventEmitter, inject } from "@angular/core";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import { difference, get, isEqual, xor } from "lodash";
 import { NzTableQueryParams } from "ng-zorro-antd/table";
-import { BehaviorSubject, debounceTime, distinctUntilChanged, Observable, of, skip, Subscription, tap } from "rxjs";
+import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, Observable, of, skip, Subscription, tap } from "rxjs";
 import { Form } from "../form/form";
 import { RequestHandler } from "../handlers/request-handler/request-handler";
 import { scrollTo, stringToObject } from "src/app/helper";
@@ -82,6 +82,27 @@ export class List<T = any> {
 
   /* -------------------- */
 
+  private _resolveQueryParams(page: number): any {
+    let queryParams;
+
+    if (this._setPageMethod !== 'NoPage') {
+      queryParams = {
+        page,
+        limit: this.limit,
+        sort: this.sort,
+        moreFilters: this.moreFiltersControl.value,
+        ...this.filters.getValuesForQueryParams(),
+      };
+    } else {
+      queryParams = {
+        moreFilters: this.moreFiltersControl.value,
+        ...this.filters.getValuesForQueryParams(),
+      };
+    }
+
+    return queryParams;
+  }
+
   init(
     getList: (page: number, reset: boolean) => any,
     options?: {
@@ -95,37 +116,28 @@ export class List<T = any> {
       this.filters.setValuesFromQueryParams(this._route.snapshot.queryParams);
       this.moreFiltersControl.setValue(!!this._route.snapshot.queryParams['moreFilters']);
 
-      subscriptions.push(this.changes$.pipe(skip(this._setPageMethod !== 'NoPage' ? 1 : 0)).subscribe(({ page, reset, refresh }) => {
+      // subscriptions.push(this.changes$.pipe(skip(this._setPageMethod !== 'NoPage' ? 1 : 0)).subscribe(({ page, reset, refresh }) => {
+      subscriptions.push(this.changes$.subscribe(({ page, reset, refresh }) => {
         if (refresh) {
           getList(page, reset);
           return;
         }
 
-        let queryParams;
-
-        if (this._setPageMethod !== 'NoPage') {
-          queryParams = {
-            page,
-            limit: this.limit,
-            sort: this.sort,
-            moreFilters: this.moreFiltersControl.value,
-            ...this.filters.getValuesForQueryParams(),
-          };
-        } else {
-          queryParams = {
-            moreFilters: this.moreFiltersControl.value,
-            ...this.filters.getValuesForQueryParams(),
-          };
-        }
-
         this._router.navigate([], {
-          queryParams: stringToObject(queryParams, true),
+          queryParams: stringToObject(this._resolveQueryParams(page), true),
           replaceUrl: true,
-          state: { reset },
+          state: {
+            reset,
+          },
         });
       }));
 
       subscriptions.push(this._route.queryParams.subscribe((queryParams: Params) => {
+        if (typeof queryParams['page'] === 'undefined') {
+          this.changes$.emit({ page: this.currentPage, reset: false });
+          return;
+        }
+
         const queryParamsValue = {
           ...this.filters.group.value,
           page: '1',
@@ -141,7 +153,7 @@ export class List<T = any> {
 
         this.queryParamsValue = { ...queryParamsValue };
 
-        const page: number = parseInt(queryParams['page'] || '1') || this.currentPage;
+        const page = parseInt(queryParams['page'] || '1') || this.currentPage;
         this.limit = parseInt(queryParams['limit'] || '0') || this.limit;
         this.sort = queryParams['sort'] || this.sort;
 
@@ -156,6 +168,7 @@ export class List<T = any> {
     subscriptions.push(this.filters.group.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
+      filter(() => this.filters.group.status === 'VALID')
     ).subscribe(value => {
       this.changes$.emit({ page: 1, reset: true });
     }));
@@ -184,8 +197,14 @@ export class List<T = any> {
 
   setItem(item: any): void {
     this.data = [...this.data].map((itemData: any) => {
-      if (itemData.id === item.id) {
-        return item;
+      if (typeof itemData.data !== 'undefined') {
+        if (itemData.data?.id === item.data?.id) {
+          return item;
+        }
+      } else {
+        if (itemData.id === item.id) {
+          return item;
+        }
       }
 
       return itemData;
