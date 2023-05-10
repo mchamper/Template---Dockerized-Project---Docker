@@ -80,11 +80,9 @@ export class SystemUserActionComponent extends AbstractActionComponent  {
       this._getForm().send(this._systemUserHttpS.activate(this.systemUser$()?.data.id || 0), {
         prepareOptions: { strict: false },
         success: (res) => {
-          const systemUser = new SystemUser(res.body.system_user);
-
           this.list
-            ? this.list.setItem(systemUser)
-            : this.systemUser$.set(systemUser);
+            ? this.list.setItem(res.body.system_user)
+            : this.systemUser$.set(res.body.system_user);
         },
         notifySuccess: !this.list
       })?.subscribe()
@@ -96,11 +94,9 @@ export class SystemUserActionComponent extends AbstractActionComponent  {
       this._getForm().send(this._systemUserHttpS.deactivate(this.systemUser$()?.data.id || 0), {
         prepareOptions: { strict: false },
         success: (res) => {
-          const systemUser = new SystemUser(res.body.system_user);
-
           this.list
-            ? this.list.setItem(systemUser)
-            : this.systemUser$.set(systemUser);
+            ? this.list.setItem(res.body.system_user)
+            : this.systemUser$.set(res.body.system_user);
         },
         notifySuccess: !this.list
       })?.subscribe()
@@ -112,11 +108,9 @@ export class SystemUserActionComponent extends AbstractActionComponent  {
       this._getForm().send(this._systemUserHttpS.delete(this.systemUser$()?.data.id || 0), {
         prepareOptions: { strict: false },
         success: (res) => {
-          const systemUser = new SystemUser(res.body.system_user);
-
           this.list
-            ? this.list.setItem(systemUser)
-            : this.systemUser$.set(systemUser);
+            ? this.list.setItem(res.body.system_user)
+            : this.systemUser$.set(res.body.system_user);
 
           this.onDelete.emit();
         },

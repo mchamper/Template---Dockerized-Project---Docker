@@ -1,6 +1,6 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { get } from "lodash";
+import { cloneDeep, get } from "lodash";
 import { map, Observable } from "rxjs";
 import { AuthService, TGuard } from "../services/auth.service";
 import { AUTH_GUARD, AUTH_LOGIN, AUTH_LOGIN_AS, AUTH_LOGOUT, AUTH_UPDATE, AUTH_UPDATE_AS, RES, MAP, URL } from "./contexts";
@@ -52,9 +52,11 @@ export class SuccessInterceptor implements HttpInterceptor {
           }
 
           if (mapContext) {
+            const originalBody = cloneDeep(res.body);
+
             res.body = {
               ...mapContext(res),
-              _raw: res.body,
+              _raw: originalBody,
             };
           }
 

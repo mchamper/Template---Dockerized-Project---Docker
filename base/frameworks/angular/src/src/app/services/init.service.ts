@@ -5,7 +5,6 @@ import { environment } from 'src/environments/environment';
 import { versionName } from 'src/version';
 import { AuthService } from './auth.service';
 import { AuthSystemUserHttpService } from './http/auth-system-user-http.service';
-import { StorageService } from './storage.service';
 import { AuthAppClientHttpService } from './http/auth-app-client-http.service';
 
 export const initializeApp = (initS: InitService) => {
@@ -21,7 +20,6 @@ export class InitService {
 
   constructor(
     @Inject(DOCUMENT) private _dom: Document,
-    private _storageS: StorageService,
     private _authS: AuthService,
     private _authAppClientHttpS: AuthAppClientHttpService,
     private _authSystemUserHttpS: AuthSystemUserHttpService,
@@ -32,8 +30,6 @@ export class InitService {
   async init(): Promise<void> {
     const preloaderAppVersionElem = this._dom.querySelector<HTMLElement>('#preloaderAppVersion');
     if (preloaderAppVersionElem) preloaderAppVersionElem.innerHTML = `${versionName}`;
-
-    this.checkStorage();
 
     try {
       await this.checkAuthAppClient();
@@ -60,19 +56,6 @@ export class InitService {
     if (preloaderContentElem) preloaderContentElem.innerHTML = this.errorMessage;
 
     return Promise.reject(this.errorMessage);
-  }
-
-  /* -------------------- */
-
-  checkStorage(): void {
-    const storageVersion: number = this._storageS.get('storageVersion');
-
-    if (!storageVersion || storageVersion !== environment.storageVersion) {
-      this._storageS.clear();
-      this._storageS.clearSession();
-
-      this._storageS.set('storageVersion', environment.storageVersion);
-    }
   }
 
   /* -------------------- */

@@ -2,6 +2,7 @@ export interface IEnvironment {
   production: boolean,
   name: 'dev' | 'staging' | 'prod',
   storageVersion: number,
+  storageKey: string,
   mock: boolean,
   httpMock: boolean,
   httpCache: boolean,

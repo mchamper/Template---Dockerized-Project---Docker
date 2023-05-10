@@ -8,7 +8,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { FormModule } from 'src/app/utils/form/form.module';
 import { RequestHandlerComponent } from 'src/app/utils/handlers/request-handler/components/request-handler/request-handler.component';
 import { AuthService } from 'src/app/services/auth.service';
-import { SocialAuthService, SocialLoginModule } from '@abacritt/angularx-social-login';
+import { GoogleSigninButtonModule, SocialAuthService, SocialLoginModule } from '@abacritt/angularx-social-login';
 import { filter, skip } from 'rxjs';
 import { authLoginFormMock } from 'src/app/mocks/auth-login-form.mock';
 
@@ -19,7 +19,8 @@ import { authLoginFormMock } from 'src/app/mocks/auth-login-form.mock';
     SharedModule,
     FormModule,
     SocialLoginModule,
-    RequestHandlerComponent
+    RequestHandlerComponent,
+    GoogleSigninButtonModule,
   ],
   templateUrl: './auth-page-login.component.html',
   styleUrls: ['./auth-page-login.component.scss'],

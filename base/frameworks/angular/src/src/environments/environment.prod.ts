@@ -4,6 +4,7 @@ export const environment: IEnvironment = {
   production: true,
   name: 'prod',
   storageVersion: 1,
+  storageKey: '',
   mock: false,
   httpMock: false,
   httpCache: false,
