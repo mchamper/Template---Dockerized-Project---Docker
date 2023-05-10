@@ -121,45 +121,4 @@ export default class SystemUsersPageComponent {
       })?.subscribe()
     , 'getList');
   }
-
-  /* -------------------- */
-
-  toggleStatus(systemUser: any) {
-    systemUser.status === 'Active'
-      ? this.deactivate(systemUser)
-      : this.activate(systemUser);
-  }
-
-  activate(systemUser: any) {
-    this._sh.add(
-      this.list.action.send(this._systemUserHttpS.activate(systemUser.id), {
-        prepareOptions: { strict: false },
-        success: (res) => {
-          this.list.setItem(res.body.system_user);
-        },
-      })?.subscribe()
-    , 'activate');
-  }
-
-  deactivate(systemUser: any) {
-    this._sh.add(
-      this.list.action.send(this._systemUserHttpS.deactivate(systemUser.id), {
-        prepareOptions: { strict: false },
-        success: (res) => {
-          this.list.setItem(res.body.system_user);
-        },
-      })?.subscribe()
-    , 'deactivate');
-  }
-
-  delete(systemUser: any) {
-    this._sh.add(
-      this.list.action.send(this._systemUserHttpS.delete(systemUser.id), {
-        prepareOptions: { strict: false },
-        success: (res) => {
-          this.list.setItem(res.body.system_user);
-        },
-      })?.subscribe()
-    , 'delete');
-  }
 }

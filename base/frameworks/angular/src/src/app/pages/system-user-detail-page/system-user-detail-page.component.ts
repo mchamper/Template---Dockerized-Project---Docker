@@ -94,8 +94,8 @@ export default class SystemUserDetailPageComponent {
       this.form.send(this._systemUserHttpS.getOne(this.systemUserId, params), {
         request: 'data',
         success: (res) => {
-          this.systemUser$.set(new SystemUser(res.body.system_user));
-          this.form.set(res.body.system_user);
+          this.systemUser$.set(res.body.system_user);
+          this.form.set(res.body._raw.system_user);
         },
       })?.subscribe()
     , 'getOne');
