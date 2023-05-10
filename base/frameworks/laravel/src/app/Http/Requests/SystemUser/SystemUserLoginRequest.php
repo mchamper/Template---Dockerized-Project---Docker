@@ -14,7 +14,7 @@ class SystemUserLoginRequest extends BaseRequest
     public static function rules(?array $params = []): array
     {
         return [
-            'email' => ['bail', 'required', 'email'],
+            'email' => ['bail', 'required', 'string'],
             'password' => ['bail', 'required', 'string'],
             'remember_me' => ['bail', 'nullable', 'boolean'],
         ];

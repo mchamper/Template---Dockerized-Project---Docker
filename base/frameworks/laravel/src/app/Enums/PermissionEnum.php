@@ -6,6 +6,7 @@ enum PermissionEnum
 {
     use BaseEnum;
 
+    case SystemUserGet;
     case SystemUserCreate;
     case SystemUserUpdate;
     case SystemUserDelete;

@@ -21,6 +21,7 @@ Route::middleware(['auth:app_client'])->group(function () {
 Route::middleware(['auth:system_user'])->group(function () {
     Route::post('/system-user/logout', 'AuthSystemUserController@logout');
     Route::get('/system-user/me', 'AuthSystemUserController@me');
+    Route::put('/system-user/update', 'AuthSystemUserController@update');
     Route::post('/system-user/verification/request', 'AuthSystemUserVerificationController@request')->middleware(['throttle:3,1']);
     Route::patch('/system-user/verification/verify', 'AuthSystemUserVerificationController@verify');
 });
