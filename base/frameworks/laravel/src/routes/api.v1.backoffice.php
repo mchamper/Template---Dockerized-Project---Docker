@@ -1,6 +1,7 @@
 <?php
 
 use App\Commons\Response\Response;
+use App\Enums\PermissionEnum;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:app_client'])->group(function () {
@@ -11,9 +12,11 @@ Route::middleware(['auth:app_client'])->group(function () {
 });
 
 Route::middleware(['auth:system_user', 'verified'])->group(function () {
-    Route::get('/system-users', 'SystemUserController@index');
-    Route::get('/system-users/{systemUserId}', 'SystemUserController@show');
-    Route::post('/system-users', 'SystemUserController@create');
-    Route::put('/system-users/{systemUserId}', 'SystemUserController@update');
-    Route::delete('/system-users/{systemUserId}', 'SystemUserController@delete');
+    Route::get('/system-users', 'SystemUserController@index')->can(PermissionEnum::SystemUserGet->name);
+    Route::get('/system-users/{systemUserId}', 'SystemUserController@show')->can(PermissionEnum::SystemUserGet->name);
+    Route::post('/system-users', 'SystemUserController@create')->can(PermissionEnum::SystemUserCreate->name);
+    Route::put('/system-users/{systemUserId}', 'SystemUserController@update')->can(PermissionEnum::SystemUserUpdate->name);
+    Route::delete('/system-users/{systemUserId}', 'SystemUserController@delete')->can(PermissionEnum::SystemUserDelete->name);
+    Route::patch('/system-users/{systemUserId}/activate', 'SystemUserController@activate')->can(PermissionEnum::SystemUserActivate->name);
+    Route::patch('/system-users/{systemUserId}/deactivate', 'SystemUserController@deactivate')->can(PermissionEnum::SystemUserDeactivate->name);
 });

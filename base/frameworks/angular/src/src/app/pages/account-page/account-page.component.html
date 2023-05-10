@@ -3,35 +3,37 @@
   isLoggedIn: authS.isLoggedIn$() | async,
   auth: authS.guard$() | async
 } as vm">
-  <div class="container-fluid">
-    <h2 class="fs-1 mb-3">Mi cuenta</h2>
+  <app-section-title>
+    Mi cuenta
+  </app-section-title>
 
+  <div class="container-fluid">
     <app-account-verification>
       <div class="box">
         <app-request-handler [form]="form">
-          <form nz-form nzLayout="vertical" [formGroup]="form.group" (ngSubmit)="update()">
+          <form class="form-default floating-label" nz-form nzLayout="vertical" [formGroup]="form.group" (ngSubmit)="update()">
             <h3 class="fs-6 mb-0">Datos generales</h3>
             <nz-divider class="my-3"></nz-divider>
 
             <div class="row">
               <nz-form-item class="col-60 col-lg-30 col-xl-15">
-                <nz-form-control [nzErrorTip]="form.getError('first_name')">
+                <nz-form-control>
                   <nz-form-label>Nombre</nz-form-label>
-                  <input nz-input formControlName="first_name" placeholder="&nbsp;">
+                  <input nz-input formControlName="first_name">
                 </nz-form-control>
               </nz-form-item>
 
               <nz-form-item class="col-60 col-lg-30 col-xl-15">
-                <nz-form-control [nzErrorTip]="form.getError('last_name')">
+                <nz-form-control>
                   <nz-form-label>Apellido</nz-form-label>
-                  <input nz-input formControlName="last_name" placeholder="&nbsp;">
+                  <input nz-input formControlName="last_name">
                 </nz-form-control>
               </nz-form-item>
 
               <nz-form-item class="col-60 col-lg-30 col-xl-15">
-                <nz-form-control [nzErrorTip]="form.getError('email')">
+                <nz-form-control>
                   <nz-form-label>Email</nz-form-label>
-                  <input nz-input formControlName="email" placeholder="&nbsp;">
+                  <input nz-input formControlName="email">
                 </nz-form-control>
               </nz-form-item>
             </div>
@@ -42,23 +44,23 @@
 
             <div class="row">
               <nz-form-item class="col-60 col-lg-30 col-xl-15">
-                <nz-form-control [nzErrorTip]="form.getError('password_current')">
+                <nz-form-control>
                   <nz-form-label>Contraseña actual</nz-form-label>
-                  <input nz-input type="password" formControlName="password_current" placeholder="&nbsp;">
+                  <input nz-input type="password" formControlName="password_current">
                 </nz-form-control>
               </nz-form-item>
 
               <nz-form-item class="col-60 col-lg-30 col-xl-15">
-                <nz-form-control [nzErrorTip]="form.getError('password')">
+                <nz-form-control>
                   <nz-form-label>Nueva contraseña</nz-form-label>
-                  <input nz-input type="password" formControlName="password" placeholder="&nbsp;">
+                  <input nz-input type="password" formControlName="password">
                 </nz-form-control>
               </nz-form-item>
 
               <nz-form-item class="col-60 col-lg-30 col-xl-15">
-                <nz-form-control [nzErrorTip]="form.getError('password_confirmation')">
+                <nz-form-control>
                   <nz-form-label>Confirmar nueva contraseña</nz-form-label>
-                  <input nz-input type="password" formControlName="password_confirmation" placeholder="&nbsp;">
+                  <input nz-input type="password" formControlName="password_confirmation">
                 </nz-form-control>
               </nz-form-item>
             </div>

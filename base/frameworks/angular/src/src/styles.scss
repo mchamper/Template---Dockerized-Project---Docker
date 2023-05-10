@@ -9,11 +9,12 @@
 /* -------------------- */
 @import "theme/ant.scss";
 @import "theme/buttons.scss";
-@import "theme/forms.scss";
 @import "theme/layouts.scss";
+@import "theme/swiper.scss";
 @import "theme/tables.scss";
 @import "theme/texts.scss";
 @import "theme/titles.scss";
+@import "theme/forms/forms.scss";
 
 body {
   overflow-x: hidden;

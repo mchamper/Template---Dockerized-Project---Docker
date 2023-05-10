@@ -64,7 +64,7 @@ export class ErrorInterceptor implements HttpInterceptor {
             const authLoginGuard: TGuard | null = req.context.get(AUTH_LOGIN_GUARD);
             const authUpdateGuard: TGuard | null = req.context.get(AUTH_UPDATE_GUARD);
 
-            if (error.status === 401) {
+            if (error.status === 401 && error.exception === 'AuthenticationException') {
               if (authLoginGuard) this._authS.logout(authLoginGuard);
               else if (authUpdateGuard) this._authS.logout(authUpdateGuard);
               else this._authS.logout(guard);

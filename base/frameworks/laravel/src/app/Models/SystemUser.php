@@ -31,6 +31,8 @@ class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
         'password',
         'token_for_email_verification',
         'token_for_password_reset',
+        'roles',
+        'permissions',
     ];
 
     protected $casts = [
@@ -44,6 +46,7 @@ class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
         'picture',
         'social_driver_enum',
         'status_enum',
+        'roles_and_permissions'
     ];
 
     /**
@@ -82,6 +85,18 @@ class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
     {
         return Attribute::make(
             get: fn () => $this->status ? $this->status->value() : null,
+        );
+    }
+
+    protected function rolesAndPermissions(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                return [
+                    'roles' => $this->getRoleNames(),
+                    'permissions' => $this->getAllPermissions()->map(fn ($item) => $item['name']),
+                ];
+            }
         );
     }
 }

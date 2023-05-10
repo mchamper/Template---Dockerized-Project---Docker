@@ -2,15 +2,18 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { FormBuilder, Validators } from '@angular/forms';
 import { SystemUserHttpService } from 'src/app/services/http/system-user-http.service';
 import { SharedModule } from 'src/app/shared.module';
-import { FormModule } from 'src/app/utils/form/components/form.module';
+import { FormModule } from 'src/app/utils/form/form.module';
 import { Form } from 'src/app/utils/form/form';
 import { RequestHandlerComponent } from 'src/app/utils/handlers/request-handler/components/request-handler/request-handler.component';
 import { SubscriptionHandler } from 'src/app/utils/handlers/subscription-handler';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { distinctUntilChanged } from 'rxjs';
 import { systemUserCreateFormMock } from 'src/app/mocks/system-user-create-form.mock';
 import { escape } from 'lodash';
+import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
+import { SystemUserActionComponent } from 'src/app/components/core/system-user/system-user-action/system-user-action.component';
+import { SectionTitleComponent } from 'src/app/components/layouts/section-title/section-title.component';
 
 @Component({
   selector: 'app-system-user-create-page',
@@ -19,7 +22,11 @@ import { escape } from 'lodash';
     SharedModule,
     FormModule,
     RequestHandlerComponent,
-    NzDividerModule
+    NzDividerModule,
+    NzBreadCrumbModule,
+    SystemUserActionComponent,
+    RouterModule,
+    SectionTitleComponent,
   ],
   templateUrl: './system-user-create-page.component.html',
   styleUrls: ['./system-user-create-page.component.scss'],

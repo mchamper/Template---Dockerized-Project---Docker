@@ -6,7 +6,7 @@ import { AuthSystemUserVerificationHttpService } from 'src/app/services/http/aut
 import { SubscriptionHandler } from 'src/app/utils/handlers/subscription-handler';
 import { Form } from 'src/app/utils/form/form';
 import { FormBuilder } from '@angular/forms';
-import { FormModule } from 'src/app/utils/form/components/form.module';
+import { FormModule } from 'src/app/utils/form/form.module';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({

@@ -1,0 +1,45 @@
+<div *ngIf="{
+  mustDisableInteraction: type === 'data' ? (requestH.mustDisableInteraction$() | async) : (requestH.isLoading$() | async),
+  isLoading: requestH.isLoading$() | async,
+  isSuccess: requestH.isSuccess$() | async,
+  isError: errorInfo && (requestH.isError$() | async),
+  res: requestH.res$ | async
+} as vm"
+  [class]="'type-' + type"
+>
+  <ng-container *ngIf="vm.mustDisableInteraction">
+    <div class="interaction-disabled"
+      [class]="theme"
+      [class.has-content]="vm.isError || (type === 'form' && false)"
+    >
+      <ng-container *ngIf="vm.isError">
+        <ng-container *ngTemplateOutlet="errorTpl || defaultErrorTpl"></ng-container>
+
+        <ng-template #defaultErrorTpl>
+          <nz-result class="p-0"
+            nzStatus="error"
+            nzTitle="Ha ocurrido un error"
+            nzSubTitle="No podemos mostrar esta información por el momento"
+          ></nz-result>
+        </ng-template>
+      </ng-container>
+    </div>
+  </ng-container>
+
+  <ng-content></ng-content>
+
+  <ng-container *ngIf="!vm.res">
+    <ng-container *ngTemplateOutlet="
+      loadingTpl || (!['form'].includes(type) ? defaultLoadingTpl : null) || null;
+      context: { $implicit: vm.isLoading || false }
+    "></ng-container>
+
+    <ng-template #defaultLoadingTpl let-isLoading>
+      <div *ngIf="isLoading" class="interaction-disabled has-content" [class]="theme">
+        <div class="spinner-border text-primary" style="width: 1.5rem; height: 1.5rem;" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    </ng-template>
+  </ng-container>
+</div>

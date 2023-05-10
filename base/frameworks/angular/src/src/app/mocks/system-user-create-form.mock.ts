@@ -2,7 +2,7 @@ import * as moment from "moment";
 import { environment } from "src/environments/environment";
 
 export const systemUserCreateFormMock = () => {
-  return environment.mock ? {
+  return !environment.production && environment.mock ? {
     first_name: 'Mock',
     last_name: 'User',
     email: `${moment().unix()}@example.com`,

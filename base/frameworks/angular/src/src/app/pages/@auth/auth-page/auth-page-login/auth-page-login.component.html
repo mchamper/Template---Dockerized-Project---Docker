@@ -9,24 +9,24 @@
 
   <ng-template #noLoggedInTpl>
     <app-request-handler [form]="form">
-      <form nz-form nzLayout="vertical" [formGroup]="form.group" (ngSubmit)="login()">
+      <form class="form-default floating-label" nz-form nzLayout="vertical" [formGroup]="form.group" (ngSubmit)="login()">
         <div class="row">
           <nz-form-item>
-            <nz-form-control [nzErrorTip]="form.getError('email')">
+            <nz-form-control>
               <nz-form-label>Email</nz-form-label>
-              <input nz-input formControlName="email" placeholder="&nbsp;">
+              <input nz-input formControlName="email">
             </nz-form-control>
           </nz-form-item>
 
           <nz-form-item>
-            <nz-form-control [nzErrorTip]="form.getError('password')">
+            <nz-form-control>
               <nz-form-label>Contraseña</nz-form-label>
-              <input nz-input type="password" formControlName="password" placeholder="&nbsp;">
+              <input nz-input type="password" formControlName="password">
             </nz-form-control>
           </nz-form-item>
 
           <nz-form-item>
-            <nz-form-control [nzErrorTip]="form.getError('remember_me')">
+            <nz-form-control>
               <label nz-checkbox formControlName="remember_me">Recordarme</label>
             </nz-form-control>
           </nz-form-item>

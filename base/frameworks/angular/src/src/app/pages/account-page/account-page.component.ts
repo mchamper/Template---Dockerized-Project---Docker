@@ -5,10 +5,11 @@ import { AccountVerificationComponent } from 'src/app/components/auth/account-ve
 import { AuthService } from 'src/app/services/auth.service';
 import { AuthSystemUserHttpService } from 'src/app/services/http/auth-system-user-http.service';
 import { SharedModule } from 'src/app/shared.module';
-import { FormModule } from 'src/app/utils/form/components/form.module';
+import { FormModule } from 'src/app/utils/form/form.module';
 import { Form } from 'src/app/utils/form/form';
 import { RequestHandlerComponent } from 'src/app/utils/handlers/request-handler/components/request-handler/request-handler.component';
 import { SubscriptionHandler } from 'src/app/utils/handlers/subscription-handler';
+import { SectionTitleComponent } from 'src/app/components/layouts/section-title/section-title.component';
 
 @Component({
   selector: 'app-account-page',
@@ -19,6 +20,7 @@ import { SubscriptionHandler } from 'src/app/utils/handlers/subscription-handler
     FormModule,
     NzDividerModule,
     RequestHandlerComponent,
+    SectionTitleComponent,
   ],
   templateUrl: './account-page.component.html',
   styleUrls: ['./account-page.component.scss'],

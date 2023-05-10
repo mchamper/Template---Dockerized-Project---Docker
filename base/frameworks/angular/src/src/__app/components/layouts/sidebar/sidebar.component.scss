@@ -1,0 +1,49 @@
+:host {
+  .navbar-nav {
+    .nav-item {
+      position: relative;
+      padding-left: 1rem;
+      transition: all 0.2s ease;
+      margin: 0.25rem 0;
+      overflow: hidden;
+
+      .nav-link {
+        font-size: var(--app-px-14);
+        font-weight: 500;
+        color: var(--bs-secondary);
+
+        [nz-icon] {
+          margin-right: 0.5rem;
+        }
+      }
+
+      &::before {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 100%;
+        background-color: var(--bs-primary);
+        opacity: 0;
+        transform: translateY(101%);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+      }
+
+      &:hover:not(.active) {
+        &::before {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      &.active {
+        .nav-link {
+          color: var(--bs-primary);
+          font-weight: 700;
+        }
+      }
+    }
+  }
+}

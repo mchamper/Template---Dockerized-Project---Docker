@@ -1,0 +1,9 @@
+:host {
+  .btn-close {
+    box-shadow: none !important;
+  }
+
+  .offcanvas-header {
+    height: var(--app-navbar-height);
+  }
+}

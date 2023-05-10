@@ -3,6 +3,7 @@ import { SharedModule } from 'src/app/shared.module';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { RouterModule } from '@angular/router';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { ViewportService } from 'src/app/services/viewport.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -19,4 +20,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 })
 export class SidebarComponent {
 
+  constructor(
+    public viewportS: ViewportService,
+  ) { }
 }

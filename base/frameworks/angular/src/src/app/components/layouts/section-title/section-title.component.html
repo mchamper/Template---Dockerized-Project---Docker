@@ -1,0 +1,27 @@
+<div class="container-fluid shadow-sm mb-4 py-3">
+  <ng-container *ngIf="breadcrumbsTpl">
+    <div class="">
+      <ng-container *ngTemplateOutlet="breadcrumbsTpl"></ng-container>
+    </div>
+  </ng-container>
+
+  <div class="d-flex align-items-center">
+    <h2 class="h3 mb-0">
+      <strong class="d-inline-flex align-items-center">
+        <ng-content></ng-content>
+      </strong>
+    </h2>
+
+    <ng-container *ngIf="reloadFn">
+      <a class="ms-3 fs-3" (click)="reloadFn()">
+        <span nz-icon nzType="redo" nzTheme="outline"></span>
+      </a>
+    </ng-container>
+
+    <div class="ms-auto">
+      <ng-container *ngIf="extrasTpl">
+        <ng-container *ngTemplateOutlet="extrasTpl"></ng-container>
+      </ng-container>
+    </div>
+  </div>
+</div>

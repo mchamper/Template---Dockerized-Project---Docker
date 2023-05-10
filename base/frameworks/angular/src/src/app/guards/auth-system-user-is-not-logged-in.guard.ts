@@ -1,46 +1,20 @@
-import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
-import { Observable } from 'rxjs';
+import { inject } from "@angular/core";
+import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from "@angular/router";
 import { AuthService } from '../services/auth.service';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class AuthSystemUserIsNotLoggedInGuard implements CanActivate {
+export function authSystemUserIsNotLoggedInGuard(): CanActivateFn {
+  return (next: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+    const router: Router = inject(Router);
+    const authS: AuthService = inject(AuthService);
 
-  constructor(
-    private _authS: AuthService,
-    private _router: Router,
-  ) { }
-
-  canActivate(
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-
-    return this.resolveCanActivate(next, state);
-  }
-
-  canActivateChild(
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-
-    return this.resolveCanActivate(next, state);
-  }
-
-  /* -------------------- */
-
-  resolveCanActivate(
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-
-    const can: boolean = !this._authS.isLoggedIn();
+    const can: boolean = !authS.isLoggedIn();
 
     if (!can) {
-      this._router.navigate(['/'], {
+      router.navigate(['/'], {
         replaceUrl: true,
       });
     }
 
     return can;
-  }
+  };
 }

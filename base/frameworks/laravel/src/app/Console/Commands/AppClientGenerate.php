@@ -2,11 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Apis\Google\GoogleContactApi;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class AppClientGenerate extends Command
@@ -114,5 +111,18 @@ class AppClientGenerate extends Command
         })->each(function ($item) {
             DB::table('app_clients')->updateOrInsert(['id' => $item['id']], $item);
         });
+
+        DB::table('personal_access_tokens')->delete();
+        DB::table('personal_access_tokens')
+            ->insert([
+            'id' => 1,
+            'tokenable_type' => 'App\Models\AppClient',
+            'tokenable_id' => 1,
+            'name' => '',
+            'token' => 'caafba46a9f99b72cc70e2cc3178a720e89a3af66f7b3b4a30f93a4a0abb64d3',
+        ]);
+
+        $this->info('');
+        $this->info('AppClient (Root) token for local environment: 1|aFM64Th3O4TSnSv4JL6wCtkDjkT6uEjhYnFH3r40');
     }
 }

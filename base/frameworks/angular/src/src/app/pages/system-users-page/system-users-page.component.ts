@@ -3,14 +3,20 @@ import { RouterModule } from '@angular/router';
 import { stringToObject } from 'src/app/helper';
 import { SystemUserHttpService } from 'src/app/services/http/system-user-http.service';
 import { SharedModule } from 'src/app/shared.module';
-import { FormModule } from 'src/app/utils/form/components/form.module';
+import { FormModule } from 'src/app/utils/form/form.module';
 import { RequestHandlerComponent } from 'src/app/utils/handlers/request-handler/components/request-handler/request-handler.component';
 import { SubscriptionHandler } from 'src/app/utils/handlers/subscription-handler';
-import { SystemUsersPageFiltersComponent } from './system-users-page-filters/system-users-page-filters.component';
 import * as moment from 'moment';
 import { AuthService } from 'src/app/services/auth.service';
 import { List } from 'src/app/utils/list/list';
-import { ListModule } from 'src/app/utils/list/components/list.module';
+import { ListModule } from 'src/app/utils/list/list.module';
+import { FiltersComponent } from 'src/app/components/layouts/filters/filters.component';
+import { CombosHttpService } from 'src/app/services/http/combos-http.service';
+import { FormBuilder } from '@angular/forms';
+import { Form } from 'src/app/utils/form/form';
+import { SectionTitleComponent } from 'src/app/components/layouts/section-title/section-title.component';
+import { SystemUserActionComponent } from 'src/app/components/core/system-user/system-user-action/system-user-action.component';
+import { SystemUser } from 'src/app/models/system-user';
 
 @Component({
   selector: 'app-system-users-page',
@@ -21,7 +27,9 @@ import { ListModule } from 'src/app/utils/list/components/list.module';
     RequestHandlerComponent,
     ListModule,
     FormModule,
-    SystemUsersPageFiltersComponent,
+    FiltersComponent,
+    SectionTitleComponent,
+    SystemUserActionComponent,
   ],
   templateUrl: './system-users-page.component.html',
   styleUrls: ['./system-users-page.component.scss'],
@@ -29,23 +37,30 @@ import { ListModule } from 'src/app/utils/list/components/list.module';
 })
 export default class SystemUsersPageComponent {
 
-  list: List<any>;
+  list: List<SystemUser>;
 
   private _sh: SubscriptionHandler = new SubscriptionHandler();
 
   constructor(
     private _authS: AuthService,
     private _systemUserHttpS: SystemUserHttpService,
+    private _combosHttpS: CombosHttpService,
+    private _fb: FormBuilder,
   ) {
 
-    this.list = new List('LaravelPage');
-  }
+    this.list = new List<SystemUser>('LaravelPage');
 
-  ngOnInit(): void {
-    //
-  }
+    this.list.filters = new Form(this._fb.group({
+      statuses: [[]],
+      name: [''],
+      email: [''],
+      createdAt: [[]],
+      emailVerified: [false],
+      emailNotVerified: [false],
+    }));
 
-  ngAfterViewInit(): void {
+    this.getCombos();
+
     this._sh.add(
       this.list.init(this.getList, {
         persistOnUrl: true
@@ -53,11 +68,26 @@ export default class SystemUsersPageComponent {
     );
   }
 
+  ngOnInit(): void {
+    //
+  }
+
   ngOnDestroy(): void {
     this._sh.clean();
   }
 
   /* -------------------- */
+
+  getCombos() {
+    this._sh.add(
+      this.list.filters.send(this._combosHttpS.get('system_user_statuses'), {
+        request: 'combos',
+        success: (res) => {
+          this.list.filters.combos = res.body.combos;
+        },
+      })?.subscribe()
+    , 'getCombos');
+  }
 
   getList = (page: number = 1, reset?: boolean) => {
     if (reset) this.list.reset();

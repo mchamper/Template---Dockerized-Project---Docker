@@ -4,7 +4,7 @@ export const environment: IEnvironment = {
   production: false,
   name: 'dev',
   storageVersion: 1,
-  mock: false,
+  mock: true,
   httpMock: false,
   httpCache: false,
   appUrl: 'http://localhost:10003',
