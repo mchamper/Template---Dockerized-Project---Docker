@@ -1,15 +1,16 @@
-import { camelCase, isArray, isObject, transform, upperFirst } from "lodash";
+import { upperFirst } from "lodash";
 import { BehaviorSubject } from "rxjs";
+import { camelize } from "../helper";
 
 export abstract class AbstractModel<T = any> {
 
   subject$: BehaviorSubject<T>;
 
   constructor(data: any, parserMethod?: string) {
-    data = this._camelize(data);
+    data = camelize(data);
 
     if (parserMethod && !data._isParsed) {
-      data = (this as any)[`getParsedFrom${upperFirst(parserMethod)}`](data);
+      data = (this as any)[`parseFrom${upperFirst(parserMethod)}`](data);
       data._isParsed = true;
     }
 
@@ -29,13 +30,4 @@ export abstract class AbstractModel<T = any> {
       data,
     });
   }
-
-  /* -------------------- */
-
-  protected _camelize(obj: any) {
-    return transform(obj, (acc: any, value: any, key: string, target) => {
-      const camelKey = isArray(target) ? key : camelCase(key);
-      acc[camelKey] = isObject(value) ? this._camelize(value) : value;
-    });
-  };
 }

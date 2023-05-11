@@ -41,6 +41,28 @@ export class SystemUserHttpService {
     });
   }
 
+  create(input: any) {
+    return this._httpClient.post(`backend:/api/v1/backoffice/system-users`, input, {
+      context: new HttpContext()
+        .set(AUTH_GUARD, 'systemUser')
+        .set(MAP, res => {
+          res.body.system_user = new SystemUser(res.body.system_user, 'backend');
+          return res.body;
+        })
+    });
+  }
+
+  update(systemUserId: number, input: any) {
+    return this._httpClient.put(`backend:/api/v1/backoffice/system-users/${systemUserId}`, input, {
+      context: new HttpContext()
+        .set(AUTH_GUARD, 'systemUser')
+        .set(MAP, res => {
+          res.body.system_user = new SystemUser(res.body.system_user, 'backend');
+          return res.body;
+        })
+    });
+  }
+
   delete(systemUserId: number) {
     return this._httpClient.delete(`backend:/api/v1/backoffice/system-users/${systemUserId}`, {
       context: new HttpContext()

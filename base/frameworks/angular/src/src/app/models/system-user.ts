@@ -32,7 +32,7 @@ export class SystemUser extends AbstractModel<ISystemUser> {
 
   /* -------------------- */
 
-  getParsedFromBackend(data: any): ISystemUser {
+  parseFromBackend(data: any): ISystemUser {
     return {
       ...data,
       emailVerifiedAt: data.emailVerifiedAt ? moment(data.emailVerifiedAt) : null,
@@ -44,7 +44,7 @@ export class SystemUser extends AbstractModel<ISystemUser> {
 
   /* -------------------- */
 
-  getParsedForAuthData(): IAuth['data'] {
+  parseForAuthData(): IAuth['data'] {
     return {
       id: this.data.id,
       email: this.data.email,
