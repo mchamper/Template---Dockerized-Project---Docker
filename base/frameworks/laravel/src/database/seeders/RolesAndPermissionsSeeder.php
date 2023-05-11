@@ -47,9 +47,9 @@ class RolesAndPermissionsSeeder extends Seeder
         /* -------------------- */
 
         Role::findByName(RoleEnum::Root->name, Auth::$systemUserGuard)
-            ->givePermissionTo(Permission::whereGuardName(Auth::$systemUserGuard)->get());
+            ->syncPermissions(Permission::whereGuardName(Auth::$systemUserGuard)->get());
 
         Role::findByName(RoleEnum::Admin->name, Auth::$systemUserGuard)
-            ->givePermissionTo(Permission::whereGuardName(Auth::$systemUserGuard)->get());
+            ->syncPermissions(Permission::whereGuardName(Auth::$systemUserGuard)->get());
     }
 }
