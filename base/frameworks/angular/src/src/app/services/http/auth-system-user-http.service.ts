@@ -33,7 +33,7 @@ export class AuthSystemUserHttpService {
           const tokenExpiresAt = res.body.token_expires_at;
 
           return {
-            data: systemUser.getParsedForAuthData(),
+            data: systemUser.parseForAuthData(),
             token,
             tokenExpiresAt,
           };
@@ -51,7 +51,7 @@ export class AuthSystemUserHttpService {
           const tokenExpiresAt = res.body.token_expires_at;
 
           return {
-            data: systemUser.getParsedForAuthData(),
+            data: systemUser.parseForAuthData(),
             token,
             tokenExpiresAt,
           };
@@ -75,7 +75,7 @@ export class AuthSystemUserHttpService {
         .set(AUTH_LOGOUT_ON_ERROR, true)
         .set(AUTH_UPDATE, (res: IHttpResponse) => {
           const systemUser = new SystemUser(res.body.data, 'backend');
-          return systemUser.getParsedForAuthData();
+          return systemUser.parseForAuthData();
         })
     });
   }
@@ -88,7 +88,7 @@ export class AuthSystemUserHttpService {
         .set(AUTH_GUARD, 'systemUser')
         .set(AUTH_UPDATE, (res: IHttpResponse) => {
           const systemUser = new SystemUser(res.body.data, 'backend');
-          return systemUser.getParsedForAuthData();
+          return systemUser.parseForAuthData();
         })
     });
   }

@@ -1,3 +1,5 @@
+import { camelCase, isArray, isObject, transform } from "lodash";
+
 export const parseQueryParams = (params: any, prefix?: string): string => {
   let query: any[] = [];
 
@@ -46,8 +48,6 @@ export const stringToObject = (object: any, strict: boolean = false): any => {
   return res;
 }
 
-/* -------------------- */
-
 export const onViewportIntersection = (elem: Element, callbackIn: () => any, callbackOut?: () => any) => {
   if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
     return callbackIn();
@@ -81,4 +81,11 @@ export const scrollToAnchor = (anchor: string, offset: number = 30) => {
 export const scrollTo = (top: 0, offset: number = 30) => {
   const scrollableElem = document.querySelector<HTMLElement>(`main`) || window;
   scrollableElem.scrollTo({ behavior: 'smooth', top: top - offset });
+}
+
+export const camelize = (obj: any) => {
+  return transform(obj, (acc: any, value: any, key: string, target) => {
+    const camelKey = isArray(target) ? key : camelCase(key);
+    acc[camelKey] = isObject(value) ? camelize(value) : value;
+  });
 }
