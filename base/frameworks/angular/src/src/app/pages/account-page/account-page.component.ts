@@ -10,6 +10,7 @@ import { Form } from 'src/app/utils/form/form';
 import { RequestHandlerComponent } from 'src/app/utils/handlers/request-handler/components/request-handler/request-handler.component';
 import { SubscriptionHandler } from 'src/app/utils/handlers/subscription-handler';
 import { SectionTitleComponent } from 'src/app/components/layouts/section-title/section-title.component';
+import { FormSectionTitleComponent } from 'src/app/components/layouts/form-section-title/form-section-title.component';
 
 @Component({
   selector: 'app-account-page',
@@ -21,6 +22,7 @@ import { SectionTitleComponent } from 'src/app/components/layouts/section-title/
     NzDividerModule,
     RequestHandlerComponent,
     SectionTitleComponent,
+    FormSectionTitleComponent,
   ],
   templateUrl: './account-page.component.html',
   styleUrls: ['./account-page.component.scss'],
@@ -46,8 +48,12 @@ export default class AccountPageComponent implements OnInit, OnDestroy {
       password: [''],
       password_confirmation: [''],
     }), {
-      onInit(form) {
-        form.group.get('email')?.disable();
+      onInit: (form) => {
+        if (this.authS.hasRole('Root')) {
+          form.group.disable();
+        } else {
+          form.group.get('email')?.disable();
+        }
       }
     });
   }

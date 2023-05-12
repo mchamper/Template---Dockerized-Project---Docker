@@ -34,26 +34,9 @@
         <app-request-handler [requestH]="actionForm.requestH" type="loading">
           <app-request-handler [requestH]="form.dataRequestH">
             <form class="form-default floating-label" nz-form nzLayout="vertical" [formGroup]="form.group" (ngSubmit)="update()">
-              <h3 class="fs-6 mb-0">Datos generales</h3>
-              <nz-divider class="my-3"></nz-divider>
+              <app-form-section-title [title]="'Datos generales'" icon="info-circle" [isFirst]="true" />
 
               <div class="ps-3">
-                <div class="row">
-                  <nz-form-item class="col-60 col-lg-30 col-xl-15">
-                    <nz-form-control>
-                      <nz-form-label>Fecha de creación</nz-form-label>
-                      <nz-date-picker class="w-100" nzFormat="d 'de' MMMM 'de' YYYY, HH:mm:ss" formControlName="created_at"></nz-date-picker>
-                    </nz-form-control>
-                  </nz-form-item>
-
-                  <nz-form-item class="col-60 col-lg-30 col-xl-15">
-                    <nz-form-control>
-                      <nz-form-label>Fecha de modificación</nz-form-label>
-                      <nz-date-picker class="w-100" nzFormat="d 'de' MMMM 'de' YYYY, HH:mm:ss" formControlName="updated_at"></nz-date-picker>
-                    </nz-form-control>
-                  </nz-form-item>
-                </div>
-
                 <div class="row">
                   <nz-form-item class="col-60 col-lg-30 col-xl-15">
                     <nz-form-control>
@@ -73,6 +56,22 @@
                     <nz-form-control>
                       <nz-form-label>Email</nz-form-label>
                       <input nz-input formControlName="email">
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+
+                <div class="row">
+                  <nz-form-item class="col-60 col-lg-30 col-xl-15">
+                    <nz-form-control>
+                      <nz-form-label>Fecha de creación</nz-form-label>
+                      <nz-date-picker class="w-100" nzFormat="d 'de' MMMM 'de' YYYY, HH:mm:ss" formControlName="created_at"></nz-date-picker>
+                    </nz-form-control>
+                  </nz-form-item>
+
+                  <nz-form-item class="col-60 col-lg-30 col-xl-15">
+                    <nz-form-control>
+                      <nz-form-label>Fecha de modificación</nz-form-label>
+                      <nz-date-picker class="w-100" nzFormat="d 'de' MMMM 'de' YYYY, HH:mm:ss" formControlName="updated_at"></nz-date-picker>
                     </nz-form-control>
                   </nz-form-item>
                 </div>
