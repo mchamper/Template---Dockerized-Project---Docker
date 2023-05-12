@@ -14,6 +14,7 @@ import { escape } from 'lodash';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { SystemUserActionComponent } from 'src/app/components/core/system-user/system-user-action/system-user-action.component';
 import { SectionTitleComponent } from 'src/app/components/layouts/section-title/section-title.component';
+import { FormSectionTitleComponent } from 'src/app/components/layouts/form-section-title/form-section-title.component';
 
 @Component({
   selector: 'app-system-user-create-page',
@@ -27,6 +28,7 @@ import { SectionTitleComponent } from 'src/app/components/layouts/section-title/
     SystemUserActionComponent,
     RouterModule,
     SectionTitleComponent,
+    FormSectionTitleComponent,
   ],
   templateUrl: './system-user-create-page.component.html',
   styleUrls: ['./system-user-create-page.component.scss'],

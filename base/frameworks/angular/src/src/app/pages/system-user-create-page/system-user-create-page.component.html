@@ -16,8 +16,7 @@
     <div class="box">
       <app-request-handler [form]="form">
         <form class="form-default floating-label" nz-form nzLayout="vertical" [formGroup]="form.group" (ngSubmit)="create()">
-          <h3 class="fs-6 mb-0">Datos generales</h3>
-          <nz-divider class="my-3"></nz-divider>
+          <app-form-section-title [title]="'Datos generales'" icon="info-circle" [isFirst]="true" />
 
           <div class="ps-3">
             <div class="row">
@@ -44,9 +43,7 @@
             </div>
           </div>
 
-          <nz-divider class="my-3"></nz-divider>
-          <h3 class="fs-6 mb-0">Contraseña</h3>
-          <nz-divider class="my-3"></nz-divider>
+          <app-form-section-title [title]="'Contraseña'" icon="lock" />
 
           <div class="ps-3">
             <div class="row">

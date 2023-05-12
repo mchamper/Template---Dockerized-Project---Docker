@@ -3,7 +3,7 @@
   isVerifying: verifyForm.requestH.isLoading$() | async
 } as vm">
   <ng-container *ngIf="vm.isVerified; else noVerifiedTpl">
-    <nz-alert class="mb-5"
+    <nz-alert class="mb-4"
       nzType="success"
       nzMessage="Cuenta verificada"
       nzShowIcon
@@ -14,7 +14,7 @@
 
   <ng-template #noVerifiedTpl>
     <ng-container *ngIf="vm.isVerifying; else notVerifyingTpl">
-      <nz-alert class="mb-5"
+      <nz-alert class="mb-4"
         nzType="info"
         [nzMessage]="message"
         [nzDescription]="description"
@@ -31,7 +31,7 @@
     </ng-container>
 
     <ng-template #notVerifyingTpl>
-      <nz-alert class="mb-5"
+      <nz-alert class="mb-4"
         nzType="error"
         [nzMessage]="message"
         [nzDescription]="description"

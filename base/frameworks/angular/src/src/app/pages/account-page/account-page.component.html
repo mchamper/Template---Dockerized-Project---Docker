@@ -12,64 +12,67 @@
       <div class="box">
         <app-request-handler [form]="form">
           <form class="form-default floating-label" nz-form nzLayout="vertical" [formGroup]="form.group" (ngSubmit)="update()">
-            <h3 class="fs-6 mb-0">Datos generales</h3>
-            <nz-divider class="my-3"></nz-divider>
+            <app-form-section-title [title]="'Datos generales'" icon="info-circle" [isFirst]="true" />
 
-            <div class="row">
-              <nz-form-item class="col-60 col-lg-30 col-xl-15">
-                <nz-form-control>
-                  <nz-form-label>Nombre</nz-form-label>
-                  <input nz-input formControlName="first_name">
-                </nz-form-control>
-              </nz-form-item>
+            <div class="ps-3">
+              <div class="row">
+                <nz-form-item class="col-60 col-lg-30 col-xl-15">
+                  <nz-form-control>
+                    <nz-form-label>Nombre</nz-form-label>
+                    <input nz-input formControlName="first_name">
+                  </nz-form-control>
+                </nz-form-item>
 
-              <nz-form-item class="col-60 col-lg-30 col-xl-15">
-                <nz-form-control>
-                  <nz-form-label>Apellido</nz-form-label>
-                  <input nz-input formControlName="last_name">
-                </nz-form-control>
-              </nz-form-item>
+                <nz-form-item class="col-60 col-lg-30 col-xl-15">
+                  <nz-form-control>
+                    <nz-form-label>Apellido</nz-form-label>
+                    <input nz-input formControlName="last_name">
+                  </nz-form-control>
+                </nz-form-item>
 
-              <nz-form-item class="col-60 col-lg-30 col-xl-15">
-                <nz-form-control>
-                  <nz-form-label>Email</nz-form-label>
-                  <input nz-input formControlName="email">
-                </nz-form-control>
-              </nz-form-item>
+                <nz-form-item class="col-60 col-lg-30 col-xl-15">
+                  <nz-form-control>
+                    <nz-form-label>Email</nz-form-label>
+                    <input nz-input formControlName="email">
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
             </div>
 
-            <nz-divider class="my-3"></nz-divider>
-            <h3 class="fs-6 mb-0">Cambiar contraseña</h3>
-            <nz-divider class="my-3"></nz-divider>
+            <ng-container *ngIf="!authS.hasRole('Root')">
+              <app-form-section-title [title]="'Cambiar contraseña'" icon="lock" />
 
-            <div class="row">
-              <nz-form-item class="col-60 col-lg-30 col-xl-15">
-                <nz-form-control>
-                  <nz-form-label>Contraseña actual</nz-form-label>
-                  <input nz-input type="password" formControlName="password_current">
-                </nz-form-control>
-              </nz-form-item>
+              <div class="ps-3">
+                <div class="row">
+                  <nz-form-item class="col-60 col-lg-30 col-xl-15">
+                    <nz-form-control>
+                      <nz-form-label>Contraseña actual</nz-form-label>
+                      <input nz-input type="password" formControlName="password_current">
+                    </nz-form-control>
+                  </nz-form-item>
 
-              <nz-form-item class="col-60 col-lg-30 col-xl-15">
-                <nz-form-control>
-                  <nz-form-label>Nueva contraseña</nz-form-label>
-                  <input nz-input type="password" formControlName="password">
-                </nz-form-control>
-              </nz-form-item>
+                  <nz-form-item class="col-60 col-lg-30 col-xl-15">
+                    <nz-form-control>
+                      <nz-form-label>Nueva contraseña</nz-form-label>
+                      <input nz-input type="password" formControlName="password">
+                    </nz-form-control>
+                  </nz-form-item>
 
-              <nz-form-item class="col-60 col-lg-30 col-xl-15">
-                <nz-form-control>
-                  <nz-form-label>Confirmar nueva contraseña</nz-form-label>
-                  <input nz-input type="password" formControlName="password_confirmation">
-                </nz-form-control>
-              </nz-form-item>
-            </div>
+                  <nz-form-item class="col-60 col-lg-30 col-xl-15">
+                    <nz-form-control>
+                      <nz-form-label>Confirmar nueva contraseña</nz-form-label>
+                      <input nz-input type="password" formControlName="password_confirmation">
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
 
-            <div class="mt-3">
-              <button [appLoadingBtn]="vm.isLoading" class="btn btn-primary">
-                Guardar
-              </button>
-            </div>
+              <div class="mt-3">
+                <button [appLoadingBtn]="vm.isLoading" class="btn btn-primary">
+                  Guardar
+                </button>
+              </div>
+            </ng-container>
           </form>
         </app-request-handler>
       </div>

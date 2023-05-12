@@ -15,6 +15,7 @@ import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { SystemUserActionComponent } from 'src/app/components/core/system-user/system-user-action/system-user-action.component';
 import { SystemUser } from 'src/app/models/system-user';
 import { NzTagModule } from 'ng-zorro-antd/tag';
+import { FormSectionTitleComponent } from 'src/app/components/layouts/form-section-title/form-section-title.component';
 
 @Component({
   selector: 'app-system-user-detail-page',
@@ -29,6 +30,7 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
     RouterModule,
     SystemUserActionComponent,
     NzTagModule,
+    FormSectionTitleComponent,
   ],
   templateUrl: './system-user-detail-page.component.html',
   styleUrls: ['./system-user-detail-page.component.scss'],
@@ -40,7 +42,6 @@ export default class SystemUserDetailPageComponent {
   actionForm: Form = new Form();
 
   systemUserId: number = parseInt(this._route.snapshot.paramMap.get('systemUserId') || '');
-  // systemUser$: BehaviorSubject<any> = new BehaviorSubject(null);
   systemUser$ = signal<SystemUser | null>(null);
 
   private _sh: SubscriptionHandler = new SubscriptionHandler();
