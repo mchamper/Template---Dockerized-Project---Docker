@@ -116,8 +116,7 @@ export class List<T = any> {
       this.filters.setValuesFromQueryParams(this._route.snapshot.queryParams);
       this.moreFiltersControl.setValue(!!this._route.snapshot.queryParams['moreFilters']);
 
-      // subscriptions.push(this.changes$.pipe(skip(this._setPageMethod !== 'NoPage' ? 1 : 0)).subscribe(({ page, reset, refresh }) => {
-      subscriptions.push(this.changes$.subscribe(({ page, reset, refresh }) => {
+      subscriptions.push(this.changes$.pipe(skip(this._setPageMethod !== 'NoPage' ? 1 : 0)).subscribe(({ page, reset, refresh }) => {
         if (refresh) {
           getList(page, reset);
           return;
