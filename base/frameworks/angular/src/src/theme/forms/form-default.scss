@@ -36,7 +36,9 @@
 
 //   /* -------------------- */
 
-//   [nz-input],
+//   [nz-input]:not(.input-in-group),
+//   nz-input-group,
+//   nz-input-group input[nz-input],
 //   nz-input-number input,
 //   nz-select:not(.ant-select-multiple) nz-select-item,
 //   nz-select:not(.ant-select-multiple) nz-select-search input,
@@ -46,7 +48,8 @@
 //     @include input-value();
 //   }
 
-//   [nz-input],
+//   [nz-input]:not(.input-in-group),
+//   nz-input-group,
 //   nz-input-number,
 //   nz-select nz-select-top-control,
 //   nz-date-picker,
