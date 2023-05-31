@@ -25,6 +25,8 @@ function release() {
       exit
     fi
 
+    git checkout develop || exit 1
+
     if [[ ${commit} = "--commit" ]]; then
       git add .
       git commit -m "Auto commit: Commit before version change"
