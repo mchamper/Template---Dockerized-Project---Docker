@@ -25,6 +25,16 @@ if [[ ${CMD} = "clone" ]]; then
   exit
 fi
 
+if [[ ${CMD} = "publish" ]]; then
+  bash base/bin/git/publish.sh ${SERVICE} ${ARG1}
+  exit
+fi
+
+if [[ ${CMD} = "sync" ]]; then
+  bash base/bin/git/sync.sh ${SERVICE} ${ARG1}
+  exit
+fi
+
 if [[ ${CMD} = "create" ]]; then
   bash base/bin/create-project/${ARG1}.sh ${SERVICE} "${ARG2}" "${ARG3}" "${ARG4}" "${ARG5}"
   exit
