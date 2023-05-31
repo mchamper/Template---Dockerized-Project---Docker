@@ -1,6 +1,6 @@
-import { EventEmitter, inject } from "@angular/core";
+import { EventEmitter, WritableSignal, inject, signal } from "@angular/core";
 import { ActivatedRoute, Params, Router } from "@angular/router";
-import { difference, get, isEqual, xor } from "lodash";
+import { difference, get, isArray, isEqual, xor } from "lodash";
 import { NzTableQueryParams } from "ng-zorro-antd/table";
 import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, Observable, of, skip, Subscription, tap } from "rxjs";
 import { Form } from "../form/form";
@@ -50,7 +50,8 @@ export class List<T = any> {
   total: number = 0;
   limit: number = 20;
   sort: string = '';
-  selected: any[] = [];
+  // selected: any[] = [];
+  selected$: WritableSignal<any[]> = signal([]);
   extras: any = null;
 
   action: Form = new Form();
@@ -75,6 +76,9 @@ export class List<T = any> {
 
   constructor(
     pageInterface: 'Page' | 'LaravelPage' | 'NestJsPage' | 'NoPage' = 'Page',
+    private _options?: {
+      fieldsToCheckOnSelect: string[],
+    }
   ) {
 
     this._setPageMethod = pageInterface;
@@ -190,8 +194,8 @@ export class List<T = any> {
     this.currentPage = 1;
     this.lastPage = 1;
     this.total = 0;
-    this.selected = [];
     this.extras = null;
+    this.unselectAll();
   }
 
   setItem(item: any): void {
@@ -264,11 +268,16 @@ export class List<T = any> {
   /* -------------------- */
 
   isSelected(id: any): boolean {
-    return this.selected.some(value => value === id);
+    return this.selected$().some(value => value === id);
+  }
+
+  canSelect(item: any, fieldsToCheck?: string[]): boolean {
+    if (!fieldsToCheck) fieldsToCheck = this._options?.fieldsToCheckOnSelect;
+    return (fieldsToCheck as []).some(field => !!item[field]);
   }
 
   select(...ids: any[]): void {
-    ids.forEach(id => this.selected = xor(this.selected, [id]));
+    ids.forEach(id => this.selected$.update((value) => xor(value, [id])));
   }
 
   isAllSelected(attribute: string = 'id'): boolean {
@@ -276,7 +285,12 @@ export class List<T = any> {
       attribute = `data.${attribute}`;
     }
 
-    return !!this.selected.length && this.data.every((item: any) => this.isSelected(get(item, attribute)));
+    return !!this.selected$().length && this.data.every((item: any) => this.isSelected(get(item, attribute)));
+  }
+
+  canSelectAll(fieldsToCheck?: string[]): boolean {
+    if (!fieldsToCheck) fieldsToCheck = this._options?.fieldsToCheckOnSelect;
+    return this.data.some(item => this.canSelect(item, fieldsToCheck));
   }
 
   selectAll(attribute: string = 'id'): void {
@@ -284,7 +298,7 @@ export class List<T = any> {
       attribute = `data.${attribute}`;
     }
 
-    let ids: any[] = difference(this.data.map((item: any) => get(item, attribute)), this.selected);
+    let ids: any[] = difference(this.data.map((item: any) => get(item, attribute)), this.selected$());
 
     if (!ids.length) {
       ids = this.data.map((item: any) => get(item, attribute));
@@ -294,12 +308,14 @@ export class List<T = any> {
   }
 
   unselectAll(): void {
-    this.selected = [];
+    this.selected$.set([]);
   }
 
   /* -------------------- */
 
   refresh = (reset: boolean = false): void => {
+    this.unselectAll();
+
     this.changes$.emit({
       page: this.currentPage,
       reset,

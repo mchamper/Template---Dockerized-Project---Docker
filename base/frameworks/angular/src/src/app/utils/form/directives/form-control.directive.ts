@@ -3,7 +3,7 @@ import { FormControl, FormGroup, FormGroupDirective, NgControl } from '@angular/
 import { isArray } from 'lodash';
 import { SubscriptionHandler } from '../../handlers/subscription-handler';
 import { NzSelectComponent } from 'ng-zorro-antd/select';
-import { NzInputDirective } from 'ng-zorro-antd/input';
+import { NzInputDirective, NzInputGroupComponent } from 'ng-zorro-antd/input';
 import { NzDatePickerComponent, NzRangePickerComponent } from 'ng-zorro-antd/date-picker';
 import { BehaviorSubject } from 'rxjs';
 import { NzFormControlComponent } from 'ng-zorro-antd/form';
@@ -11,7 +11,7 @@ import { formValidatorMessages } from '../form-validators';
 import { NzInputNumberComponent } from 'ng-zorro-antd/input-number';
 
 @Directive({
-  selector: '[formControlName]',
+  selector: '[formControl],[formControlName]',
   standalone: true
 })
 export class FormControlDirective {
@@ -30,6 +30,7 @@ export class FormControlDirective {
     private _control: NgControl,
     @Optional() private _formGroup: FormGroupDirective,
     @Optional() private _nzInputControl: NzInputDirective,
+    @Optional() private _nzInputGroupControl: NzInputGroupComponent,
     @Optional() private _nzInputNumberControl: NzInputNumberComponent,
     @Optional() private _nzSelectControl: NzSelectComponent,
     @Optional() private _nzDatePickerControl: NzDatePickerComponent,
@@ -65,6 +66,10 @@ export class FormControlDirective {
 
     if (this.formItemElem) {
       this.formItemLabelElem = this.formItemElem.querySelector('nz-form-label');
+    }
+
+    if (this._nzInputControl && this._nzInputGroupControl) {
+      this._host.nativeElement.classList.add('input-in-group');
     }
   }
 

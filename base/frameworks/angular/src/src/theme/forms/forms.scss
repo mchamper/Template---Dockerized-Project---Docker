@@ -80,9 +80,19 @@ form[nz-form] {
 
   /* -------------------- */
 
-  input[nz-input] {
+  input[nz-input]:not(.input-in-group) {
     @include input-height-with-padding();
     font-size: var(--input-font-size);
+  }
+
+  nz-input-group {
+    @include input-height-with-padding();
+    font-size: var(--input-font-size);
+
+    input[nz-input] {
+      font-size: var(--input-font-size);
+      background: transparent;
+    }
   }
 
   textarea[nz-input] {
@@ -183,6 +193,10 @@ form[nz-form] {
       transform-origin: top left;
       transition: all 0.2s ease;
       transform: scale(0.85);
+
+      a {
+        pointer-events: auto;
+      }
 
       label {
         font-weight: bold;
