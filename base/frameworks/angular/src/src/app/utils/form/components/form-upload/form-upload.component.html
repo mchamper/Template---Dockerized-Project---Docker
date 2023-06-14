@@ -1,0 +1,42 @@
+<nz-upload [uploadControl]="control"
+  [ngClass]="type"
+  [nzType]="nzType"
+  [nzListType]="listTipe"
+  [(nzFileList)]="fileList"
+  [nzShowButton]="fileList$().length < max"
+  [nzBeforeUpload]="beforeUpload"
+  [nzCustomRequest]="upload"
+  [nzRemove]="remove"
+  [nzMultiple]="multiple"
+  [nzLimit]="max"
+>
+  <ng-container *ngIf="type === 'avatar'">
+    <span class="upload-icon" nz-icon nzType="plus"></span>
+    <div class="ant-upload-text ms-1">Subir</div>
+  </ng-container>
+
+  <ng-container *ngIf="type === 'button'">
+    <button type="button" class="btn btn-outline-primary">
+      <span nz-icon nzType="upload"></span>
+      Subir
+    </button>
+  </ng-container>
+
+  <ng-container *ngIf="type === 'input'">
+
+  </ng-container>
+
+  <ng-container *ngIf="type === 'dropzone'">
+    <div class="p-3">
+      <p class="app-fs-36 text-primary">
+        <span nz-icon nzType="upload"></span>
+      </p>
+      <p class="app-fs-16">Subir</p>
+      <p class="app-fs-14" style="color: rgba(0,0,0,0.45)">
+        Arrastra y suelta, o haz click aquí
+      </p>
+    </div>
+  </ng-container>
+</nz-upload>
+
+<!-- <pre>{{ fileList$() | json }}</pre> -->

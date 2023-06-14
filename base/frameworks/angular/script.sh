@@ -16,6 +16,7 @@ bash base/bin/docker/run.sh ${SERVICE} "
     moment \
     ng-zorro-antd \
     ngx-mask \
+    ng2-currency-mask \
     ngx-webstorage \
     ngx-device-detector \
     ngx-pixel \

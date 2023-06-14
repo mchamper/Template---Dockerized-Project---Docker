@@ -9,13 +9,15 @@ import { BehaviorSubject } from 'rxjs';
 import { NzFormControlComponent } from 'ng-zorro-antd/form';
 import { formValidatorMessages } from '../form-validators';
 import { NzInputNumberComponent } from 'ng-zorro-antd/input-number';
+import { NzUploadComponent } from 'ng-zorro-antd/upload';
 
 @Directive({
-  selector: '[formControl],[formControlName]',
+  selector: '[formControl],[formControlName],[ngModel],nz-upload',
   standalone: true
 })
 export class FormControlDirective {
 
+  @Input() uploadControl!: FormControl;
   @Input() errorMessages!: { [key: string]: string };
 
   formItemElem!: HTMLElement | null;
@@ -27,7 +29,7 @@ export class FormControlDirective {
 
   constructor(
     private _host: ElementRef<HTMLElement>,
-    private _control: NgControl,
+    @Optional() private _control: NgControl,
     @Optional() private _formGroup: FormGroupDirective,
     @Optional() private _nzInputControl: NzInputDirective,
     @Optional() private _nzInputGroupControl: NzInputGroupComponent,
@@ -35,6 +37,7 @@ export class FormControlDirective {
     @Optional() private _nzSelectControl: NzSelectComponent,
     @Optional() private _nzDatePickerControl: NzDatePickerComponent,
     @Optional() private _nzRangePickerControl: NzRangePickerComponent,
+    @Optional() private _nzUploadControl: NzUploadComponent,
     @Optional() private _nzFormControl: NzFormControlComponent,
   ) { }
 
@@ -49,6 +52,14 @@ export class FormControlDirective {
 
   ngOnDestroy(): void {
     this._sh.clean();
+  }
+
+  get control(): NgControl | FormControl {
+    return this._control || this.uploadControl;
+  }
+
+  get controlValue(): NgControl | FormControl {
+    return this.control.value;
   }
 
   /* -------------------- */
@@ -70,6 +81,18 @@ export class FormControlDirective {
 
     if (this._nzInputControl && this._nzInputGroupControl) {
       this._host.nativeElement.classList.add('input-in-group');
+    }
+
+    if (this._nzUploadControl) {
+      this.formItemElem?.classList.add('no-floating');
+
+      if (this._host.nativeElement.classList.contains('dropzone')) {
+        const uploadElem = this._host.nativeElement.querySelector('.ant-upload');
+
+        if (uploadElem) {
+          uploadElem.classList.add('ant-upload-select-picture-card');
+        }
+      }
     }
   }
 
@@ -126,24 +149,18 @@ export class FormControlDirective {
   resolveFloatingLabelOnFocus(): void {
     this._sh.add(
       this.isFocused$.subscribe(isFocused => {
-        this.markLabelAsFloating(!isFocused, this._control.value);
+        this.markLabelAsFloating(!isFocused, this.controlValue);
       })
     );
   }
 
   resolveFloatingLabelOnValueChanges(subscribe: boolean = true): void {
-    if (!subscribe) {
-      this.markLabelAsFloating(true, this._control.value);
-      return;
-    }
+    const onValueChange = () => {
+      this.markLabelAsFloating(true, this.controlValue);
+    };
 
-    this.resolveFloatingLabelOnValueChanges(false);
-
-    this._sh.add(
-      this._control.valueChanges?.subscribe(value => {
-        this.resolveFloatingLabelOnValueChanges(false);
-      })
-    );
+    onValueChange();
+    this._sh.add(this.control?.valueChanges?.subscribe(() => onValueChange()));
   }
 
   /* -------------------- */
@@ -167,9 +184,9 @@ export class FormControlDirective {
       if (this._nzFormControl) {
         this._nzFormControl.nzErrorTip = undefined;
 
-        if (this._control.status === 'INVALID') {
+        if (this.control?.status === 'INVALID') {
           this.setErrors();
-          this._nzFormControl.nzErrorTip = this._control.getError('error');
+          this._nzFormControl.nzErrorTip = this.control?.getError('error');
         }
       }
 
@@ -179,18 +196,18 @@ export class FormControlDirective {
     this.resolveErrors(false);
 
     this._sh.add(
-      this._control.statusChanges?.subscribe(value => {
+      this.control?.statusChanges?.subscribe(value => {
         this.resolveErrors(false);
       })
     );
   }
 
   setErrors(): void {
-    if (this._control.getError('error')) {
+    if (this.control.getError('error')) {
       return;
     }
 
-    const formControl = this._formGroup.form.get(this._control.path || '');
+    const formControl = this.uploadControl || this._formGroup.form.get(this._control.path || '');
 
     if (formControl) {
       formControl.setErrors({ error: this.getLocalErrorMessage() }, {
@@ -200,7 +217,7 @@ export class FormControlDirective {
   }
 
   getLocalErrorMessage(): string {
-    for (const key in this._control.errors) {
+    for (const key in this.control.errors) {
       if (this.errorMessages && this.errorMessages[key]) {
         return this.errorMessages[key];
       }
@@ -209,7 +226,7 @@ export class FormControlDirective {
         const message: any = formValidatorMessages[key];
 
         if (key === 'mask') {
-          const mask = this._control.errors[key].requiredMask;
+          const mask = this.control.errors[key].requiredMask;
           return message(mask);
         }
 
