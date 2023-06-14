@@ -1,12 +1,14 @@
-import { upperFirst } from "lodash";
+import { cloneDeep, upperFirst } from "lodash";
 import { BehaviorSubject } from "rxjs";
 import { camelize } from "../helper";
 
 export abstract class AbstractModel<T = any> {
 
   subject$: BehaviorSubject<T>;
+  raw: any;
 
   constructor(data: any, parserMethod?: string) {
+    this.raw = cloneDeep(data);
     data = camelize(data);
 
     if (parserMethod && !data._isParsed) {

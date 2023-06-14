@@ -1,16 +1,15 @@
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from "@angular/forms";
 import { cloneDeep, isDate } from "lodash";
-import { formValidatorMessages } from "./form-validators";
 import { RequestHandler } from "../handlers/request-handler/request-handler";
-import { BehaviorSubject, Observable, of, tap } from "rxjs";
+import { BehaviorSubject, Observable, filter, of, tap } from "rxjs";
 import * as moment from "moment";
 import { IHttpErrorResponse } from "src/app/interceptors/error.interceptor";
 import { NzNotificationService } from "ng-zorro-antd/notification";
-import { inject } from "@angular/core";
+import { EventEmitter, WritableSignal, inject, signal } from "@angular/core";
 import { environment } from "src/environments/environment";
 import { IHttpResponse } from "src/app/interceptors/success.interceptor";
 
-type TRequestType = 'data' | 'combos';
+type TRequestType = 'data' | 'combos' | 'upload';
 
 export enum FormUnpreparedReasonEnum {
   IS_LOADING = 'IS_LOADING',
@@ -48,13 +47,13 @@ export class Form {
   };
 
   group: FormGroup;
-  groupMain: FormGroup;
-  groupInit: FormGroup;
   combos: { [key: string]: any[] } = {};
+  combos$: WritableSignal<{ [key: string]: any[] }> = signal({});
 
   requestH: RequestHandler = new RequestHandler('formRequest');
   dataRequestH: RequestHandler = new RequestHandler('dataRequest');
   combosRequestH: RequestHandler = new RequestHandler('combosRequest');
+  uploadRequestH: RequestHandler = new RequestHandler('uploadRequest');
 
   private _fb: FormBuilder = inject(FormBuilder);
   private _nzNotificationS: NzNotificationService = inject(NzNotificationService);
@@ -63,24 +62,28 @@ export class Form {
     group: FormGroup = new FormGroup({}),
     public options: {
       onInit?: (form: Form) => any,
+      onInitSubscriptions?: (form: Form) => any,
+      onSubmit?: () => any,
       arrays?: {
         [key: string]: {
           group: FormGroup,
-          onAdd?: (group: FormGroup) => any
-        }
+          onAdd?: (group: FormGroup, form: Form) => any,
+          onMove?: (eachControl: FormControl, newIndex: number) => any,
+        },
       },
-      mock?: any
+      mock?: any,
     } = {},
   ) {
 
-    this.groupMain = this._fb.group({ main: group });
-    this.group = this.castFG(this.groupMain.get('main'));
-
+    this.group = group;
     this.state.set(!environment.production ? options?.mock : null);
-    this.reset(true);
 
-    this.groupInit = cloneDeep(this.groupMain);
+    this.reset(true);
     this._init();
+    this._initSubscriptions();
+    this.state.set(this.group.getRawValue());
+    this.group.markAsPristine();
+    this.group.markAsUntouched();
   }
 
   /* -------------------- */
@@ -91,7 +94,21 @@ export class Form {
     }
   }
 
-  persist(value: any) {
+  private _initSubscriptions() {
+    if (this.options.onInitSubscriptions) {
+      this.options.onInitSubscriptions(this);
+    }
+  }
+
+  submit() {
+    if (this.options.onSubmit) {
+      this.options.onSubmit();
+    }
+  }
+
+  /* -------------------- */
+
+  persist(value: any = {}) {
     this.state.persist({
       ...this.group.getRawValue(),
       ...value
@@ -110,7 +127,6 @@ export class Form {
   }
 
   restore(withInit?: boolean): void {
-    this.groupMain = cloneDeep(this.groupInit);
     this._init();
 
     if (withInit) {
@@ -139,6 +155,12 @@ export class Form {
       : [];
   }
 
+  getCombo$(key: string): any[] {
+    return this.combos$()
+      ? this.combos$()[key] || []
+      : [];
+  }
+
   getFromCombo(key: string, value: any[], multi: boolean = false) {
     const compareField: string = value[1];
     value = value[0];
@@ -146,6 +168,30 @@ export class Form {
     return this.combos
       ? (this.combos[key] || [])[multi ? 'filter' : 'find'](item => compareField ? item[compareField] === value : item === value)
       : null;
+  }
+
+  updateComboByTags(key: string, control: FormControl | string) {
+    if (typeof control === 'string') {
+      control = this.group.get(control) as FormControl;
+    }
+
+    control.valueChanges.subscribe(value => {
+      const controlValue = value.map((tag: any) => {
+        tag = typeof tag === 'string' ? { value: tag, name: tag } : tag;
+
+        this.combos$.update(combos => {
+          if (!combos[key].some(item => item.value === tag.value)) {
+            combos[key].push(tag);
+          }
+
+          return combos;
+        });
+
+        return tag;
+      });
+
+      (control as FormControl).setValue(controlValue, { emitEvent: false });
+    });
   }
 
   compareFn(o1: any, o2: any): boolean {
@@ -167,7 +213,8 @@ export class Form {
   isFormRequest(type?: TRequestType): boolean {
     switch (type) {
       case 'data':
-      case 'combos': return false;
+      case 'combos':
+      case 'upload': return false;
       default: return true;
     }
   }
@@ -176,6 +223,7 @@ export class Form {
     switch (type) {
       case 'data': return this.dataRequestH;
       case 'combos': return this.combosRequestH;
+      case 'upload': return this.uploadRequestH;
       default: return this.requestH;
     }
   }
@@ -202,8 +250,16 @@ export class Form {
     return value;
   }
 
-  getControl(key: string): AbstractControl | null {
-    return this.group.get(key);
+  getGroup(key: string): FormGroup {
+    return this.castFG(this.group.get(key));
+  }
+
+  getControl(key: string): FormControl {
+    return this.castFC(this.group.get(key));
+  }
+
+  getArray(key: string): FormArray {
+    return this.castFA(this.group.get(key));
   }
 
   /* -------------------- */
@@ -287,18 +343,69 @@ export class Form {
     const group = cloneDeep(this.options.arrays[groupArrayKey].group);
 
     if (this.options.arrays[groupArrayKey].onAdd) {
-      (this.options.arrays[groupArrayKey].onAdd as Function)(group);
+      (this.options.arrays[groupArrayKey].onAdd as Function)(group, this);
     }
 
     control.push(group);
+    control.markAsDirty();
   }
 
-  remove(control: FormArray | string, index: number): void {
+  addInit(control: FormArray | string, n: number, groupArrayKey: string = ''): void {
+    this.remove(control);
+    this.addN(control, n, groupArrayKey);
+  }
+
+  addN(control: FormArray | string, n: number, groupArrayKey: string = ''): void {
+    for (let index = 0; index < n; index++) {
+      this.add(control, groupArrayKey);
+    }
+  }
+
+  remove(control: FormArray | string, index?: number): void {
     if (typeof control === 'string') {
       control = this.group.get(control) as FormArray;
     }
 
-    control.removeAt(index);
+    if (typeof index === 'undefined') {
+      while (control.controls.length) {
+        control.removeAt(0);
+      }
+    } else {
+      control.removeAt(index);
+    }
+
+    control.markAsDirty();
+  }
+
+  move(control: FormArray | string, index: number, value: 'left' | 'right' | number, groupArrayKey: string = ''): void {
+    if (!this.options.arrays) {
+      return;
+    }
+
+    if (typeof control === 'string') {
+      groupArrayKey = control;
+      control = this.group.get(groupArrayKey) as FormArray;
+    }
+
+    let indexesToMove: number;
+
+    switch (value) {
+      case 'left': indexesToMove = -1; break;
+      case 'right': indexesToMove = 1; break;
+      default: indexesToMove = value; break;
+    }
+
+    const controlsSpliced = control.controls.splice(index, 1)[0];
+    control.controls.splice(index - indexesToMove, 0, controlsSpliced);
+
+    control.markAsDirty();
+    control.updateValueAndValidity();
+
+    if (this.options.arrays[groupArrayKey].onMove) {
+      for (let [index, value] of control.controls.entries()) {
+        (this.options.arrays[groupArrayKey].onMove as any)(value, index);
+      }
+    }
   }
 
   /* -------------------- */
@@ -328,7 +435,7 @@ export class Form {
     reason?: FormUnpreparedReasonEnum
   } {
     const defaultOptions = {
-      strict: typeof options?.strict !== 'undefined' ? options?.strict : true,
+      strict: typeof options?.strict !== 'undefined' ? options?.strict : false,
       mustResetErrors: typeof options?.mustResetErrors !== 'undefined' ? options?.mustResetErrors : true,
     };
 
@@ -424,6 +531,10 @@ export class Form {
       const prepare = options?.prepareOptions
         ? this.prepare(undefined, options?.prepareOptions)
         : this.prepare();
+
+      if (!environment.production) {
+        console.log(prepare);
+      }
 
       if (!prepare.status && prepare.reason) {
         if (defaultOptions.unprepared) {
