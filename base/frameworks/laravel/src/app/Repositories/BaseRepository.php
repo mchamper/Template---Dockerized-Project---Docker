@@ -7,9 +7,6 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
-use UnitEnum;
 
 abstract class BaseRepository
 {
@@ -30,30 +27,6 @@ abstract class BaseRepository
     /* -------------------- */
 
     // abstract public static function save(array $input, ?Model $model = null);
-
-    /* -------------------- */
-
-    /** Sync HasMany relation template:
-    public function syncRelatedModels(array $inputs, Model $model, bool $mustDetach = true): void
-    {
-        if ($mustDetach) {
-            $ids = $model->related_models->pluck('id')->toArray();
-            $idsForDelete = array_diff($ids, collect($inputs)->pluck('id')->toArray());
-
-            foreach ($idsForDelete as $id) RelatedModel::find($id)->delete();
-        }
-
-        foreach ($inputs as $input) $this->saveRelatedModel($input, $model);
-    }
-     */
-
-    /** Save HasOne relation template:
-    public function saveRelatedModel(array $input, Model $model): void
-    {
-        $input['model'] = ['id' => $model->id];
-        RelatedModelRepository::save($input, $model->related_models()->where('id', $input['id'] ?? null)->first());
-    }
-     */
 
     /* -------------------- */
 
@@ -196,6 +169,11 @@ abstract class BaseRepository
                 foreach ($idsForDelete as $id) Media::find($id)->delete();
 
                 foreach ($input[$key] as $value) {
+                    if (is_string($value)) {
+                        $value = $model->addMediaFromUrl($value)->toMediaCollection($collectionName);
+                        continue;
+                    }
+
                     $media = Media::findOrFail($value['id']);
 
                     if ($media->model_type === 'App\Models\MediaTmp') {
@@ -208,6 +186,11 @@ abstract class BaseRepository
             } else {
                 if (empty($input[$key])) {
                     $model->clearMediaCollection($collectionName);
+                    continue;
+                }
+
+                if (is_string($input[$key])) {
+                    $input[$key] = $model->addMediaFromUrl($input[$key])->toMediaCollection($collectionName);
                     continue;
                 }
 

@@ -17,6 +17,10 @@ class CombosController extends Controller
         $combos = [];
 
         foreach ($concepts as $concept) {
+            $conceptExploded = explode(':', $concept);
+            $conceptParam = $conceptExploded[1] ?? null;
+            $concept = $conceptExploded[0];
+
             switch ($concept) {
                 case 'system_user_roles': {
                     $combos[$concept] = Role::whereGuardName(Auth::$systemUserGuard)->get()->map(fn ($item) => $item['name']);

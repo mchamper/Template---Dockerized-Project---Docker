@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use App\Commons\Response\Error;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -31,6 +32,8 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $e)
     {
+        DB::rollBack();
+
         $rendered = parent::render($request, $e);
 
         if ($request->wantsJson()) {

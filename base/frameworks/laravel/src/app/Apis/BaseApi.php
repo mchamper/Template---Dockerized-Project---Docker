@@ -51,20 +51,19 @@ abstract class BaseApi
     {
         return json_decode($this->_httpClient->send(
             $this->_makeRequest($method, $endpoint),
-            array_merge($this->_httpClientDefaultOptions, $options),
+            array_merge_recursive($this->_httpClientDefaultOptions, $options),
         )->getBody()->getContents(), true);
     }
 
     /* -------------------- */
 
-    protected function _throw(ClientException|Throwable|string $e, int $tries = 1, bool $return = false)
+    protected function _throw(ClientException|Throwable|string $e, int $tries = 1, bool $return = false, int $code = 0)
     {
         $apiName = class_basename($this);
         $message = 'Ha ocurrido un error con la API "' . $apiName . '"';
         $body = null;
         $exceptionMessage = null;
-        $exceptionCode = $e instanceof Throwable ? (int) $e->getCode() : 0;
-        $exceptionCode = $exceptionCode === 401 ? 400 : $exceptionCode;
+        $exceptionCode = $e instanceof Throwable ? (int) $e->getCode() : $code;
 
         if ($e instanceof ClientException) {
             $body = json_decode((string) $e->getResponse()->getBody(), true);
@@ -77,9 +76,15 @@ abstract class BaseApi
             $exceptionMessage = $e;
         }
 
-        Str::isJson($exceptionMessage)
-            ? $body = json_decode($exceptionMessage)
-            : $message .= ': ' . $exceptionMessage;
+        if (Str::isJson($exceptionMessage)) {
+            $body = json_decode($exceptionMessage);
+        } else {
+            if (Str::startsWith($exceptionMessage, $message . ': ')) {
+                $exceptionMessage = Str::replace($message . ': ', '', $exceptionMessage);
+            }
+
+            $message .= ': ' . $exceptionMessage;
+        }
 
         $newException = new ErrorException($message, $exceptionCode ?: 500, [
             'tries' => $tries,
@@ -143,6 +148,7 @@ abstract class BaseApi
 
                 if ($tries === 1 && $onError) {
                     if (call_user_func($onError, $this->_throw($e, tries: $tries, return: true)) === true) {
+                        $maxTries++;
                         sleep(1);
                         continue;
                     }

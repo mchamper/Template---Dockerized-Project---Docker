@@ -21,12 +21,11 @@ form[nz-form].form-oneline {
   /* -------------------- */
 
   nz-form-label {
-    left: 0;
-
-    label {
-      @include app-ff-primary-eb();
-      color: var(--bs-secondary);
-    }
+    left: 0 !important;
+  }
+  label {
+    @include app-ff-primary-eb();
+    color: var(--bs-secondary);
   }
 
   /* -------------------- */
