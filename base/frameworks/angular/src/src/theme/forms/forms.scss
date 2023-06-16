@@ -50,9 +50,17 @@ form[nz-form] {
       font-size: var(--label-font-size);
     }
   }
+  label {
+    font-weight: bold;
+  }
 
-  [disabled] {
+  [disabled],
+  .ant-input-affix-wrapper-disabled,
+  .ant-select-disabled nz-select-item {
     color: var(--bs-gray-500) !important;
+  }
+  .ant-input-affix-wrapper-status-error .ant-input-prefix {
+    color: unset;
   }
 
   .ant-form-item-with-help {
@@ -91,7 +99,7 @@ form[nz-form] {
 
     input[nz-input] {
       font-size: var(--input-font-size);
-      background: transparent;
+      background: transparent !important;
     }
   }
 
@@ -177,45 +185,69 @@ form[nz-form] {
     }
   }
 
+  // [nz-radio] {
+  //   &::after {
+  //     display: none;
+  //   }
+  // }
+
+  app-form-upload {
+    + input {
+      display: none;
+    }
+
+    // .ant-upload-select {
+    //   margin-bottom: 0 !important;
+    // }
+
+    nz-upload {
+      &.dropzone {
+        .ant-upload.ant-upload-select-picture-card,
+        .ant-upload-list-picture-card-container {
+          width: 100%;
+          height: 10rem;
+        }
+      }
+    }
+  }
+
   /* -------------------- */
   /* -------------------- */
   /* -------------------- */
 
   &.floating-label {
-    nz-form-label {
-      pointer-events: none;
-      position: absolute;
-      top: 8px;
-      left: 11px;
-      padding: 0 !important;
-      line-height: 1;
-      z-index: 10;
-      transform-origin: top left;
-      transition: all 0.2s ease;
-      transform: scale(0.85);
+    nz-form-item:not(.no-floating) {
+      nz-form-label {
+        pointer-events: none;
+        position: absolute;
+        top: 8px;
+        left: 11px;
+        padding: 0 !important;
+        line-height: 1;
+        z-index: 10;
+        transform-origin: top left;
+        transition: all 0.2s ease;
+        transform: scale(0.85);
 
-      a {
-        pointer-events: auto;
+        a, .ant-typography {
+          pointer-events: auto;
+        }
+
+        &.floating {
+          top: calc(var(--input-height) / 2);
+          transform: translateY(-50%);
+        }
       }
 
-      label {
-        font-weight: bold;
+      input::placeholder {
+        color: transparent;
       }
 
-      &.floating {
-        top: calc(var(--input-height) / 2);
-        transform: translateY(-50%);
-      }
-    }
-
-    input::placeholder {
-      color: transparent;
-    }
-
-    nz-select {
-      &.ant-select-multiple {
-        nz-select-top-control {
-          padding-top: calc(var(--input-padding-top) - 1px) !important;
+      nz-select {
+        &.ant-select-multiple {
+          nz-select-top-control {
+            padding-top: calc(var(--input-padding-top) - 1px) !important;
+          }
         }
       }
     }

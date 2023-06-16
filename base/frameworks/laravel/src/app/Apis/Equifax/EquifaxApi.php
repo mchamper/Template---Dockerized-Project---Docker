@@ -37,6 +37,8 @@ abstract class EquifaxApi extends BaseApi
 
     protected function _authorize(bool $force = false): void
     {
+        $this->_httpClientDefaultOptions = [];
+
         if ($force) {
             $this->_forget('apiToken');
         }
@@ -48,6 +50,7 @@ abstract class EquifaxApi extends BaseApi
                         'Authorization' => 'Basic ' . base64_encode($this->_clientId . ':' . $this->_clientSecret),
                     ],
                     'form_params' => [
+                        'scope' => $this->_url . '/business/integration-api-efx/v1',
                         'grant_type' => 'client_credentials'
                     ],
                 ])['access_token'];

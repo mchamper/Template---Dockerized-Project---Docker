@@ -23,7 +23,6 @@ class SystemUserRepository extends BaseRepository
             'last_name',
             'email',
             'password',
-            'picture',
             'social_id',
             'social_driver',
             'social_avatar',
@@ -32,6 +31,13 @@ class SystemUserRepository extends BaseRepository
         ], $input, $systemUser);
 
         $systemUser->saveOrFail();
+
+        static::_fillMedia([
+            'picture',
+            'photos' => true,
+        ], $input, $systemUser);
+
+        $systemUser->refresh();
 
         return $systemUser;
     }

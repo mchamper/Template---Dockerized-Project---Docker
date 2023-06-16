@@ -25,9 +25,9 @@ class EquifaxVerazApi extends EquifaxApi
             'names' => Str::title($names[1]),
             'first_name' => Str::title(explode(' ', $names[1])[0]),
             'last_name' => Str::title($names[0]),
-            'document' => (int) $item['VariablesDeSalida']['documento'] ?: (int) $item['variablesDeEntrada']['documento'] ?: null,
+            'document' => (int) ($item['VariablesDeSalida']['documento'] ?? null) ?: (int) ($item['variablesDeEntrada']['documento'] ?? null) ?: null,
             'gender' => $item['VariablesDeSalida']['sexo'] ?? $item['variablesDeEntrada']['sexo'] ?? null,
-            'score' => (int) $item['VariablesDeSalida']['score_veraz'] ?? null,
+            'score' => (int) ($item['VariablesDeSalida']['score_veraz'] ?? null),
             'vars' => $item['VariablesDeSalida'],
             '_raw' => $returnRaw ? $item : null,
         ];

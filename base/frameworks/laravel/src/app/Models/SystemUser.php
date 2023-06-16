@@ -35,27 +35,23 @@ class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
         'permissions',
     ];
 
+    protected $dates = [
+        'email_verified_at'
+    ];
+
     protected $casts = [
-        'email_verified_at' => 'datetime',
         'social_driver' => SocialDriverEnum::class,
         'status' => SystemUserStatusEnum::class,
     ];
 
     protected $appends = [
         'full_name',
-        'picture',
         'social_driver_enum',
         'status_enum',
-        'roles_and_permissions'
+        'roles_and_permissions',
+        'picture',
+        'photos',
     ];
-
-    /**
-     * Media collections.
-     */
-    public function registerMediaCollections(): void
-    {
-        $this->addMediaCollection('picture');
-    }
 
     /**
      * Accesors & Mutators.
@@ -64,13 +60,6 @@ class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
     {
         return Attribute::make(
             get: fn (mixed $value, array $attributes) => trim($attributes['first_name'] . ' ' . $attributes['last_name']),
-        );
-    }
-
-    protected function picture(): Attribute
-    {
-        return Attribute::make(
-            get: fn () => $this->getFirstMediaUrl('picture'),
         );
     }
 
@@ -97,6 +86,32 @@ class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
                     'permissions' => $this->getAllPermissions()->map(fn ($item) => $item['name']),
                 ];
             }
+        );
+    }
+
+    /**
+     * Media collections.
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('picture')->singleFile();
+        $this->addMediaCollection('photos');
+    }
+
+    /**
+     * Accesors & Mutators (for media collections).
+     */
+    protected function picture(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->getFirstMedia('picture'),
+        );
+    }
+
+    protected function photos(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->getMedia('photos'),
         );
     }
 }
