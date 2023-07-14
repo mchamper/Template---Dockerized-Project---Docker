@@ -1,4 +1,4 @@
-version: '3.9'
+version: '3'
 
 services:
 
@@ -9,7 +9,7 @@ services:
       args:
         NODE_VERSION: "18"
         NPM_VERSION: "9"
-        ANGULAR_VERSION: "15"
+        ANGULAR_VERSION: "16"
     command: /bin/sh -c "npm start -- --host 0.0.0.0; tail -f /dev/null"
     ports:
       - ${PORT}0001:4200
@@ -39,7 +39,7 @@ services:
       args:
         NODE_VERSION: "18"
         NPM_VERSION: "9"
-        ANGULAR_VERSION: "15"
+        ANGULAR_VERSION: "16"
     command: /bin/sh -c "npm run serve:ssr; tail -f /dev/null"
     volumes:
       - ${SRC_WEB}:/docker/src
@@ -65,8 +65,8 @@ services:
       args:
         NODE_VERSION: "18"
         NPM_VERSION: "9"
-        ANGULAR_VERSION: "15"
-        IONIC_VERSION: "6"
+        ANGULAR_VERSION: "16"
+        IONIC_VERSION: "7"
     command: /bin/sh -c "npm start; tail -f /dev/null;"
     ports:
       - ${PORT}0002:8100
@@ -80,8 +80,8 @@ services:
       args:
         NODE_VERSION: "18"
         NPM_VERSION: "9"
-        ANGULAR_VERSION: "15"
-    command: /bin/sh -c "npm start -- --port 3000; tail -f /dev/null"
+        ANGULAR_VERSION: "16"
+    command: /bin/sh -c "npm start -- --host 0.0.0.0 --port 3000; tail -f /dev/null"
     ports:
       - ${PORT}0003:3000
     volumes:
@@ -101,14 +101,14 @@ services:
       - ${PORT}0103:80
       - ${PORT}1103:443
     volumes:
-      - ${SRC_WEB}:/docker/src
+      - ${SRC_BACKOFFICE}:/docker/src
 
   backend:
     build:
       context: ./base/dockerfiles/php
       dockerfile: Dockerfile.alpine
       args:
-        PHP_VERSION: 8.1.8-fpm
+        PHP_VERSION: 8.2.8-fpm
         COMPOSER_VERSION: --2
     ports:
       - ${PORT}0011:9000
@@ -140,7 +140,7 @@ services:
     build:
       context: ./base/dockerfiles/mariadb
       args:
-        MARIADB_VERSION: "10.4"
+        MARIADB_VERSION: "11.0.2"
     environment:
       MYSQL_USER: ${DB_USER:-admin}
       MYSQL_PASSWORD: ${DB_PASS:-root}
@@ -156,7 +156,7 @@ services:
   #   build:
   #     context: ./base/dockerfiles/postgres
   #     args:
-  #       POSTGRES_VERSION: "14.1"
+  #       POSTGRES_VERSION: "15.3"
   #   environment:
   #     POSTGRES_USER: ${DB_USER:-admin}
   #     POSTGRES_PASSWORD: ${DB_PASS:-root}

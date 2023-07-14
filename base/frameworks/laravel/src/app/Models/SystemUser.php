@@ -114,4 +114,11 @@ class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
             get: fn () => $this->getMedia('photos'),
         );
     }
+
+    /**
+     * Scopes.
+     */
+    public function scopeNoRoot(Builder $query) {
+        return $query->where('id', '!=', 1);
+    }
 }
