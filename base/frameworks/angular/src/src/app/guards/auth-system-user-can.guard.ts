@@ -4,10 +4,10 @@ import { AuthService } from '../services/auth.service';
 
 export function authSystemUserCanGuard(permissions: string | string[], matchAll: boolean = true): CanActivateFn {
   return (next: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-    const router: Router = inject(Router);
-    const authS: AuthService = inject(AuthService);
+    const router = inject(Router);
+    const authS = inject(AuthService);
 
-    const can: boolean = authS.can(permissions, matchAll);
+    const can = authS.systemUser().can(permissions, matchAll);
 
     if (!can) {
       router.navigate(['/forbidden'], {

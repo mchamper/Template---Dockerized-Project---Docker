@@ -1,135 +1,129 @@
-<ng-container *ngIf="{
-  listData: (list.data$ | async) || []
-} as vm">
-  <app-section-title [reloadFn]="list.refresh">
-    Usuarios
+<app-section-title [reloadFn]="list.refresh">
+  Usuarios
 
-    <ng-template #extrasTpl>
-      <a class="btn btn-primary btn-sm" routerLink="/usuarios/crear">
-        <span nz-icon nzType="plus-circle" nzTheme="outline" class="me-1"></span>
-        Crear usuario
-      </a>
-    </ng-template>
-  </app-section-title>
+  <ng-template #extras>
+    <a class="btn btn-primary btn-sm" routerLink="/usuarios/crear">
+      <span nz-icon nzType="plus-circle" nzTheme="outline" class="me-1"></span>
+      Crear usuario
+    </a>
+  </ng-template>
+</app-section-title>
 
-  <div class="container-fluid">
-    <app-filters [list]="list" [formGroup]="list.filters.group">
+<div class="container-fluid">
+  <app-filters [list]="list" [formGroup]="list.filters.group">
+    <div class="row">
+      <nz-form-item class="col-60 col-lg-30 col-xl-15">
+        <nz-form-control>
+          <nz-form-label>Estados</nz-form-label>
+          <nz-select formControlName="statuses" [compareWith]="list.filters.compareFn" nzMode="multiple" nzAllowClear>
+            <ng-container *ngFor="let status of list.filters.getCombo('system_user_statuses')">
+              <nz-option [nzValue]="status.name" [nzLabel]="status.value.label"></nz-option>
+            </ng-container>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <ng-template #moreFilters>
       <div class="row">
         <nz-form-item class="col-60 col-lg-30 col-xl-15">
           <nz-form-control>
-            <nz-form-label>Estados</nz-form-label>
-            <nz-select formControlName="statuses" [compareWith]="list.filters.compareFn" nzMode="multiple">
-              <ng-container *ngFor="let status of list.filters.getCombo('system_user_statuses')">
-                <nz-option [nzValue]="status.name" [nzLabel]="status.value.label"></nz-option>
-              </ng-container>
-            </nz-select>
+            <nz-form-label>Nombre</nz-form-label>
+            <input nz-input formControlName="name">
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item class="col-60 col-lg-30 col-xl-15">
+          <nz-form-control>
+            <nz-form-label>Email</nz-form-label>
+            <input nz-input formControlName="email">
           </nz-form-control>
         </nz-form-item>
       </div>
 
-      <ng-template #moreFiltersTpl>
-        <div class="row">
-          <nz-form-item class="col-60 col-lg-30 col-xl-15">
-            <nz-form-control>
-              <nz-form-label>Nombre</nz-form-label>
-              <input nz-input formControlName="name">
-            </nz-form-control>
-          </nz-form-item>
+      <div class="row">
+        <nz-form-item class="col-60 col-lg-30">
+          <nz-form-control>
+            <nz-form-label>Creado</nz-form-label>
+            <nz-range-picker formControlName="createdAt" nzFormat="longDate"></nz-range-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
 
-          <nz-form-item class="col-60 col-lg-30 col-xl-15">
-            <nz-form-control>
-              <nz-form-label>Email</nz-form-label>
-              <input nz-input formControlName="email">
-            </nz-form-control>
-          </nz-form-item>
+      <div class="row">
+        <nz-form-item class="col-60 col-lg-30 col-xl-15">
+          <nz-form-control>
+            <label class="m-0 my-1" nz-checkbox formControlName="emailVerified">Email verificado</label><br>
+            <label class="m-0 my-1" nz-checkbox formControlName="emailNotVerified">Email NO verificado</label>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </ng-template>
+  </app-filters>
 
-          <nz-form-item class="col-60 col-lg-30">
-            <nz-form-control>
-              <nz-form-label>Creado</nz-form-label>
-              <nz-range-picker formControlName="createdAt" nzFormat="longDate"></nz-range-picker>
-            </nz-form-control>
-          </nz-form-item>
-        </div>
+  <div class="box">
+    <app-request [request]="list.actionRequest">
+      <app-request [request]="list.request">
+        <nz-table
+          nzPaginationType="small"
+          [nzScroll]="{ x: '1200px' }"
+          [nzFooter]="(list.total() | number:'1.0-0') + ' registros'"
+          [nzFrontPagination]="false"
+          [nzData]="list.data()"
+          [nzTotal]="list.total()"
+          [nzPageSize]="list.limit()"
+          [nzPageIndex]="list.currentPage()"
+          (nzQueryParams)="list.onNzQueryParamsChange($event)"
+          (nzPageSizeChange)="list.onNzPageSizeChange($event)"
+        >
+          <thead>
+            <tr>
+              <th nzWidth="auto" nzColumnKey="first_name" [nzSortFn]="true">Nombre</th>
+              <th *ngIf="authS.systemUser().model()?.is('Administrator')" nzColumnKey="type" [nzSortFn]="true" nzWidth="200px">Tipo</th>
+              <th nzWidth="200px">Canal</th>
+              <th nzWidth="140px" nzColumnKey="status" [nzSortFn]="true">Estado</th>
+              <th nzWidth="200px" nzColumnKey="created_at" [nzSortFn]="true">Creado</th>
+              <th nzWidth="140px" nzAlign="center" nzRight="0">Acciones</th>
+              <th nzWidth="0px"></th>
+            </tr>
+          </thead>
 
-        <div class="row">
-          <nz-form-item class="col-60 col-lg-30 col-xl-15">
-            <nz-form-control>
-              <label class="m-0 my-1" nz-checkbox formControlName="emailVerified">Email verificado</label><br>
-              <label class="m-0 my-1" nz-checkbox formControlName="emailNotVerified">Email NO verificado</label>
-            </nz-form-control>
-          </nz-form-item>
-        </div>
-      </ng-template>
-    </app-filters>
-
-    <div class="box">
-      <app-request-handler [list]="list">
-        <app-request-handler [listAction]="list.action">
-          <nz-table
-            nzPaginationType="small"
-            [nzScroll]="{ x: '800px' }"
-            [nzFooter]="(list.total | number:'1.0-0') + ' registros'"
-            [nzFrontPagination]="false"
-            [nzData]="vm.listData"
-            [nzTotal]="list.total"
-            [nzPageSize]="list.limit"
-            [nzPageIndex]="list.currentPage"
-            (nzQueryParams)="list.onNzQueryParamsChange($event)"
-            (nzPageSizeChange)="list.onNzPageSizeChange($event)"
-          >
-            <thead>
+          <tbody>
+            <ng-container *ngFor="let item of list.data(); index as i;">
               <tr>
-                <th nzWidth="auto" nzColumnKey="first_name" [nzSortFn]="true">Nombre</th>
-                <th nzWidth="200px" nzColumnKey="status" [nzSortFn]="true">Estado</th>
-                <th nzWidth="200px" nzColumnKey="created_at" [nzSortFn]="true">Creado</th>
-                <th nzWidth="140px" nzAlign="center" nzRight="0">Acciones</th>
-                <th nzWidth="0px"></th>
+                <td>
+                  {{ item.data.fullName }}
+
+                  <ng-container *ngIf="item.data.emailVerifiedAt">
+                    <i nz-icon [nzType]="'check-circle'" nzTheme="twotone" nzTwotoneColor="#52c41a" nz-tooltip nzTooltipTitle="Dirección de correo verificada"></i>
+                  </ng-container>
+
+                  <br>
+
+                  <small class="text-muted" nz-typography nzCopyable [nzCopyText]="item.data.email">
+                    {{ item.data.email }}
+                  </small>
+                </td>
+
+                <td>
+                  <nz-tag [nzColor]="item.data.statusEnum.color">
+                    {{ item.data.statusEnum.label }}
+                  </nz-tag>
+                </td>
+
+                <td>
+                  {{ item.data.createdAt.toString() | date:'longDate' }}<br>
+                  <small class="text-muted">{{ item.data.createdAt.toString() | date:'HH:mm:ss' }}</small>
+                </td>
+
+                <td nzAlign="center" nzRight="0">
+                  <app-system-user-action [systemUser]="item" [request]="list.actionRequest" (onSuccess$)="onActionSuccess($event)"></app-system-user-action>
+                </td>
               </tr>
-            </thead>
-
-            <tbody>
-              <ng-container *ngFor="let item of vm.listData; index as i;">
-                <tr>
-                  <td>
-                    {{ item.data.fullName }}
-
-                    <ng-container *ngIf="item.data.emailVerifiedAt">
-                      <i nz-icon [nzType]="'check-circle'" nzTheme="twotone" nzTwotoneColor="#52c41a" nz-tooltip nzTooltipTitle="Dirección de correo verificada"></i>
-                    </ng-container>
-
-                    <br>
-
-                    <small class="text-muted" nz-typography nzCopyable [nzCopyText]="item.data.email">
-                      {{ item.data.email }}
-                    </small>
-                  </td>
-
-                  <td>
-                    <nz-tag [nzColor]="item.data.statusEnum.color">
-                      {{ item.data.statusEnum.label }}
-                    </nz-tag>
-                  </td>
-
-                  <td>
-                    {{ item.data.createdAt.toString() | date:'longDate' }}<br>
-                    <small class="text-muted">{{ item.data.createdAt.toString() | date:'HH:mm:ss' }}</small>
-                  </td>
-
-                  <td nzAlign="center" nzRight="0">
-                    <app-system-user-action [systemUser]="item" [list]="list"></app-system-user-action>
-                  </td>
-
-                  <div *ngIf="item.data.deletedAt" class="row-deleted">
-                    <nz-tag nzColor="volcano">
-                      Registro eliminado
-                    </nz-tag>
-                  </div>
-                </tr>
-              </ng-container>
-            </tbody>
-          </nz-table>
-        </app-request-handler>
-      </app-request-handler>
-    </div>
+            </ng-container>
+          </tbody>
+        </nz-table>
+      </app-request>
+    </app-request>
   </div>
-</ng-container>
+</div>

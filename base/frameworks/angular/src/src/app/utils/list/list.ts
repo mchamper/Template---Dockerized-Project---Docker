@@ -1,14 +1,16 @@
-import { EventEmitter, WritableSignal, inject, signal } from "@angular/core";
+import { EventEmitter, inject, signal } from "@angular/core";
 import { ActivatedRoute, Params, Router } from "@angular/router";
-import { difference, get, isArray, isEqual, xor } from "lodash";
+import { difference, get, initial, isEqual, xor } from "lodash";
 import { NzTableQueryParams } from "ng-zorro-antd/table";
 import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, Observable, of, skip, Subscription, tap } from "rxjs";
 import { Form } from "../form/form";
-import { RequestHandler } from "../handlers/request-handler/request-handler";
 import { scrollTo, stringToObject } from "src/app/helper";
 import { IHttpResponse } from "src/app/interceptors/success.interceptor";
 import { IHttpErrorResponse } from "src/app/interceptors/error.interceptor";
 import { FormControl } from "@angular/forms";
+import { Request } from "../request/request";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { environment } from "src/environments/environment";
 
 export enum ListUnpreparedReasonEnum {
   IS_LOADING = 'IS_LOADING',
@@ -41,234 +43,209 @@ export interface INoPage {
   data: any[];
 }
 
-export class List<T = any> {
+export class List<Item = any> {
 
-  data: T[] = [];
-  data$: BehaviorSubject<T[]> = new BehaviorSubject<T[]>([]);
-  currentPage: number = 1;
-  lastPage: number = 1;
-  total: number = 0;
-  limit: number = 20;
-  sort: string = '';
-  // selected: any[] = [];
-  selected$: WritableSignal<any[]> = signal([]);
-  extras: any = null;
+  data = signal<Item[]>([]);
+  currentPage = signal(1);
+  lastPage = signal(1);
+  total = signal(0);
+  limit = signal(20);
+  sort = signal('');
+  selected = signal<any[]>([]);
+  extras = signal<any>(null);
 
-  action: Form = new Form();
-  filters: Form = new Form();
+  request = new Request();
+  actionRequest = new Request();
+  filters = new Form();
   moreFiltersControl: FormControl = new FormControl<boolean>(false);
   queryParamsValue!: Object;
 
-  requestH: RequestHandler = new RequestHandler();
-
   nzExpandSet = new Set<number>();
 
-  changes$: EventEmitter<{
+  onChange$: EventEmitter<{
     page: number,
     reset: boolean,
     refresh?: boolean,
   }> = new EventEmitter();
 
-  private _setPageMethod!: string;
+  private _setPageMethod: 'Page' | 'LaravelPage' | 'NestJsPage' | 'NoPage';
 
   private _router: Router = inject(Router);
   private _route: ActivatedRoute = inject(ActivatedRoute);
 
   constructor(
-    pageInterface: 'Page' | 'LaravelPage' | 'NestJsPage' | 'NoPage' = 'Page',
-    private _options?: {
-      fieldsToCheckOnSelect: string[],
-    }
+    pageInterface: List['_setPageMethod'] = 'Page',
+    private _options: {
+      persistOnUrl?: boolean,
+      fieldsToCheckOnSelect?: string[],
+      request?: {
+        scrollToTop?: boolean,
+      } & Request['_options'],
+      filters?: Form,
+    } = {}
   ) {
 
     this._setPageMethod = pageInterface;
+
+    if (this._options.request) {
+      this.request = new Request({
+        ...this._options.request,
+        type: 'default',
+      });
+    }
+
+    if (this._options.filters) {
+      this.filters = this._options.filters;
+    }
+
+    this._init();
   }
 
   /* -------------------- */
 
-  private _resolveQueryParams(page: number): any {
-    let queryParams;
-
+  private _getQueryParams(page: number) {
     if (this._setPageMethod !== 'NoPage') {
-      queryParams = {
+      return {
         page,
-        limit: this.limit,
-        sort: this.sort,
+        limit: this.limit(),
+        sort: this.sort(),
         moreFilters: this.moreFiltersControl.value,
-        ...this.filters.getValuesForQueryParams(),
-      };
-    } else {
-      queryParams = {
-        moreFilters: this.moreFiltersControl.value,
-        ...this.filters.getValuesForQueryParams(),
+        ...this.filters.getQueryParamsFromValues(),
       };
     }
 
-    return queryParams;
+    return {
+      moreFilters: this.moreFiltersControl.value,
+      ...this.filters.getQueryParamsFromValues(),
+    };
   }
 
-  init(
-    getList: (page: number, reset: boolean) => any,
-    options?: {
-      persistOnUrl: boolean
-    }
-  ): Subscription[] {
+  private _persistOnUrl(page?: number): void {
+    this._router.navigate([], {
+      queryParams: stringToObject(this._getQueryParams(page || this.currentPage()), true),
+      replaceUrl: true,
+    });
+  }
 
-    const subscriptions: Subscription[] = [];
+  private _init() {
+    if (this._options.persistOnUrl) {
+      const queryParams = this._route.snapshot.queryParams;
 
-    if (options?.persistOnUrl) {
-      this.filters.setValuesFromQueryParams(this._route.snapshot.queryParams);
-      this.moreFiltersControl.setValue(!!this._route.snapshot.queryParams['moreFilters']);
+      this.filters.setValuesFromQueryParams(queryParams);
+      this.moreFiltersControl.setValue(!!queryParams['moreFilters']);
 
-      subscriptions.push(this.changes$.pipe(skip(this._setPageMethod !== 'NoPage' ? 1 : 0)).subscribe(({ page, reset, refresh }) => {
-        if (refresh) {
-          getList(page, reset);
-          return;
-        }
+      this.currentPage.set(parseInt(queryParams['page'] || '1') || this.currentPage());
+      this.limit.set(parseInt(queryParams['limit'] || '0') || this.limit());
+      this.sort.set(queryParams['sort'] || this.sort());
 
-        this._router.navigate([], {
-          queryParams: stringToObject(this._resolveQueryParams(page), true),
-          replaceUrl: true,
-          state: {
-            reset,
-          },
-        });
-      }));
-
-      subscriptions.push(this._route.queryParams.subscribe((queryParams: Params) => {
-        if (typeof queryParams['page'] === 'undefined') {
-          this.changes$.emit({ page: this.currentPage, reset: false });
-          return;
-        }
-
-        const queryParamsValue = {
-          ...this.filters.group.value,
-          page: '1',
-          limit: this.limit + '',
-          sort: this.sort,
-          ...queryParams,
-          moreFilters: null,
-        };
-
-        if (isEqual(queryParamsValue, this.queryParamsValue)) {
-          return;
-        }
-
-        this.queryParamsValue = { ...queryParamsValue };
-
-        const page = parseInt(queryParams['page'] || '1') || this.currentPage;
-        this.limit = parseInt(queryParams['limit'] || '0') || this.limit;
-        this.sort = queryParams['sort'] || this.sort;
-
-        getList(page, this._router.getCurrentNavigation()?.extras?.state?.['reset'] || false);
-      }));
-    } else {
-      subscriptions.push(this.changes$.subscribe(({ page, reset }) => {
-        getList(page, reset);
-      }));
+      this.moreFiltersControl.valueChanges.pipe(
+        takeUntilDestroyed(),
+        debounceTime(300),
+        distinctUntilChanged(),
+      ).subscribe(() => {
+        this._persistOnUrl();
+      });
     }
 
-    subscriptions.push(this.filters.group.valueChanges.pipe(
+    this.onChange$.pipe(
+      takeUntilDestroyed()
+    ).subscribe(({ page, reset }) => {
+      if (this._options.persistOnUrl) {
+        this._persistOnUrl(page);
+      }
+
+      this.run(page, reset);
+    });
+
+    this.filters.group.valueChanges.pipe(
+      takeUntilDestroyed(),
       debounceTime(300),
       distinctUntilChanged(),
       filter(() => this.filters.group.status === 'VALID')
-    ).subscribe(value => {
-      this.changes$.emit({ page: 1, reset: true });
-    }));
-
-    subscriptions.push(this.moreFiltersControl.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-    ).subscribe(value => {
-      this.changes$.emit({ page: this.currentPage, reset: false });
-    }));
-
-    return subscriptions;
+    ).subscribe(() => {
+      this.onChange$.emit({ page: 1, reset: true });
+    });
   }
 
   /* -------------------- */
 
   reset(): void {
-    this.data$.next([]);
-    this.data = [];
-    this.currentPage = 1;
-    this.lastPage = 1;
-    this.total = 0;
-    this.extras = null;
+    this.data.set([]);
+    this.currentPage.set(1);
+    this.lastPage.set(1);
+    this.total.set(0);
+    this.extras.set(null);
     this.unselectAll();
   }
 
   setItem(item: any): void {
-    this.data = [...this.data].map((itemData: any) => {
-      if (typeof itemData.data !== 'undefined') {
-        if (itemData.data?.id === item.data?.id) {
-          return item;
+    this.data.update(value => {
+      return [...value].map((itemData: any) => {
+        if (typeof itemData.data !== 'undefined') {
+          if (itemData.data?.id === item.data?.id) {
+            return item;
+          }
+        } else {
+          if (itemData.id === item.id) {
+            return item;
+          }
         }
-      } else {
-        if (itemData.id === item.id) {
-          return item;
-        }
-      }
 
-      return itemData;
+        return itemData;
+      });
     });
-
-    this.data$.next(this.data);
   }
 
   set(page: IPage | ILaravelPage | INestJsPage | INoPage, options?: { extras?: any }): void {
     'items' in page
-      ? this.data = page.items
-      : this.data = page.data;
+      ? this.data.set(page.items)
+      : this.data.set(page.data);
 
-    this.data$.next(this.data);
-
-    this.extras = options?.extras;
+    this.extras.set(options?.extras);
 
     (this as any)[`_set${this._setPageMethod}`](page);
   }
 
   add(page: IPage | ILaravelPage | INestJsPage | INoPage): void {
-    let data: T[];
+    let data: Item[];
 
     'items' in page
       ? data = page.items
       : data = page.data;
 
-    this.data = [...this.data, ...data];
-    this.data$.next(this.data);
+    this.data.update(value => [ ...value, ...data]);
 
     (this as any)[`_set${this._setPageMethod}`](page);
   }
 
   private _setPage(page: IPage): void {
-    this.currentPage = page.currentPage;
-    this.lastPage = page.lastPage;
-    this.total = page.total;
+    this.currentPage.set(page.currentPage);
+    this.lastPage.set(page.lastPage);
+    this.total.set(page.total);
   }
 
   private _setLaravelPage(page: ILaravelPage): void {
-    this.currentPage = page.current_page;
-    this.lastPage = page.last_page;
-    this.total = page.total;
+    this.currentPage.set(page.current_page);
+    this.lastPage.set(page.last_page);
+    this.total.set(page.total);
   }
 
   private _setNestJsPage(page: INestJsPage): void {
-    this.currentPage = page.meta.currentPage;
-    this.lastPage = page.meta.totalPages;
-    this.total = page.meta.totalItems;
+    this.currentPage.set(page.meta.currentPage);
+    this.lastPage.set(page.meta.totalPages);
+    this.total.set(page.meta.totalItems);
   }
 
   private _setNoPage(page: INoPage): void {
-    this.currentPage = 1;
-    this.lastPage = 1;
-    this.total = this.data.length;
+    this.currentPage.set(1);
+    this.lastPage.set(1);
+    this.total.set(this.data().length);
   }
 
   /* -------------------- */
 
   isSelected(id: any): boolean {
-    return this.selected$().some(value => value === id);
+    return this.selected().some(value => value === id);
   }
 
   canSelect(item: any, fieldsToCheck?: string[]): boolean {
@@ -277,38 +254,38 @@ export class List<T = any> {
   }
 
   select(...ids: any[]): void {
-    ids.forEach(id => this.selected$.update((value) => xor(value, [id])));
+    ids.forEach(id => this.selected.update((value) => xor(value, [id])));
   }
 
   isAllSelected(attribute: string = 'id'): boolean {
-    if (this.data[0] && 'data' in (this.data[0] as any)) {
+    if (this.data()[0] && 'data' in (this.data()[0] as any)) {
       attribute = `data.${attribute}`;
     }
 
-    return !!this.selected$().length && this.data.every((item: any) => this.isSelected(get(item, attribute)));
+    return !!this.selected().length && this.data().every((item: any) => this.isSelected(get(item, attribute)));
   }
 
   canSelectAll(fieldsToCheck?: string[]): boolean {
     if (!fieldsToCheck) fieldsToCheck = this._options?.fieldsToCheckOnSelect;
-    return this.data.some(item => this.canSelect(item, fieldsToCheck));
+    return this.data().some(item => this.canSelect(item, fieldsToCheck));
   }
 
   selectAll(attribute: string = 'id'): void {
-    if (this.data[0] && 'data' in (this.data[0] as any)) {
+    if (this.data()[0] && 'data' in (this.data()[0] as any)) {
       attribute = `data.${attribute}`;
     }
 
-    let ids: any[] = difference(this.data.map((item: any) => get(item, attribute)), this.selected$());
+    let ids: any[] = difference(this.data().map((item: any) => get(item, attribute)), this.selected());
 
     if (!ids.length) {
-      ids = this.data.map((item: any) => get(item, attribute));
+      ids = this.data().map((item: any) => get(item, attribute));
     }
 
     this.select(...ids);
   }
 
   unselectAll(): void {
-    this.selected$.set([]);
+    this.selected.set([]);
   }
 
   /* -------------------- */
@@ -316,8 +293,8 @@ export class List<T = any> {
   refresh = (reset: boolean = false): void => {
     this.unselectAll();
 
-    this.changes$.emit({
-      page: this.currentPage,
+    this.onChange$.emit({
+      page: this.currentPage(),
       reset,
       refresh: true,
     });
@@ -336,23 +313,24 @@ export class List<T = any> {
     const sort = event.sort.find(item => item.value);
 
     if (sort) {
-      this.sort = sort.value === 'descend'
+      this.sort.set(sort.value === 'descend'
         ? `-${sort?.key}`
         : `${sort?.key}`
+      );
     } else {
-      this.sort = '';
+      this.sort.set('');
     }
 
-    this.changes$.emit({
+    this.onChange$.emit({
       page,
       reset: false,
     });
   }
 
   onNzPageSizeChange(event: number): void {
-    this.limit = event;
+    this.limit.set(event);
 
-    this.changes$.emit({
+    this.onChange$.emit({
       page: 1,
       reset: true
     });
@@ -364,7 +342,7 @@ export class List<T = any> {
     status: boolean,
     reason?: ListUnpreparedReasonEnum
   } {
-    if (this.requestH.isLoading()) {
+    if (this.request.isLoading()) {
       return {
         status: false,
         reason: ListUnpreparedReasonEnum.IS_LOADING,
@@ -376,60 +354,32 @@ export class List<T = any> {
     };
   }
 
-  send(
-    observable: Observable<any>,
-    options?: {
-      unprepared?: (reason: ListUnpreparedReasonEnum) => void,
-      before?: () => void,
-      success?: (res: IHttpResponse) => void,
-      error?: (err: IHttpErrorResponse) => void,
-      after?: () => void,
-      scrollToTop?: boolean,
-    }
-  ): Observable<IHttpResponse> {
-    const defaultOptions = {
-      unprepared: typeof options?.unprepared !== 'undefined' ? options?.unprepared : null,
-      before: typeof options?.before !== 'undefined' ? options?.before : null,
-      success: typeof options?.success !== 'undefined' ? options?.success : null,
-      error: typeof options?.error !== 'undefined' ? options?.error : null,
-      after: typeof options?.after !== 'undefined' ? options?.after : null,
-      scrollToTop: typeof options?.scrollToTop !== 'undefined' ? options?.scrollToTop : true,
+  /* -------------------- */
+
+  send(...params: any): Observable<IHttpResponse> {
+    const options = {
+      ...this._options.request,
+      scrollToTop: get(this._options.request, 'scrollToTop', true),
+    };
+
+    const isPrepared = this.prepare();
+
+    if (!environment.production) {
+      console.log('List prepared:', isPrepared);
     }
 
-    const prepare = this.prepare();
-
-    if (!prepare.status && prepare.reason) {
-      if (defaultOptions.unprepared) {
-        defaultOptions.unprepared(prepare.reason);
-      }
-
+    if (!isPrepared.status && isPrepared.reason) {
       return of();
     }
 
-    if (defaultOptions.scrollToTop) {
+    if (options.scrollToTop) {
       scrollTo(0);
     }
 
-    if (defaultOptions.before) {
-      defaultOptions.before();
-    }
+    return this.request.send(params);
+  }
 
-    return this.requestH.send(observable).pipe(
-      tap({
-        next: (res: IHttpResponse) => {
-          if (defaultOptions.success) {
-            defaultOptions.success(res);
-          }
-        },
-        error: (err: IHttpErrorResponse) => {
-          if (defaultOptions.error) {
-            defaultOptions.error(err);
-          }
-        },
-        complete: () => {
-          if (defaultOptions.after) defaultOptions.after();
-        },
-      }),
-    );
+  run = (...params: any): Subscription => {
+    return this.send(...params).subscribe();
   }
 }

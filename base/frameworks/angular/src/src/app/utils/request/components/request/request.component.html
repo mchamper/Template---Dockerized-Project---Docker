@@ -1,0 +1,58 @@
+<div [style.minHeight]="minHeight">
+  <ng-content></ng-content>
+
+  <ng-container *ngIf="type === 'default'" [ngTemplateOutlet]="typeDefaultTpl" />
+  <ng-container *ngIf="type === 'spinner'" [ngTemplateOutlet]="typeSpinnerTpl" />
+  <ng-container *ngIf="type === 'form'" [ngTemplateOutlet]="typeFormTpl" />
+
+  <!-- -------------------- -->
+
+  <ng-template #typeDefaultTpl>
+    <ng-container *ngIf="request.body(); else noResTpl">
+      <ng-container *ngTemplateOutlet="contentTpl" />
+    </ng-container>
+
+    <ng-template #noResTpl>
+      <ng-container [ngTemplateOutlet]="placeholderTpl" />
+    </ng-template>
+
+    <div *ngIf="mustDisableInteraction" class="interaction-disabled has-content">
+      <div>
+        <ng-container *ngIf="isLoading" [ngTemplateOutlet]="loadingTpl || defaultLoadingTpl" />
+        <ng-container *ngIf="request.isError()" [ngTemplateOutlet]="errorTpl || defaultErrorTpl" />
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #typeSpinnerTpl>
+    <div *ngIf="request.isLoading()" class="interaction-disabled has-content">
+      <div>
+        <ng-container *ngIf="isLoading" [ngTemplateOutlet]="loadingTpl || defaultLoadingTpl" />
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #typeFormTpl>
+    <div *ngIf="request.isLoading()" class="interaction-disabled"></div>
+  </ng-template>
+
+  <!-- -------------------- -->
+
+  <ng-template #defaultErrorTpl>
+    <div class="text-center p-3">
+      <p class="lead mb-0">Ha ocurrido un error</p>
+      <p class="mb-0">No podemos mostrar esta información por el momento</p>
+    </div>
+  </ng-template>
+
+  <ng-template #defaultLoadingTpl>
+    <div class="spinner-border text-primary" role="status"
+      [ngStyle]="{
+        'width': spinnerSize + 'rem',
+        'height': spinnerSize + 'rem',
+      }"
+    >
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </ng-template>
+</div>

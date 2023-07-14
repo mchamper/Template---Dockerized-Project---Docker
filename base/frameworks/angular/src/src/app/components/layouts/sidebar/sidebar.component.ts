@@ -21,6 +21,10 @@ import { ViewportService } from 'src/app/services/viewport.service';
 export class SidebarComponent {
 
   constructor(
-    public viewportS: ViewportService,
+    private _viewportS: ViewportService,
   ) { }
+
+  get isMobile() {
+    return this._viewportS.down('md');
+  }
 }

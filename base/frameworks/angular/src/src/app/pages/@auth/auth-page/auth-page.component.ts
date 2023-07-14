@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { SvgCoffeeBreakLogoComponent } from 'src/app/components/svg/svg.components';
 import { SharedModule } from 'src/app/shared.module';
 import { AuthPageLoginComponent } from './auth-page-login/auth-page-login.component';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
@@ -14,7 +13,6 @@ import { AuthPagePasswordResetUpdateComponent } from './auth-page-password-reset
   imports: [
     SharedModule,
     RouterModule,
-    SvgCoffeeBreakLogoComponent,
     AuthPageLoginComponent,
     AuthPageRegisterComponent,
     AuthPagePasswordResetRequestComponent,
@@ -28,12 +26,9 @@ import { AuthPagePasswordResetUpdateComponent } from './auth-page-password-reset
 })
 export default class AuthPageComponent {
 
-  passwordResetHash: string;
+  passwordResetHash = this._route.snapshot.queryParamMap.get('passwordResetHash') || '';
 
   constructor(
     private _route: ActivatedRoute,
-  ) {
-
-    this.passwordResetHash = this._route.snapshot.queryParamMap.get('passwordResetHash') || '';
-  }
+  ) { }
 }

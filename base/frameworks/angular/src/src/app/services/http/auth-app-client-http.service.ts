@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpContext } from '@angular/common/http';
-import { AUTH_LOGIN, AUTH_LOGOUT_ON_ERROR } from 'src/app/interceptors/contexts';
-import { IHttpResponse } from 'src/app/interceptors/success.interceptor';
+import { GUARD, ON_ERROR, ON_SUCCESS } from 'src/app/interceptors/contexts';
 import { AuthService } from '../auth.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -16,34 +16,39 @@ export class AuthAppClientHttpService {
 
   /* -------------------- */
 
-  login(input: { key: string, secret: string }) {
-    return this._httpClient.post(`backend:/auth/v1/app-client/login`, input, {
+  login = (input: { key: string, secret: string }) => {
+    return this._httpClient.post(`${environment.backendUrl}/auth/v1/app-client/login`, input, {
       context: new HttpContext()
-        .set(AUTH_LOGIN, (res: IHttpResponse) => {
+        .set(ON_SUCCESS, res => {
           const token = res.body.token;
           const tokenExpiresAt = res.body.token_expires_at;
 
-          return {
-            data: {},
+          this._authS.appClient().login({
             token,
             tokenExpiresAt,
-          };
+          });
         })
     });
   }
 
-  logout() {
-    this._authS.logout('appClient');
+  logout = () => {
+    this._authS.appClient().logout();
 
-    return this._httpClient.post(`backend:/auth/v1/app-client/logout`, null, {
+    return this._httpClient.post(`${environment.backendUrl}/auth/v1/app-client/logout`, null, {
       context: new HttpContext()
+        .set(GUARD, 'appClient')
     });
   }
 
-  me() {
-    return this._httpClient.get(`backend:/auth/v1/app-client/me`, {
+  me = () => {
+    return this._httpClient.get(`${environment.backendUrl}/auth/v1/app-client/me`, {
       context: new HttpContext()
-        .set(AUTH_LOGOUT_ON_ERROR, true)
+        .set(GUARD, 'appClient')
+        .set(ON_ERROR, err => {
+          if (err.status === 401) {
+            this._authS.appClient().logout();
+          }
+        })
     });
   }
 }

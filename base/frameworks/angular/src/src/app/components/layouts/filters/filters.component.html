@@ -1,5 +1,5 @@
 <div class="box mb-3">
-  <app-request-handler [requestH]="list.filters.combosRequestH">
+  <app-request [request]="list.filters.combosRequest">
     <form class="form-default floating-label" nz-form nzLayout="vertical">
       <ng-content></ng-content>
 
@@ -30,5 +30,5 @@
         </ng-container>
       </div>
     </form>
-  </app-request-handler>
+  </app-request>
 </div>

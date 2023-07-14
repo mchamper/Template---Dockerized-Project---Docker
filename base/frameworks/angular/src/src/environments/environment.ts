@@ -6,8 +6,6 @@ export const environment: IEnvironment = {
   storageVersion: 1,
   storageKey: '',
   mock: true,
-  httpMock: false,
-  httpCache: false,
   appUrl: 'http://localhost:10003',
   backendUrl: 'http://localhost:10111',
   backendAppClientKey: '1|local',

@@ -1,5 +1,5 @@
-<ng-container *ngIf="!permissions$().length || authS.can(permissions$()); else forbiddenTpl">
-  <router-outlet></router-outlet>
+<ng-container *ngIf="!permissions().length || authS.systemUser().can(permissions()); else forbiddenTpl">
+  <ng-container [ngTemplateOutlet]="contentTpl" />
 </ng-container>
 
 <ng-template #forbiddenTpl>

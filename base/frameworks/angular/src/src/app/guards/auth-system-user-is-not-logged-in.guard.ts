@@ -4,10 +4,10 @@ import { AuthService } from '../services/auth.service';
 
 export function authSystemUserIsNotLoggedInGuard(): CanActivateFn {
   return (next: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-    const router: Router = inject(Router);
-    const authS: AuthService = inject(AuthService);
+    const router = inject(Router);
+    const authS = inject(AuthService);
 
-    const can: boolean = !authS.isLoggedIn();
+    const can = !authS.systemUser().isLoggedIn();
 
     if (!can) {
       router.navigate(['/'], {

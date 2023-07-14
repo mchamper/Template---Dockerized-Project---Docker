@@ -1,21 +1,18 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { SharedModule } from 'src/app/shared.module';
 
 @Component({
   selector: 'app-min-width',
   standalone: true,
-  imports: [SharedModule],
+  imports: [
+    SharedModule
+  ],
   templateUrl: './min-width.component.html',
   styleUrls: ['./min-width.component.scss']
 })
-export class MinWidthComponent implements OnInit {
+export class MinWidthComponent {
 
-  @Input() value!: number;
+  @Input({ required: true }) value!: number;
   @Input() translate: string = '-50%';
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
 
 }

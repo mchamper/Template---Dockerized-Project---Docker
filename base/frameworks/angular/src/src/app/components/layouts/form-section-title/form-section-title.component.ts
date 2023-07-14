@@ -17,7 +17,7 @@ import { SharedModule } from 'src/app/shared.module';
 })
 export class FormSectionTitleComponent {
 
-  @Input() title!: string;
+  @Input({ required: true }) title!: string;
   @Input() icon!: string;
   @Input() isFirst: boolean = false;
 }
