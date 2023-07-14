@@ -8,6 +8,7 @@ bash base/bin/docker/run.sh ${SERVICE} "
   composer require \
     laravel/socialite \
     marvinlabs/laravel-discord-logger \
+    mvanduijker/laravel-model-exists-rule \
     spatie/laravel-medialibrary:^10.0.0 \
     spatie/laravel-permission \
     google/apiclient;
