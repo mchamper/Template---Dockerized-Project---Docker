@@ -35,7 +35,7 @@ class CreatePermissionTables extends Migration
         });
 
         Schema::create($tableNames['roles'], function (Blueprint $table) use ($teams, $columnNames) {
-            $table->bigIncrements('id')->from(1000); // role id
+            $table->bigIncrements('id')->startingValue(1000); // role id
             // $table->bigIncrements('id')->generatedAs('START WITH 100'); // role id (for postgresql)
             if ($teams || config('permission.testing')) { // permission.testing is a fix for sqlite testing
                 $table->unsignedBigInteger($columnNames['team_foreign_key'])->nullable();

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\v1\Backoffice;
+namespace App\Http\Controllers\Api\Backoffice\v1;
 
 use App\Commons\Response\Response;
 use App\Http\Controllers\Controller;

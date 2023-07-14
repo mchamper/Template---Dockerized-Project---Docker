@@ -7,6 +7,8 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
+use UnitEnum;
 
 abstract class BaseRepository
 {
@@ -113,11 +115,17 @@ abstract class BaseRepository
             $repo = $config[0];
             $repoModel = $config[1];
             $repoModelRelation = $config[2];
+            $mustDelete = $config[3] ?? false;
             $relatedModels = $model->$key()->get();
 
             $ids = $relatedModels->pluck('id')->toArray();
             $idsForDetach = array_diff($ids, collect($input[$key])->pluck('id')->toArray());
-            foreach ($idsForDetach as $id) $repo::save([$repoModelRelation => null], $repoModel::findOrFail($id));
+
+            foreach ($idsForDetach as $id) {
+                $mustDelete
+                    ? $repoModel::findOrFail($id)->delete()
+                    : $repo::save([$repoModelRelation => null], $repoModel::findOrFail($id));
+            }
 
             foreach ($input[$key] as $value) {
                 $value[$repoModelRelation] = ['id' => $model->id];
@@ -170,7 +178,9 @@ abstract class BaseRepository
 
                 foreach ($input[$key] as $value) {
                     if (is_string($value)) {
-                        $value = $model->addMediaFromUrl($value)->toMediaCollection($collectionName);
+                        $value = $model->addMediaFromUrl($value)
+                            ->toMediaCollection($collectionName);
+
                         continue;
                     }
 
@@ -190,7 +200,9 @@ abstract class BaseRepository
                 }
 
                 if (is_string($input[$key])) {
-                    $input[$key] = $model->addMediaFromUrl($input[$key])->toMediaCollection($collectionName);
+                    $input[$key] = $model->addMediaFromUrl($input[$key])
+                        ->toMediaCollection($collectionName);
+
                     continue;
                 }
 

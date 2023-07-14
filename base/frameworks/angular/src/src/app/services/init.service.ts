@@ -16,8 +16,6 @@ export const initializeApp = (initS: InitService) => {
 })
 export class InitService {
 
-  errorMessage: string = 'Ha ocurrido un error.';
-
   constructor(
     @Inject(DOCUMENT) private _dom: Document,
     private _authS: AuthService,
@@ -51,17 +49,19 @@ export class InitService {
     return Promise.resolve();
   }
 
-  throwError() {
-    const preloaderContentElem = this._dom.querySelector<HTMLElement>('#preloaderContent');
-    if (preloaderContentElem) preloaderContentElem.innerHTML = this.errorMessage;
+  throwError(message?: string) {
+    message = message || 'Ha ocurrido un error.'
 
-    return Promise.reject(this.errorMessage);
+    const preloaderContentElem = this._dom.querySelector<HTMLElement>('#preloaderContent');
+    if (preloaderContentElem) preloaderContentElem.innerHTML = message;
+
+    return Promise.reject(message);
   }
 
   /* -------------------- */
 
   async checkAuthAppClient(): Promise<void> {
-    if (this._authS.isLoggedIn('appClient')) {
+    if (this._authS.appClient().isLoggedIn()) {
       await firstValueFrom(this._authAppClientHttpS.me());
     }
     else {
@@ -75,7 +75,7 @@ export class InitService {
   }
 
   async checkAuthSystemUser(): Promise<void> {
-    if (this._authS.isLoggedIn('systemUser')) {
+    if (this._authS.systemUser().isLoggedIn()) {
       await firstValueFrom(this._authSystemUserHttpS.me()).catch(() => null);
     }
 

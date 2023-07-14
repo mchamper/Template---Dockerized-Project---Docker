@@ -11,12 +11,13 @@ import { LoadingBtnDirective } from 'src/app/directives/loading-btn.directive';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import { FormControlDirective } from './directives/form-control.directive';
-import { CurrencyMaskModule } from 'ng2-currency-mask';
 import { FormUploadComponent } from './components/form-upload/form-upload.component';
 
 const modules = [
   FormsModule,
   ReactiveFormsModule,
+  FormControlDirective,
+  FormUploadComponent,
   NzFormModule,
   NzInputModule,
   NzInputNumberModule,
@@ -25,12 +26,9 @@ const modules = [
   NzDatePickerModule,
   NzRadioModule,
   NzUploadModule,
-  LoadingBtnDirective,
   NgxMaskDirective,
   NgxMaskPipe,
-  CurrencyMaskModule,
-  FormControlDirective,
-  FormUploadComponent,
+  LoadingBtnDirective,
 ];
 
 @NgModule({

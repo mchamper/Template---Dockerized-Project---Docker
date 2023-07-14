@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\v1\Backoffice;
+namespace App\Http\Controllers\Api\Backoffice\v1;
 
 use App\Commons\Auth\Auth;
 use App\Commons\Response\Response;
@@ -36,6 +36,8 @@ class CombosController extends Controller
                     $combos[$concept] = SystemUserStatusEnum::all();
                     break;
                 }
+
+                default: throw new Exception('Invalid request concept.');
             }
         }
 

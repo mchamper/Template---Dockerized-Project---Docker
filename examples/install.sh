@@ -6,12 +6,14 @@ bash base/bin/sources/create.sh --all || exit 1
 
 ########################################
 
-bash bin/core/web.sh clone
+bash bin/core/website.sh clone
+bash bin/core/webapp.sh clone
 bash bin/core/mobile.sh clone
 bash bin/core/backoffice.sh clone
 bash bin/core/backend.sh clone
 
-bash bin/core/web.sh install
+bash bin/core/website.sh install
+bash bin/core/webapp.sh install
 bash bin/core/mobile.sh install
 bash bin/core/backoffice.sh install
 bash bin/core/backend.sh install

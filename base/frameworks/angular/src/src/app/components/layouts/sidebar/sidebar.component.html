@@ -1,57 +1,17 @@
-<ng-container *ngIf="{
-  isMobile: viewportS.down$('md') | async
-} as vm">
-  <div class="py-3">
-    <ul class="navbar-nav">
-      <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-        <a class="nav-link" routerLink="/" [attr.data-bs-dismiss]="vm.isMobile ? 'offcanvas' : null">
-          <span nz-icon nzType="dashboard" nzTheme="outline"></span>
-          Dashboard
-        </a>
-      </li>
+<div class="py-3">
+  <ul class="navbar-nav">
+    <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <a class="nav-link" routerLink="/" [attr.data-bs-dismiss]="isMobile ? 'offcanvas' : null">
+        <span nz-icon nzType="dashboard" nzTheme="outline"></span>
+        Dashboard
+      </a>
+    </li>
 
-      <li class="nav-item" routerLinkActive="active">
-        <a class="nav-link" routerLink="/usuarios" [attr.data-bs-dismiss]="vm.isMobile ? 'offcanvas' : null">
-          <span nz-icon nzType="user" nzTheme="outline"></span>
-          Usuarios
-        </a>
-      </li>
-
-      <li class="nav-item" routerLinkActive="active">
-        <a class="nav-link" routerLink="/canales" [attr.data-bs-dismiss]="vm.isMobile ? 'offcanvas' : null">
-          <span nz-icon nzType="apartment" nzTheme="outline"></span>
-          Canales
-        </a>
-      </li>
-
-      <li class="nav-item" routerLinkActive="active">
-        <a class="nav-link" routerLink="/partidas" [attr.data-bs-dismiss]="vm.isMobile ? 'offcanvas' : null">
-          <span nz-icon nzType="rocket" nzTheme="outline"></span>
-          Partidas
-        </a>
-      </li>
-
-      <li class="nav-item" routerLinkActive="active">
-        <a class="nav-link" routerLink="/preguntas" [attr.data-bs-dismiss]="vm.isMobile ? 'offcanvas' : null">
-          <span nz-icon nzType="diff" nzTheme="outline"></span>
-          Preguntas
-        </a>
-      </li>
-
-      <li class="nav-item" routerLinkActive="active">
-        <a class="nav-link" routerLink="/jugadores" [attr.data-bs-dismiss]="vm.isMobile ? 'offcanvas' : null">
-          <!-- <span nz-icon nzType="contacts" nzTheme="outline"></span> -->
-          <span nz-icon nzType="usergroup-add" nzTheme="outline"></span>
-          Jugadores
-        </a>
-      </li>
-
-      <li class="nav-item" routerLinkActive="active">
-        <a class="nav-link" routerLink="/reportes" [attr.data-bs-dismiss]="vm.isMobile ? 'offcanvas' : null">
-          <span nz-icon nzType="area-chart" nzTheme="outline"></span>
-          Reportes
-        </a>
-      </li>
-    </ul>
-  </div>
-</ng-container>
+    <li class="nav-item" routerLinkActive="active">
+      <a class="nav-link" routerLink="/usuarios" [attr.data-bs-dismiss]="isMobile ? 'offcanvas' : null">
+        <span nz-icon nzType="user" nzTheme="outline"></span>
+        Usuarios
+      </a>
+    </li>
+  </ul>
+</div>

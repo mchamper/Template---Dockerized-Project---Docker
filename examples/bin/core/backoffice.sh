@@ -26,11 +26,6 @@ if [[ ${CMD} = "upload" ]]; then
   exit
 fi
 
-if [[ ${CMD} = "download" ]]; then
-  bash base/bin/aws/s3-download.sh ${SERVICE} "bucket-name" "dist"
-  exit
-fi
-
 if [[ ${CMD} = "deploy" ]]; then
   bash ${THIS} build && bash ${THIS} upload
   exit

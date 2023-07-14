@@ -34,15 +34,25 @@ class RouteServiceProvider extends ServiceProvider
 
             /* -------------------- */
 
-            Route::prefix('api/v1/web')
+            Route::prefix('api/website/v1')
                 ->middleware('api')
-                ->namespace('App\Http\Controllers\Api\v1\Web')
-                ->group(base_path('routes/api.v1.web.php'));
+                ->namespace('App\Http\Controllers\Api\Website\v1')
+                ->group(base_path('routes/api.website.v1.php'));
 
-            Route::prefix('api/v1/backoffice')
+            Route::prefix('api/webapp/v1')
                 ->middleware('api')
-                ->namespace('App\Http\Controllers\Api\v1\Backoffice')
-                ->group(base_path('routes/api.v1.backoffice.php'));
+                ->namespace('App\Http\Controllers\Api\Webapp\v1')
+                ->group(base_path('routes/api.webapp.v1.php'));
+
+            Route::prefix('api/mobile/v1')
+                ->middleware('api')
+                ->namespace('App\Http\Controllers\Api\Mobile\v1')
+                ->group(base_path('routes/api.mobile.v1.php'));
+
+            Route::prefix('api/backoffice/v1')
+                ->middleware('api')
+                ->namespace('App\Http\Controllers\Api\Backoffice\v1')
+                ->group(base_path('routes/api.backoffice.v1.php'));
         });
     }
 

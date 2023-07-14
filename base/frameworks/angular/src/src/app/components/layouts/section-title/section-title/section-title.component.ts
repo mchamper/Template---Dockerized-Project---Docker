@@ -15,8 +15,8 @@ import { SharedModule } from 'src/app/shared.module';
 })
 export class SectionTitleComponent {
 
-  @Input() reloadFn!: () => any;
+  @Input() reloadFn!: (() => any) | null;
 
-  @ContentChild('breadcrumbsTpl') breadcrumbsTpl!: TemplateRef<any>;
-  @ContentChild('extrasTpl') extrasTpl!: TemplateRef<any>;
+  @ContentChild('extras') extrasTpl!: TemplateRef<any>;
+  @ContentChild('breadcrumbs') breadcrumbsTpl!: TemplateRef<any>;
 }

@@ -1,19 +1,15 @@
 <ng-container *ngIf="{
-  isVerified: authS.isVerified$() | async,
-  isVerifying: verifyForm.requestH.isLoading$() | async
+  useVerifiedCustom: isVerified === true || isVerified === false,
+  isVerifiedCustom: isVerified,
+  isVerified: authS.systemUser().isVerified(),
+  isVerifying: verifyRequest.isLoading()
 } as vm">
-  <ng-container *ngIf="vm.isVerified; else noVerifiedTpl">
-    <nz-alert class="mb-4"
-      nzType="success"
-      nzMessage="Cuenta verificada"
-      nzShowIcon
-    ></nz-alert>
-
+  <ng-container *ngIf="vm.useVerifiedCustom ? vm.isVerifiedCustom : vm.isVerified; else noVerifiedTpl">
     <ng-content></ng-content>
   </ng-container>
 
   <ng-template #noVerifiedTpl>
-    <ng-container *ngIf="vm.isVerifying; else notVerifyingTpl">
+    <ng-container *ngIf="vm.isVerifying && !vm.useVerifiedCustom; else notVerifyingTpl">
       <nz-alert class="mb-4"
         nzType="info"
         [nzMessage]="message"
@@ -34,7 +30,7 @@
       <nz-alert class="mb-4"
         nzType="error"
         [nzMessage]="message"
-        [nzDescription]="description"
+        [nzDescription]="!vm.useVerifiedCustom ? description : null"
         nzShowIcon
       >
         <ng-template #message>
@@ -42,9 +38,9 @@
         </ng-template>
 
         <ng-template #description>
-          <p>Tu cuenta aún no ha sido verificada. Revisa la bandeja de entrada (o la carpeta de SPAM) de tu dirección de correo y verifica tu cuenta para acceder a todos los serivicos de CoffeeBreak.</p>
+          <p>Tu cuenta aún no ha sido verificada. Revisa la bandeja de entrada (o la carpeta de SPAM) de tu dirección de correo y verifica tu cuenta para acceder a todos los serivicos de Trivias Fun.</p>
 
-          <button [appLoadingBtn]="requestForm.requestH.isLoading$() | async" class="btn btn-outline-primary btn-sm" (click)="request()">
+          <button [appLoadingBtn]="requestRequest.isLoading()" class="btn btn-outline-primary btn-sm" (click)="requestRequest.run()">
             Reenviar email de verificación
           </button>
         </ng-template>

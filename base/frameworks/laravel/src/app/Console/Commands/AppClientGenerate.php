@@ -36,17 +36,17 @@ class AppClientGenerate extends Command
             ],
             [
                 'id' => 10,
-                'name' => 'Api v1 --- External',
+                'name' => 'Api --- External (v1)',
                 'scopes' => json_encode([
-                    'api/v1/external',
+                    'api/external/v1',
                 ]),
                 'hosts' => json_encode('*'),
             ],
             [
                 'id' => 20,
-                'name' => 'Api v1 --- Internal',
+                'name' => 'Api --- Internal (v1)',
                 'scopes' => json_encode([
-                    'api/v1/internal',
+                    'api/internal/v1',
                 ]),
                 'hosts' => json_encode([
                     '^https:\/\/example\.com$',
@@ -55,9 +55,9 @@ class AppClientGenerate extends Command
             ],
             [
                 'id' => 30,
-                'name' => 'Api v1 --- Website',
+                'name' => 'Api --- Website (v1)',
                 'scopes' => json_encode([
-                    'api/v1/website',
+                    'api/website/v1',
                 ]),
                 'hosts' => json_encode([
                     '^https:\/\/example\.com$',
@@ -66,9 +66,9 @@ class AppClientGenerate extends Command
             ],
             [
                 'id' => 40,
-                'name' => 'Api v1 --- Webapp',
+                'name' => 'Api --- Webapp (v1)',
                 'scopes' => json_encode([
-                    'api/v1/webapp',
+                    'api/webapp/v1',
                 ]),
                 'hosts' => json_encode([
                     '^https:\/\/app\.example\.com$',
@@ -76,9 +76,9 @@ class AppClientGenerate extends Command
             ],
             [
                 'id' => 50,
-                'name' => 'Api v1 --- Mobile',
+                'name' => 'Api --- Mobile (v1)',
                 'scopes' => json_encode([
-                    'api/v1/mobile',
+                    'api/mobile/v1',
                 ]),
                 'hosts' => json_encode([
                     '^http:\/\/localhost$',
@@ -86,9 +86,9 @@ class AppClientGenerate extends Command
             ],
             [
                 'id' => 60,
-                'name' => 'Api v1 --- Backoffice',
+                'name' => 'Api --- Backoffice (v1)',
                 'scopes' => json_encode([
-                    'api/v1/backoffice',
+                    'api/backoffice/v1',
                 ]),
                 'hosts' => json_encode([
                     '^https:\/\/backoffice\.example\.com$',

@@ -1,17 +1,17 @@
-import { ChangeDetectionStrategy, Component, Input, WritableSignal, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, Input, OnInit, WritableSignal, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NzUploadFile, NzUploadListType, NzUploadModule, NzUploadType, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
-import { RequestHandlerComponent } from 'src/app/utils/handlers/request-handler/components/request-handler/request-handler.component';
 import { UploadHttpService } from 'src/app/services/http/upload-http.service';
 import { Observable, Subscription } from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { IHttpErrorResponse } from 'src/app/interceptors/error.interceptor';
-import { SubscriptionHandler } from 'src/app/utils/handlers/subscription-handler';
 import { FormControlDirective } from '../../directives/form-control.directive';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { isArray } from 'lodash';
+import { RequestComponent } from 'src/app/utils/request/components/request/request.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-form-upload',
@@ -20,17 +20,17 @@ import { isArray } from 'lodash';
     CommonModule,
     NzUploadModule,
     NzIconModule,
-    FormControlDirective,
     ReactiveFormsModule,
+    FormControlDirective,
     NzInputModule,
     NzFormModule,
-    RequestHandlerComponent,
+    RequestComponent
   ],
   templateUrl: './form-upload.component.html',
   styleUrls: ['./form-upload.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FormUploadComponent {
+export class FormUploadComponent implements OnInit {
 
   @Input({ required: true }) control!: FormControl;
   @Input({ required: true }) concept!: string;
@@ -38,21 +38,21 @@ export class FormUploadComponent {
   @Input() listTipe: NzUploadListType = 'text';
   @Input() max: number = 10;
 
-  fileList$: WritableSignal<NzUploadFile[]> = signal([]);
-  multiple: boolean = false;
+  fileList = signal<NzUploadFile[]>([]);
+  multiple = false;
 
-  private _sh: SubscriptionHandler = new SubscriptionHandler();
+  private _destroyRef = inject(DestroyRef);
 
   constructor(
     private _uploadHttpS: UploadHttpService,
   ) { }
 
-  get fileList(): NzUploadFile[] {
-    return this.fileList$();
+  get nzFileList(): NzUploadFile[] {
+    return this.fileList();
   }
 
-  set fileList(value: any) {
-    this.fileList$.set(value);
+  set nzFileList(value: any) {
+    this.fileList.set(value);
   }
 
   get nzType(): NzUploadType {
@@ -73,21 +73,18 @@ export class FormUploadComponent {
       this.max = 1;
     }
 
-    this._sh.add(
-      this.control.valueChanges.subscribe(value => {
-        if ((isArray(value) && value.length) || value) {
-          this.multiple
-            ? this.fileList$.set((value as any[]).map(item => this.getFileItem(item)))
-            : this.fileList$.set([this.getFileItem(value)]);
-        } else {
-          this.fileList$.set([]);
-        }
-      })
-    );
-  }
+    const onControlChange = (value: any) => {
+      if ((isArray(value) && value.length) || value) {
+        this.multiple
+          ? this.fileList.set((value as any[]).map(item => this.getFileItem(item)))
+          : this.fileList.set([this.getFileItem(value)]);
+      } else {
+        this.fileList.set([]);
+      }
+    }
 
-  ngOnDestroy(): void {
-    this._sh.clean();
+    onControlChange(this.control.value);
+    this.control.valueChanges.pipe(takeUntilDestroyed(this._destroyRef)).subscribe(value => onControlChange(value));
   }
 
   /* -------------------- */
@@ -112,7 +109,7 @@ export class FormUploadComponent {
   }
 
   updateFileItem(value: any, file: NzUploadFile, errorMessage?: string): void {
-    this.fileList$.update(fileListValue => {
+    this.fileList.update(fileListValue => {
       return [
         ...fileListValue.map(item => {
           if (item.uid === file.uid) {
@@ -130,18 +127,18 @@ export class FormUploadComponent {
   /* -------------------- */
 
   beforeUpload = (file: NzUploadFile, fileList: NzUploadFile[]): boolean => {
-    return this.fileList$().length < this.max;
+    return this.nzFileList.length < this.max;
   }
 
   upload = (item: NzUploadXHRArgs): Subscription => {
     if (!this.multiple) {
+      //
     }
-
 
     const input = new FormData();
     input.append('file', item.file as any);
 
-    return this._uploadHttpS.upload(this.concept, input)?.subscribe({
+    return this._uploadHttpS.upload(this.concept, input).subscribe({
       next: (res: any) => {
         this.updateFileItem(res.body.file, item.file);
         this.addControlValue(res.body.file);

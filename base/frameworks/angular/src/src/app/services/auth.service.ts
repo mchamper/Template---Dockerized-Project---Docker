@@ -1,186 +1,188 @@
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { Injectable, WritableSignal, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { isArray } from 'lodash';
 import * as moment from 'moment';
 import { Moment } from 'moment';
-import { BehaviorSubject, map, Observable, skip } from 'rxjs';
 import { StorageService } from './storage.service';
+import { Router } from '@angular/router';
 import { RouteService } from './route.service';
+import { SystemUser } from '../commons/models/system-user';
 
-export interface IAuth {
-  data: {
+export type TGuard =
+  | 'guest'
+  | 'appClient'
+  | 'systemUser'
+  | 'user'
+  ;
+
+export interface IAuth<DataModel = any> {
+  token: string,
+  tokenExpiresAt?: Moment,
+  data?: {
     id?: number,
-    email?: string,
     name?: string,
-    isVerified?: boolean,
     firstName?: string,
     lastName?: string,
+    email?: string,
+    isVerified?: boolean,
     picture?: string,
     roles?: string[],
     permissions?: string[],
-    _raw?: any,
+    model?: DataModel,
   },
-  token: string,
-  tokenExpiresAt?: Moment,
 }
-
-export type TGuard = 'appClient' | 'systemUser';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  guardDefault: TGuard = 'systemUser';
-  guards: TGuard[] = ['appClient', 'systemUser'];
+  guards: TGuard[] = [
+    'guest',
+    'appClient',
+    'systemUser',
+    'user',
+  ];
 
-  auths: { [key: string]: BehaviorSubject<IAuth | null> } = {};
+  auths: {
+    [key: string]: WritableSignal<IAuth | null>
+  } = {};
 
   constructor(
+    private _storageS: StorageService,
     private _router: Router,
     private _routeS: RouteService,
-    private _storageS: StorageService,
   ) {
 
     this.guards.forEach(guard => {
-      const defaultValue = this._storageS.getSecure(`auth.${guard}`);
-      const authGuard = new BehaviorSubject<IAuth | null>(defaultValue);
+      const defaultValue: IAuth | null = this._storageS.getSecure(`auth.${guard}`);
 
-      authGuard.pipe(skip(1)).subscribe(value => this._storageS.setSecure(`auth.${guard}`, value));
+      if (defaultValue?.data?.model) {
+        switch (guard) {
+          case 'systemUser': defaultValue.data.model = new SystemUser(defaultValue?.data?.model); break;
 
-      this.auths[guard] = authGuard;
+          default: break;
+        }
+      }
+
+      const auth = signal<IAuth | null>(defaultValue);
+      toObservable(auth).subscribe(value => this._storageS.setSecure(`auth.${guard}`, value));
+
+      this.auths[guard] = auth;
     });
   }
 
   /* -------------------- */
 
-  guard$(guard: TGuard = this.guardDefault): BehaviorSubject<IAuth | null> {
+  private _guard<DataModel = any>(guard: TGuard): WritableSignal<IAuth<DataModel> | null> {
     return this.auths[guard];
   }
 
-  /* -------------------- */
+  guard<DataModel = any>(guard: TGuard) {
+    const auth = this._guard<DataModel>(guard);
 
-  data(guard: TGuard = this.guardDefault): IAuth['data'] | undefined {
-    if (!this.isLoggedIn(guard)) return;
-    return this.guard$(guard).value?.data;
-  }
-  data$(guard: TGuard = this.guardDefault): Observable<IAuth['data'] | undefined> {
-    return this.guard$(guard).pipe(map(() => this.data(guard)));
-  }
+    return {
+      guard: () => {
+        return auth;
+      },
 
-  raw<T = any>(guard: TGuard = this.guardDefault): T | undefined {
-    if (!this.isLoggedIn(guard)) return;
-    return this.guard$(guard).value?.data._raw;
-  }
-  raw$<T = any>(guard: TGuard = this.guardDefault): Observable<T | undefined> {
-    return this.guard$(guard).pipe(map(() => this.raw(guard)));
-  }
+      /* -------------------- */
 
-  /* -------------------- */
+      token: (): IAuth['token'] | undefined => {
+        return auth()?.token;
+      },
 
-  token(guard: TGuard = this.guardDefault): IAuth['token'] | undefined {
-    if (!this.isLoggedIn(guard)) return;
-    return this.guard$(guard).value?.token;
-  }
-  token$(guard: TGuard = this.guardDefault): Observable<IAuth['token'] | undefined> {
-    return this.guard$(guard).pipe(map(() => this.token(guard)));
-  }
+      tokenExpiresAt: (): IAuth['tokenExpiresAt'] | undefined => {
+        return auth()?.tokenExpiresAt;
+      },
 
-  tokenExpiresAt(guard: TGuard = this.guardDefault): IAuth['tokenExpiresAt'] | undefined {
-    if (!this.isLoggedIn(guard)) return;
-    return this.guard$(guard).value?.tokenExpiresAt;
-  }
-  tokenExpiresAt$(guard: TGuard = this.guardDefault): Observable<IAuth['tokenExpiresAt'] | undefined> {
-    return this.guard$(guard).pipe(map(() => this.tokenExpiresAt(guard)));
-  }
+      data: (): IAuth<DataModel>['data'] | undefined => {
+        return auth()?.data;
+      },
 
-  /* -------------------- */
+      model: (): DataModel | undefined => {
+        return auth()?.data?.model;
+      },
 
-  isLoggedIn(guard: TGuard = this.guardDefault): boolean {
-    const auth = this.guard$(guard).value;
+      /* -------------------- */
 
-    if (!auth?.data) {
-      return false;
-    }
+      isLoggedIn: (): boolean => {
+        if (!auth()?.token) {
+          return false;
+        }
 
-    if (!auth?.token) {
-      return false;
-    }
+        const tokenExpiresAt = auth()?.tokenExpiresAt;
 
-    if (!!auth?.tokenExpiresAt && auth.tokenExpiresAt < moment()) {
-      return false;
-    }
+        if (!!tokenExpiresAt && tokenExpiresAt < moment()) {
+          return false;
+        }
 
-    return true;
-  }
-  isLoggedIn$(guard: TGuard = this.guardDefault): Observable<boolean> {
-    return this.guard$(guard).pipe(map(() => this.isLoggedIn(guard)));
-  }
+        return true;
+      },
 
-  isVerified(guard: TGuard = this.guardDefault): boolean {
-    const auth = this.guard$(guard).value;
-    return !!auth?.data.isVerified;
-  }
-  isVerified$(guard: TGuard = this.guardDefault): Observable<boolean> {
-    return this.guard$(guard).pipe(map(() => this.isVerified(guard)));
-  }
+      isVerified: (): boolean => {
+        return !!auth()?.data?.isVerified;
+      },
 
-  /* -------------------- */
+      /* -------------------- */
 
-  login(auth: IAuth, guard: TGuard = this.guardDefault, cb?: () => any): void {
-    this.guard$(guard).next(auth);
-    if (cb) cb();
-  }
+      login: (value: IAuth): void => {
+        auth.set(value);
+      },
 
-  logout(guard: TGuard = this.guardDefault, cb?: () => any): void {
-    if (!this.isLoggedIn(guard)) return;
+      logout: (): void => {
+        if (!this.guard(guard).isLoggedIn()) return;
 
-    this.guard$(guard).next(null);
+        auth.set(null);
 
-    switch (guard) {
-      case 'appClient': {
-        // window.location.reload();
-        break;
+        switch (guard) {
+          case 'appClient': {
+            // window.location.reload();
+            break;
+          }
+
+          case 'systemUser': {
+            this._router.navigate(['/bienvenido'], {
+              replaceUrl: true,
+              queryParams: {
+                redirectTo: `${this._routeS.currentPage().url || '/'}`
+              },
+            });
+
+            break;
+          }
+        }
+      },
+
+      /* -------------------- */
+
+      hasRole: (roles: string | string[], matchAll: boolean = true): boolean => {
+        if (!isArray(roles)) roles = [roles];
+        return roles[matchAll ? 'every' : 'some'](role => auth()?.data?.roles?.includes(role));
+      },
+
+      can: (permissions: string | string[], matchAll: boolean = true): boolean => {
+        if (!isArray(permissions)) permissions = [permissions];
+        return permissions[matchAll ? 'every' : 'some'](permission => auth()?.data?.permissions?.includes(permission));
       }
-
-      case 'systemUser': {
-        this._router.navigate(['/bienvenido'], {
-          replaceUrl: true,
-          queryParams: {
-            redirectTo: `${this._routeS.currentPage$.value.url || '/'}`
-          },
-        });
-
-        break;
-      }
-    }
-
-    if (cb) cb();
+    };
   }
 
   /* -------------------- */
 
-  hasRole(roles: string | string[], matchAll: boolean = true, guard: TGuard = this.guardDefault): boolean {
-    const auth = this.guard$(guard).value;
-
-    if (!isArray(roles)) {
-      roles = [roles];
-    }
-
-    return roles[matchAll ? 'every' : 'some'](role => {
-      return auth?.data.roles?.some(item => item === role) || false;
-    });
+  guest() {
+    return this.guard<any>('guest');
   }
 
-  can(permissions: string | string[], matchAll: boolean = true, guard: TGuard = this.guardDefault): boolean {
-    const auth = this.guard$(guard).value;
+  appClient() {
+    return this.guard<any>('appClient');
+  }
 
-    if (!isArray(permissions)) {
-      permissions = [permissions];
-    }
+  systemUser() {
+    return this.guard<SystemUser>('systemUser');
+  }
 
-    return permissions[matchAll ? 'every' : 'some'](permission => {
-      return auth?.data.permissions?.some(item => item === permission) || false;
-    });
+  user() {
+    return this.guard<any>('user');
   }
 }

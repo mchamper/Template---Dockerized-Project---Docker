@@ -1,0 +1,32 @@
+:host {
+  > div {
+    display: block;
+    position: relative;
+
+    .interaction-disabled {
+      display: flex;
+      position: absolute;
+      background: transparent;
+      background: rgba(0,0,0,0.25);
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 0.25rem;
+      z-index: 20;
+
+      &.has-content {
+        backdrop-filter: blur(1px);
+        background: rgba(255,255,255,0.5);
+        border: 1px solid rgba(0,0,0,0.125);
+
+        width: calc(100% + 1rem);
+        height: calc(100% + 1rem);
+        transform: translate(-0.5rem, -0.5rem);
+      }
+    }
+  }
+}

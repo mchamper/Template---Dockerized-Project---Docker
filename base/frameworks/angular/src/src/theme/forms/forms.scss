@@ -48,10 +48,8 @@ form[nz-form] {
   nz-form-label {
     label {
       font-size: var(--label-font-size);
+      font-weight: bold;
     }
-  }
-  label {
-    font-weight: bold;
   }
 
   [disabled],
@@ -185,12 +183,6 @@ form[nz-form] {
     }
   }
 
-  // [nz-radio] {
-  //   &::after {
-  //     display: none;
-  //   }
-  // }
-
   app-form-upload {
     + input {
       display: none;
@@ -201,6 +193,10 @@ form[nz-form] {
     // }
 
     nz-upload {
+      .ant-upload-list-picture-card .ant-upload-list-item-thumbnail {
+        opacity: 1 !important;
+      }
+
       &.dropzone {
         .ant-upload.ant-upload-select-picture-card,
         .ant-upload-list-picture-card-container {

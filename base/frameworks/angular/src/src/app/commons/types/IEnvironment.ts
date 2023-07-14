@@ -4,8 +4,6 @@ export interface IEnvironment {
   storageVersion: number,
   storageKey: string,
   mock: boolean,
-  httpMock: boolean,
-  httpCache: boolean,
   appUrl: string,
   backendUrl: string,
   backendAppClientKey: string,

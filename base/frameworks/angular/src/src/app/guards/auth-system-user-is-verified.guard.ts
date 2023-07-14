@@ -4,10 +4,10 @@ import { AuthService } from '../services/auth.service';
 
 export function authSystemUserIsVerifiedGuard(): CanActivateFn {
   return (next: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-    const router: Router = inject(Router);
-    const authS: AuthService = inject(AuthService);
+    const router = inject(Router);
+    const authS = inject(AuthService);
 
-    const can: boolean = authS.isVerified();
+    const can = authS.systemUser().isVerified();
 
     if (!can) {
       router.navigate(['/cuenta'], {

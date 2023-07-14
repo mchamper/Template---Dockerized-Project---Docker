@@ -9,7 +9,6 @@ class Media extends BaseMedia
     protected static function booted(): void
     {
         static::deleting(function (Media $media) {
-
             if ($media->collection_name === 'trash') {
                 return true;
             }

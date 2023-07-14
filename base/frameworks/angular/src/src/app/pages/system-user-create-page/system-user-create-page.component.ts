@@ -1,20 +1,22 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { SystemUserHttpService } from 'src/app/services/http/system-user-http.service';
 import { SharedModule } from 'src/app/shared.module';
 import { FormModule } from 'src/app/utils/form/form.module';
 import { Form } from 'src/app/utils/form/form';
-import { RequestHandlerComponent } from 'src/app/utils/handlers/request-handler/components/request-handler/request-handler.component';
-import { SubscriptionHandler } from 'src/app/utils/handlers/subscription-handler';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { Router, RouterModule } from '@angular/router';
 import { distinctUntilChanged } from 'rxjs';
 import { systemUserCreateFormMock } from 'src/app/mocks/system-user-create-form.mock';
 import { escape } from 'lodash';
+import { SectionTitleComponent } from 'src/app/components/layouts/section-title/section-title/section-title.component';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
-import { SystemUserActionComponent } from 'src/app/components/core/system-user/system-user-action/system-user-action.component';
-import { SectionTitleComponent } from 'src/app/components/layouts/section-title/section-title.component';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 import { FormSectionTitleComponent } from 'src/app/components/layouts/form-section-title/form-section-title.component';
+import { AuthService } from 'src/app/services/auth.service';
+import { FormFooterComponent } from 'src/app/components/layouts/form-footer/form-footer.component';
+import { RequestComponent } from 'src/app/utils/request/components/request/request.component';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 
 @Component({
   selector: 'app-system-user-create-page',
@@ -22,26 +24,27 @@ import { FormSectionTitleComponent } from 'src/app/components/layouts/form-secti
   imports: [
     SharedModule,
     FormModule,
-    RequestHandlerComponent,
+    RequestComponent,
     NzDividerModule,
-    NzBreadCrumbModule,
-    SystemUserActionComponent,
-    RouterModule,
     SectionTitleComponent,
+    NzBreadCrumbModule,
+    RouterModule,
+    NzIconModule,
     FormSectionTitleComponent,
+    FormFooterComponent,
   ],
   templateUrl: './system-user-create-page.component.html',
   styleUrls: ['./system-user-create-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export default class SystemUserCreatePageComponent implements OnInit, OnDestroy {
+export default class SystemUserCreatePageComponent {
 
   form: Form;
 
-  private _sh: SubscriptionHandler = new SubscriptionHandler();
-
   constructor(
+    public authS: AuthService,
     private _systemUserHttpS: SystemUserHttpService,
+    private _nzNotificationS: NzNotificationService,
     private _fb: FormBuilder,
     private _router: Router,
   ) {
@@ -55,10 +58,7 @@ export default class SystemUserCreatePageComponent implements OnInit, OnDestroy 
       password_confirmation: ['', [Validators.required]],
     }), {
       mock: systemUserCreateFormMock(),
-      onInit(form) {
-        form.group.get('password')?.disable();
-        form.group.get('password_confirmation')?.disable();
-
+      onInitSubscriptions: (form) => {
         form.group.get('password_input_type')?.valueChanges.pipe(distinctUntilChanged()).subscribe(value => {
           if (value === 'random') {
             form.group.get('password')?.setValue('');
@@ -71,29 +71,11 @@ export default class SystemUserCreatePageComponent implements OnInit, OnDestroy 
           }
         });
       },
-    });
-  }
-
-  ngOnInit(): void {
-    //
-  }
-
-  ngOnDestroy(): void {
-    this._sh.clean();
-  }
-
-  /* -------------------- */
-
-  create(): void {
-    const input = {
-      ...this.form.group.value,
-    };
-
-    this._sh.add(
-      this.form.send(this._systemUserHttpS.create(input), {
-        reset: true,
-        success: (res, notify) => {
-          notify.success(
+      combos: `channels_for_system_user_client_assignment`,
+      request: {
+        send: () => this._systemUserHttpS.create({ ...this.form.group.value }),
+        success: (res) => {
+          this._nzNotificationS.success(
             `<strong>Usuario creado</strong>`,
             res.body.system_user_password
               ? `
@@ -111,8 +93,8 @@ export default class SystemUserCreatePageComponent implements OnInit, OnDestroy 
           );
 
           this._router.navigate(['/usuarios']);
-        },
-      })?.subscribe()
-    );
+        }
+      },
+    });
   }
 }

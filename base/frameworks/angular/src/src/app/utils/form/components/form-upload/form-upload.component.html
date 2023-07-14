@@ -2,8 +2,8 @@
   [ngClass]="type"
   [nzType]="nzType"
   [nzListType]="listTipe"
-  [(nzFileList)]="fileList"
-  [nzShowButton]="fileList$().length < max"
+  [(nzFileList)]="nzFileList"
+  [nzShowButton]="nzFileList.length < max"
   [nzBeforeUpload]="beforeUpload"
   [nzCustomRequest]="upload"
   [nzRemove]="remove"
@@ -39,4 +39,4 @@
   </ng-container>
 </nz-upload>
 
-<!-- <pre>{{ fileList$() | json }}</pre> -->
+<!-- <pre>{{ fileList() | json }}</pre> -->

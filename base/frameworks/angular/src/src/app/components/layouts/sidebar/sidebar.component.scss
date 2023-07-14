@@ -10,7 +10,7 @@
       .nav-link {
         font-size: var(--app-px-14);
         font-weight: 500;
-        color: var(--bs-secondary);
+        color: black;
 
         [nz-icon] {
           margin-right: 0.5rem;
@@ -31,7 +31,7 @@
         transition: opacity 0.2s ease, transform 0.2s ease;
       }
 
-      &:hover:not(.active) {
+      &:hover:not(.active), &.active {
         &::before {
           opacity: 1;
           transform: translateX(0);
@@ -39,6 +39,8 @@
       }
 
       &.active {
+        background: rgba(var(--bs-primary-rgb), 0.1);
+
         .nav-link {
           color: var(--bs-primary);
           font-weight: 700;

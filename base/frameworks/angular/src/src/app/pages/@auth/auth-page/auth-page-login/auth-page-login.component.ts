@@ -1,16 +1,16 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Form } from 'src/app/utils/form/form';
 import { SharedModule } from 'src/app/shared.module';
-import { SubscriptionHandler } from 'src/app/utils/handlers/subscription-handler';
 import { AuthSystemUserHttpService } from 'src/app/services/http/auth-system-user-http.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, Validators } from '@angular/forms';
 import { FormModule } from 'src/app/utils/form/form.module';
-import { RequestHandlerComponent } from 'src/app/utils/handlers/request-handler/components/request-handler/request-handler.component';
 import { AuthService } from 'src/app/services/auth.service';
 import { GoogleSigninButtonModule, SocialAuthService, SocialLoginModule } from '@abacritt/angularx-social-login';
 import { filter, skip } from 'rxjs';
 import { authLoginFormMock } from 'src/app/mocks/auth-login-form.mock';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { RequestComponent } from 'src/app/utils/request/components/request/request.component';
 
 @Component({
   selector: 'app-auth-page-login',
@@ -19,18 +19,17 @@ import { authLoginFormMock } from 'src/app/mocks/auth-login-form.mock';
     SharedModule,
     FormModule,
     SocialLoginModule,
-    RequestHandlerComponent,
+    RequestComponent,
     GoogleSigninButtonModule,
   ],
   templateUrl: './auth-page-login.component.html',
   styleUrls: ['./auth-page-login.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AuthPageLoginComponent implements OnInit, OnDestroy {
+export class AuthPageLoginComponent {
 
-  form: Form;
-
-  private _sh: SubscriptionHandler = new SubscriptionHandler();
+  formLogin: Form;
+  formLoginGoogle: Form;
 
   constructor(
     public authS: AuthService,
@@ -41,63 +40,46 @@ export class AuthPageLoginComponent implements OnInit, OnDestroy {
     private _fb: FormBuilder,
   ) {
 
-    this.form = new Form(this._fb.group({
+    this.formLogin = new Form(this._fb.group({
       email: ['', [Validators.required]],
       password: ['', [Validators.required]],
       remember_me: [false, [Validators.required]],
     }), {
       mock: authLoginFormMock(),
+      request: {
+        send: () => this._authSystemUserHttpS.login({ ...this.formLogin.group.value }),
+        success: () => {
+          this._router.navigateByUrl(this._route.snapshot.queryParamMap.get('redirectTo') || '/', {
+            replaceUrl: true,
+          });
+        },
+        reset: true,
+      },
     });
-  }
 
-  ngOnInit(): void {
-    this._sh.add(
-      this._socialAuthService.authState.pipe(
-        skip(1),
-        filter(socialUser => !!socialUser)
-      ).subscribe(socialUser => {
-        this.loginGoogle(socialUser.idToken);
-      })
-    );
-  }
+    /* -------------------- */
 
-  ngOnDestroy(): void {
-    this._sh.clean();
-  }
-
-  /* -------------------- */
-
-  login(): void {
-    const input = {
-      ...this.form.group.value,
-    };
-
-    this._sh.add(
-      this.form.send(this._authSystemUserHttpS.login(input), {
-        success: (res) => {
+    this.formLoginGoogle = new Form(this._fb.group({
+      token: ['', [Validators.required]],
+    }), {
+      request: {
+        send: () => this._authSystemUserHttpS.loginGoogle({ ...this.formLoginGoogle.group.value }),
+        success: () => {
           this._router.navigateByUrl(this._route.snapshot.queryParamMap.get('redirectTo') || '/', {
             replaceUrl: true,
           });
         },
         reset: true,
-      })?.subscribe()
-    );
-  }
+      },
+    });
 
-  loginGoogle(token: string): void {
-    const input = {
-      token,
-    };
-
-    this._sh.add(
-      this.form.send(this._authSystemUserHttpS.loginGoogle(input), {
-        success: (res) => {
-          this._router.navigateByUrl(this._route.snapshot.queryParamMap.get('redirectTo') || '/', {
-            replaceUrl: true,
-          });
-        },
-        reset: true,
-      })?.subscribe()
-    );
+    this._socialAuthService.authState.pipe(
+      takeUntilDestroyed(),
+      skip(1),
+      filter(socialUser => !!socialUser)
+    ).subscribe(socialUser => {
+      this.formLoginGoogle.group.get('token')?.setValue(socialUser.idToken);
+      this.formLoginGoogle.submit();
+    });
   }
 }

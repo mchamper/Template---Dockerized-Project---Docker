@@ -9,6 +9,7 @@ import { authSystemUserIsNotLoggedInGuard } from './guards/auth-system-user-is-n
 import { authSystemUserIsVerifiedGuard } from './guards/auth-system-user-is-verified.guard';
 import { RouteService } from './services/route.service';
 import { TaxonomyService } from './taxonomies/taxonomy.service';
+import { toObservable } from '@angular/core/rxjs-interop';
 // import { GoogleTagManagerService } from 'angular-google-tag-manager';
 
 const routes: Routes = [
@@ -80,9 +81,10 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, {
-    initialNavigation: 'enabledBlocking',
+    initialNavigation: 'enabledNonBlocking',
+    bindToComponentInputs: true,
     // Esta opción no restaura el scroll cuando se refresca la página.
-    // scrollPositionRestoration: 'enabled',
+    scrollPositionRestoration: 'enabled',
   })],
   exports: [RouterModule]
 })
@@ -96,22 +98,22 @@ export class AppRoutingModule {
     // gtmService: GoogleTagManagerService,
   ) {
 
-    router.events.pipe(
-      filter((e: Event): e is Scroll => e instanceof Scroll),
-    ).subscribe(e => {
-      if (e.position) {
-        // backward navigation
-        viewportScroller.scrollToPosition(e.position);
-      } else if (e.anchor) {
-        // anchor navigation
-        viewportScroller.scrollToAnchor(e.anchor);
-      } else {
-        // forward navigation
-        viewportScroller.scrollToPosition([0, 0]);
-      }
-    });
+    // router.events.pipe(
+    //   filter((e: Event): e is Scroll => e instanceof Scroll),
+    // ).subscribe(e => {
+    //   if (e.position) {
+    //     // backward navigation
+    //     viewportScroller.scrollToPosition(e.position);
+    //   } else if (e.anchor) {
+    //     // anchor navigation
+    //     viewportScroller.scrollToAnchor(e.anchor);
+    //   } else {
+    //     // forward navigation
+    //     viewportScroller.scrollToPosition([0, 0]);
+    //   }
+    // });
 
-    routeS.currentPage$.subscribe((value) => {
+    toObservable(routeS.currentPage).subscribe((value) => {
       taxonomyS.resolve(value);
 
       // gtmService.pushTag({

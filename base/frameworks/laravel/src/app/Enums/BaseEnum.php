@@ -52,6 +52,17 @@ trait BaseEnum
         return null;
     }
 
+    public static function tryFromNames(array $names): ?static
+    {
+        $cases = [];
+
+        foreach ($names as $name) {
+            $cases[] = static::tryFromName($name);
+        }
+
+        return $cases;
+    }
+
     public static function tryFromValue($value, string $key = ''): ?static
     {
         foreach (static::cases() as $case) {

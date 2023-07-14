@@ -6,12 +6,16 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:app_client'])->group(function () {
     Route::get('/', function () { return Response::jsonHello(); });
-    /* -------------------- */
+});
+
+Route::middleware(['auth:app_client,system_user'])->group(function () {
     Route::get('/combos', 'CombosController@get');
     Route::get('/validate', 'ValidateController@validate');
 });
 
 Route::middleware(['auth:system_user', 'verified'])->group(function () {
+    Route::post('/upload', 'UploadController@upload');
+    /* -------------------- */
     Route::get('/system-users', 'SystemUserController@index')->can(PermissionEnum::SystemUserGet->name);
     Route::get('/system-users/{systemUserId}', 'SystemUserController@show')->can(PermissionEnum::SystemUserGet->name);
     Route::post('/system-users', 'SystemUserController@create')->can(PermissionEnum::SystemUserCreate->name);

@@ -1,0 +1,28 @@
+<ng-container *ngIf="{
+  status: form.group.statusChanges | async
+} as vm">
+  <div class="content">
+    <div class="me-3 w-100">
+      <ng-container *ngIf="alertTpl">
+        <ng-container *ngTemplateOutlet="alertTpl"></ng-container>
+      </ng-container>
+
+      <ng-container *ngIf="form.group.dirty">
+        <nz-alert nzBanner nzType="warning" [nzMessage]="messageTpl">
+          <ng-template #messageTpl>
+            Hay cambios sin guardar <a href="javascript:;" (click)="form.restore()">[descartar]</a>
+          </ng-template>
+        </nz-alert>
+      </ng-container>
+    </div>
+
+    <div class="ms-auto">
+      <button type="button" class="btn btn-primary" (click)="form.submit()"
+        [appLoadingBtn]="form.request.isLoading()"
+        [disabled]="disabled === true"
+      >
+        {{ buttonText }}
+      </button>
+    </div>
+  </div>
+</ng-container>

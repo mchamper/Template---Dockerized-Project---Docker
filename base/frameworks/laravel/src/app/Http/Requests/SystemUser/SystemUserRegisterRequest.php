@@ -19,7 +19,6 @@ class SystemUserRegisterRequest extends BaseRequest
             'last_name' => ['bail', 'required', 'string'],
             'email' => ['bail', 'required', 'email', 'unique:system_users,email'],
             'password' => ['bail', 'required', 'string', 'confirmed', Password::min(6)],
-            // 'picture' => ['bail', 'nullable', 'file', File::types(['jpg', 'png', 'webp'])->max(1024)],
         ];
     }
 }

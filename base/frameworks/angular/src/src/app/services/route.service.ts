@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Location } from '@angular/common';
+import { Injectable, WritableSignal, signal } from '@angular/core';
 import { Router, NavigationStart, NavigationEnd, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, Scroll, ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
 @Injectable({
@@ -8,15 +9,19 @@ import { filter, map } from 'rxjs/operators';
 })
 export class RouteService {
 
-  currentPage$: BehaviorSubject<any> = new BehaviorSubject(this.getSnapshotLastChild().data);
+  currentPage: WritableSignal<any> = signal({
+    ...this.getSnapshotLastChild().data,
+    url: this._location.path(),
+  });
 
   constructor(
     private _route: ActivatedRoute,
     private _router: Router,
+    private _location: Location,
   ) {
 
     this.onNavigationEnd$().subscribe(value => {
-      this.currentPage$.next({
+      this.currentPage.set({
         ...this.getSnapshotLastChild().data,
         url: value.urlAfterRedirects
       });
@@ -25,17 +30,9 @@ export class RouteService {
 
   /* -------------------- */
 
-  isCurrentPage(name: string | string[]): boolean {
-    let names: string[];
-
-    Array.isArray(name)
-      ? names = name
-      : names = [name];
-
-    return names.includes(this.currentPage$.value?.name);
-  }
-  isCurrentPage$(name: string | string[]): Observable<boolean> {
-    return this.currentPage$.pipe(map(() => this.isCurrentPage(name)));
+  isCurrentPage(names: string | string[]): boolean {
+    if (!Array.isArray(names)) names = [names];
+    return names.includes(this.currentPage().name);
   }
 
   /* -------------------- */

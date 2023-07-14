@@ -1,66 +1,61 @@
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from "@angular/forms";
-import { cloneDeep, isDate } from "lodash";
-import { RequestHandler } from "../handlers/request-handler/request-handler";
-import { BehaviorSubject, Observable, filter, of, tap } from "rxjs";
+import { AbstractControl, FormArray, FormControl, FormGroup } from "@angular/forms";
+import { cloneDeep, get, isDate } from "lodash";
+import { Observable, Subscription, of, tap } from "rxjs";
 import * as moment from "moment";
 import { IHttpErrorResponse } from "src/app/interceptors/error.interceptor";
-import { NzNotificationService } from "ng-zorro-antd/notification";
-import { EventEmitter, WritableSignal, inject, signal } from "@angular/core";
+import { Injector, inject, signal } from "@angular/core";
 import { environment } from "src/environments/environment";
 import { IHttpResponse } from "src/app/interceptors/success.interceptor";
+import { Request } from "../request/request";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { CombosHttpService } from "src/app/services/http/combos-http.service";
 
-type TRequestType = 'data' | 'combos' | 'upload';
+interface FormPrepareOptions {
+  strict?: boolean,
+  mustResetErrors?: boolean,
+}
 
 export enum FormUnpreparedReasonEnum {
   IS_LOADING = 'IS_LOADING',
-  IS_SUCCESS_AND_PRISTINE = 'IS_SUCCESS_AND_PRISTINE',
+  IS_PRISTINE = 'IS_PRISTINE',
   IS_INVALID = 'IS_INVALID',
 }
 
-export class Form {
+export class Form<Data = any> {
 
-  state: {
-    init$: BehaviorSubject<any>,
-    current$: BehaviorSubject<any>,
-    get: () => any,
-    get$: () => BehaviorSubject<any>,
-    set: (value?: any) => void,
-    persist: (value?: any) => void,
-  } = {
-    init$: new BehaviorSubject(null),
-    current$: new BehaviorSubject(null),
+  state = {
+    init: signal<any>(null),
+    current: signal<any>(null),
     get: (): any => {
-      return this.state.get$().value;
-    },
-    get$: (): BehaviorSubject<any> => {
-      return this.state.current$.value
-        ? this.state.current$
-        : this.state.init$;
+      return this.state.current()
+        ? this.state.current()
+        : this.state.init();
     },
     set: (value?: any): void => {
-      this.state.init$.next(cloneDeep(value || this.group.getRawValue()));
-      this.state.current$.next(cloneDeep(this.state.init$.value));
+      const newValue = cloneDeep(value || this.group.getRawValue());
+
+      this.state.init.set(newValue);
+      this.state.current.set(newValue);
     },
     persist: (value?: any): void => {
-      this.state.current$.next(cloneDeep(value || this.group.getRawValue()));
+      const newValue = cloneDeep(value || this.group.getRawValue());
+      this.state.current.set(newValue);
     },
   };
 
   group: FormGroup;
-  combos: { [key: string]: any[] } = {};
-  combos$: WritableSignal<{ [key: string]: any[] }> = signal({});
+  combos = signal<{ [key: string]: any[] }>({});
 
-  requestH: RequestHandler = new RequestHandler('formRequest');
-  dataRequestH: RequestHandler = new RequestHandler('dataRequest');
-  combosRequestH: RequestHandler = new RequestHandler('combosRequest');
-  uploadRequestH: RequestHandler = new RequestHandler('uploadRequest');
+  request = new Request({ type: 'form' });
+  actionRequest = new Request();
+  dataRequest = new Request<Data>();
+  combosRequest = new Request();
 
-  private _fb: FormBuilder = inject(FormBuilder);
-  private _nzNotificationS: NzNotificationService = inject(NzNotificationService);
+  private _combosHttpS = inject(CombosHttpService);
 
   constructor(
     group: FormGroup = new FormGroup({}),
-    public options: {
+    private _options: {
       onInit?: (form: Form) => any,
       onInitSubscriptions?: (form: Form) => any,
       onSubmit?: () => any,
@@ -71,12 +66,20 @@ export class Form {
           onMove?: (eachControl: FormControl, newIndex: number) => any,
         },
       },
+      combos?: string,
+      dataRequest?: Request['_options'],
+      request?: {
+        prepare?: FormPrepareOptions,
+        reset?: boolean,
+        persist?: boolean,
+      } & Request['_options'],
+      injector?: Injector,
       mock?: any,
     } = {},
   ) {
 
     this.group = group;
-    this.state.set(!environment.production ? options?.mock : null);
+    this.state.set(!environment.production ? this._options?.mock : null);
 
     this.reset(true);
     this._init();
@@ -84,25 +87,51 @@ export class Form {
     this.state.set(this.group.getRawValue());
     this.group.markAsPristine();
     this.group.markAsUntouched();
+
+    if (this._options.combos) {
+      this.combosRequest = new Request({
+        send: () => this._combosHttpS.get(this._options.combos || ''),
+        body: 'combos',
+        success: () => {
+          this.combos.set(this.combosRequest.body());
+        }
+      });
+
+      this.combosRequest.run();
+    }
+
+    if (this._options.dataRequest) {
+      this.dataRequest = new Request(this._options.dataRequest);
+      this.dataRequest.run();
+    }
+
+    if (this._options.request) {
+      this.request = new Request({
+        ...this._options.request,
+        type: 'form',
+      });
+    }
   }
 
   /* -------------------- */
 
   private _init() {
-    if (this.options.onInit) {
-      this.options.onInit(this);
+    if (this._options.onInit) {
+      this._options.onInit(this);
     }
   }
 
   private _initSubscriptions() {
-    if (this.options.onInitSubscriptions) {
-      this.options.onInitSubscriptions(this);
+    if (this._options.onInitSubscriptions) {
+      this._options.onInitSubscriptions(this);
     }
   }
 
   submit() {
-    if (this.options.onSubmit) {
-      this.options.onSubmit();
+    if (this._options.onSubmit) {
+      this._options.onSubmit();
+    } else {
+      this.run();
     }
   }
 
@@ -130,17 +159,17 @@ export class Form {
     this._init();
 
     if (withInit) {
-      this.state.current$.next(null);
+      this.state.current.set(null);
     }
 
     this.reset();
-    this.requestH.reset();
+    this.request.reset();
   }
 
   /* -------------------- */
 
   reset(withInit?: boolean, options?: any): void {
-    this.group.reset(withInit ? this.state.init$.value : this.state.get(), options);
+    this.group.reset(withInit ? this.state.init() : this.state.get(), options);
   }
 
   resetErrors(options?: any): void {
@@ -150,14 +179,8 @@ export class Form {
   /* -------------------- */
 
   getCombo(key: string): any[] {
-    return this.combos
-      ? this.combos[key] || []
-      : [];
-  }
-
-  getCombo$(key: string): any[] {
-    return this.combos$()
-      ? this.combos$()[key] || []
+    return this.combos()
+      ? this.combos()[key] || []
       : [];
   }
 
@@ -165,21 +188,21 @@ export class Form {
     const compareField: string = value[1];
     value = value[0];
 
-    return this.combos
-      ? (this.combos[key] || [])[multi ? 'filter' : 'find'](item => compareField ? item[compareField] === value : item === value)
+    return this.combos()
+      ? (this.combos()[key] || [])[multi ? 'filter' : 'find'](item => compareField ? item[compareField] === value : item === value)
       : null;
   }
 
-  updateComboByTags(key: string, control: FormControl | string) {
+  updateComboWithNewTags(key: string, control: FormControl | string) {
     if (typeof control === 'string') {
       control = this.group.get(control) as FormControl;
     }
 
-    control.valueChanges.subscribe(value => {
+    control.valueChanges.pipe(takeUntilDestroyed()).subscribe(value => {
       const controlValue = value.map((tag: any) => {
         tag = typeof tag === 'string' ? { value: tag, name: tag } : tag;
 
-        this.combos$.update(combos => {
+        this.combos.update(combos => {
           if (!combos[key].some(item => item.value === tag.value)) {
             combos[key].push(tag);
           }
@@ -210,24 +233,6 @@ export class Form {
 
   /* -------------------- */
 
-  isFormRequest(type?: TRequestType): boolean {
-    switch (type) {
-      case 'data':
-      case 'combos':
-      case 'upload': return false;
-      default: return true;
-    }
-  }
-
-  getRequest(type?: TRequestType): RequestHandler {
-    switch (type) {
-      case 'data': return this.dataRequestH;
-      case 'combos': return this.combosRequestH;
-      case 'upload': return this.uploadRequestH;
-      default: return this.requestH;
-    }
-  }
-
   getValue(key: string, field?: string): any {
     let value = this.group.get(key)?.value;
 
@@ -251,20 +256,20 @@ export class Form {
   }
 
   getGroup(key: string): FormGroup {
-    return this.castFG(this.group.get(key));
+    return this.asFG(this.group.get(key));
   }
 
   getControl(key: string): FormControl {
-    return this.castFC(this.group.get(key));
+    return this.asFC(this.group.get(key));
   }
 
   getArray(key: string): FormArray {
-    return this.castFA(this.group.get(key));
+    return this.asFA(this.group.get(key));
   }
 
   /* -------------------- */
 
-  getValuesForQueryParams(prefix: string = ''): any {
+  getQueryParamsFromValues(prefix: string = ''): any {
     const queryParams: any = {};
 
     Object.keys(this.group.controls).forEach((key: string) => {
@@ -306,10 +311,10 @@ export class Form {
 
   getError(key: string, group?: FormGroup): string {
     group = group || this.group;
-    return group.get(key)?.getError('error');
+    return group.get(key)?.getError('localError') || group.get(key)?.getError('apiError');
   }
 
-  setErrors(errors: any = null): void {
+  setApiErrors(errors: any = null): void {
     if (errors) {
       for (const key in errors) {
         let field = key;
@@ -322,7 +327,7 @@ export class Form {
 
         if (control) {
           control.markAsDirty();
-          control.setErrors({ error: errors[key] });
+          control.setErrors({ apiError: errors[key] });
         }
       }
     }
@@ -330,8 +335,8 @@ export class Form {
 
   /* -------------------- */
 
-  add(control: FormArray | string, groupArrayKey: string = ''): void {
-    if (!this.options.arrays) {
+  arrayAdd(control: FormArray | string, groupArrayKey: string = ''): void {
+    if (!this._options.arrays) {
       return;
     }
 
@@ -340,28 +345,28 @@ export class Form {
       control = this.group.get(groupArrayKey) as FormArray;
     }
 
-    const group = cloneDeep(this.options.arrays[groupArrayKey].group);
-
-    if (this.options.arrays[groupArrayKey].onAdd) {
-      (this.options.arrays[groupArrayKey].onAdd as Function)(group, this);
-    }
+    const group = cloneDeep(this._options.arrays[groupArrayKey].group);
 
     control.push(group);
     control.markAsDirty();
-  }
 
-  addInit(control: FormArray | string, n: number, groupArrayKey: string = ''): void {
-    this.remove(control);
-    this.addN(control, n, groupArrayKey);
-  }
-
-  addN(control: FormArray | string, n: number, groupArrayKey: string = ''): void {
-    for (let index = 0; index < n; index++) {
-      this.add(control, groupArrayKey);
+    if (this._options.arrays[groupArrayKey].onAdd) {
+      (this._options.arrays[groupArrayKey].onAdd as Function)(group, this);
     }
   }
 
-  remove(control: FormArray | string, index?: number): void {
+  arrayAddN(control: FormArray | string, n: number, groupArrayKey: string = ''): void {
+    for (let index = 0; index < n; index++) {
+      this.arrayAdd(control, groupArrayKey);
+    }
+  }
+
+  addInit(control: FormArray | string, n: number, groupArrayKey: string = ''): void {
+    this.arrayRemove(control);
+    this.arrayAddN(control, n, groupArrayKey);
+  }
+
+  arrayRemove(control: FormArray | string, index?: number): void {
     if (typeof control === 'string') {
       control = this.group.get(control) as FormArray;
     }
@@ -377,8 +382,8 @@ export class Form {
     control.markAsDirty();
   }
 
-  move(control: FormArray | string, index: number, value: 'left' | 'right' | number, groupArrayKey: string = ''): void {
-    if (!this.options.arrays) {
+  arrayMove(control: FormArray | string, index: number, value: 'left' | 'right' | number, groupArrayKey: string = ''): void {
+    if (!this._options.arrays) {
       return;
     }
 
@@ -401,24 +406,24 @@ export class Form {
     control.markAsDirty();
     control.updateValueAndValidity();
 
-    if (this.options.arrays[groupArrayKey].onMove) {
+    if (this._options.arrays[groupArrayKey].onMove) {
       for (let [index, value] of control.controls.entries()) {
-        (this.options.arrays[groupArrayKey].onMove as any)(value, index);
+        (this._options.arrays[groupArrayKey].onMove as Function)(value, index);
       }
     }
   }
 
   /* -------------------- */
 
-  castFC(control: AbstractControl | null): FormControl {
+  asFC(control: AbstractControl | null): FormControl {
     return control as FormControl;
   }
 
-  castFG(control: AbstractControl | null): FormGroup {
+  asFG(control: AbstractControl | null): FormGroup {
     return control as FormGroup;
   }
 
-  castFA(control: AbstractControl | null): FormArray {
+  asFA(control: AbstractControl | null): FormArray {
     return control as FormArray;
   }
 
@@ -426,38 +431,35 @@ export class Form {
 
   prepare(
     group?: FormGroup | FormArray,
-    options?: {
-      strict?: boolean,
-      mustResetErrors?: boolean
-    },
+    options?: FormPrepareOptions,
   ): {
     status: boolean,
     reason?: FormUnpreparedReasonEnum
   } {
-    const defaultOptions = {
-      strict: typeof options?.strict !== 'undefined' ? options?.strict : false,
-      mustResetErrors: typeof options?.mustResetErrors !== 'undefined' ? options?.mustResetErrors : true,
+    options = {
+      strict: get(options, 'strict', false),
+      mustResetErrors: get(options, 'mustResetErrors', true),
     };
 
     const formGroup = group || this.group;
 
-    this.validate(formGroup);
-
-    if (this.requestH.isLoading()) {
+    if (this.request.isLoading()) {
       return {
         status: false,
         reason: FormUnpreparedReasonEnum.IS_LOADING,
       };
     }
 
-    if (defaultOptions?.strict) {
-      if (this.requestH.isSuccess() && formGroup.pristine) {
+    if (options?.strict) {
+      if (formGroup.pristine) {
         return {
           status: false,
-          reason: FormUnpreparedReasonEnum.IS_SUCCESS_AND_PRISTINE,
+          reason: FormUnpreparedReasonEnum.IS_PRISTINE,
         };
       }
     }
+
+    this.validate(formGroup);
 
     if (formGroup.invalid) {
       return {
@@ -466,7 +468,7 @@ export class Form {
       };
     };
 
-    if (defaultOptions?.mustResetErrors) {
+    if (options?.mustResetErrors) {
       this.resetErrors();
     }
 
@@ -484,125 +486,52 @@ export class Form {
       if (abstractControl instanceof FormGroup || abstractControl instanceof FormArray) {
         this.validate(abstractControl);
       } else {
-        abstractControl?.markAsTouched();
-        abstractControl?.updateValueAndValidity();
+        if (!abstractControl?.getError('apiError')) {
+          abstractControl?.markAsTouched();
+          abstractControl?.updateValueAndValidity({ onlySelf: true });
+        }
       }
     });
   }
 
   /* -------------------- */
 
-  send(
-    observable: Observable<any>,
-    options?: {
-      request?: TRequestType,
-      prepareOptions?: {
-        strict?: boolean,
-        mustResetErrors?: boolean
-      },
-      unprepared?: (reason: FormUnpreparedReasonEnum) => void,
-      before?: () => void,
-      success?: (res: IHttpResponse, notify: NzNotificationService) => void,
-      error?: (err: IHttpErrorResponse, notify: NzNotificationService) => void,
-      after?: () => void,
-      reset?: boolean,
-      persist?: boolean,
-      notify?: boolean,
-      notifySuccess?: boolean | [title: string, content: string],
-      notifyError?: boolean | [title: string, content: string],
-    }
-  ): Observable<IHttpResponse> {
-    const defaultOptions = {
-      unprepared: typeof options?.unprepared !== 'undefined' ? options?.unprepared : null,
-      before: typeof options?.before !== 'undefined' ? options?.before : null,
-      success: typeof options?.success !== 'undefined' ? options?.success : null,
-      error: typeof options?.error !== 'undefined' ? options?.error : null,
-      after: typeof options?.after !== 'undefined' ? options?.after : null,
-      reset: typeof options?.reset !== 'undefined' ? options?.reset : false,
-      persist: typeof options?.persist !== 'undefined' ? options?.persist : false,
-      notify: typeof options?.notify !== 'undefined' ? options?.notify : false,
-      notifySuccess: typeof options?.notifySuccess !== 'undefined' ? options?.notifySuccess : false,
-      notifyError: typeof options?.notifyError !== 'undefined' ? options?.notifyError : true,
+  send(...params: any): Observable<IHttpResponse> {
+    const options = {
+      ...this._options.request,
+      reset: get(this._options.request, 'reset', false),
+      persist: get(this._options.request, 'persist', false),
     };
 
-    const requestH = this.getRequest(options?.request);
+    const isPrepared = options?.prepare
+      ? this.prepare(undefined, options.prepare)
+      : this.prepare();
 
-    if (this.isFormRequest(options?.request)) {
-      const prepare = options?.prepareOptions
-        ? this.prepare(undefined, options?.prepareOptions)
-        : this.prepare();
-
-      if (!environment.production) {
-        console.log(prepare);
-      }
-
-      if (!prepare.status && prepare.reason) {
-        if (defaultOptions.unprepared) {
-          defaultOptions.unprepared(prepare.reason);
-        }
-
-        return of();
-      }
+    if (!environment.production) {
+      console.log('Form prepared:', isPrepared);
     }
 
-    if (defaultOptions.before) {
-      defaultOptions.before();
+    if (!isPrepared.status && isPrepared.reason) {
+      return of();
     }
 
-    return requestH.send(observable).pipe(
+    return this.request.send(params).pipe(
       tap({
         next: (res: IHttpResponse) => {
-          if (defaultOptions.reset) {
+          if (options?.reset) {
             this.reset();
-          } else if (defaultOptions.persist) {
+          } else if (options?.persist) {
             this.state.persist();
-          }
-
-          if (defaultOptions.notify || defaultOptions.notifySuccess) {
-            let title: string = '¡Perfecto!';
-            let content: string = res.message || 'Su solicitud ha sido enviada con éxito.';
-
-            if (Array.isArray(defaultOptions.notifySuccess)) {
-              if (defaultOptions.notifySuccess[0]) title = defaultOptions.notifySuccess[0];
-              if (defaultOptions.notifySuccess[1]) content = defaultOptions.notifySuccess[1];
-            }
-
-            this._nzNotificationS.success(
-              `<strong>${title}</strong>`,
-              `${content}`,
-            );
-          }
-
-          if (defaultOptions.success) {
-            defaultOptions.success(res, this._nzNotificationS);
           }
         },
         error: (err: IHttpErrorResponse) => {
-          this.setErrors(err.validation);
-
-          if (defaultOptions.notify || defaultOptions.notifyError) {
-            let title: string = 'Mmm...';
-            let content: string = err.message || 'Ha ocurrido un error.';
-
-            if (Array.isArray(defaultOptions.notifyError)) {
-              if (defaultOptions.notifyError[0]) title = defaultOptions.notifyError[0];
-              if (defaultOptions.notifyError[1]) content = defaultOptions.notifyError[1];
-            }
-
-            this._nzNotificationS.error(
-              `<strong>${title}</strong>`,
-              `${content}`,
-            );
-          }
-
-          if (defaultOptions.error) {
-            defaultOptions.error(err, this._nzNotificationS);
-          }
-        },
-        complete: () => {
-          if (defaultOptions.after) defaultOptions.after();
+          this.setApiErrors(err.validation);
         },
       }),
     );
+  }
+
+  run = (...params: any): Subscription => {
+    return this.send(...params).subscribe();
   }
 }

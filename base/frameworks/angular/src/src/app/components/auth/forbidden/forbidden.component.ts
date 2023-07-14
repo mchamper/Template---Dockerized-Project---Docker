@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, ContentChild, TemplateRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { RouterModule } from '@angular/router';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { AuthService } from 'src/app/services/auth.service';
@@ -20,14 +20,16 @@ import { SharedModule } from 'src/app/shared.module';
 })
 export class ForbiddenComponent {
 
+  @ContentChild('content') contentTpl!: TemplateRef<any>;
+
+  permissions = signal<string[]>([]);
+
   authS = inject(AuthService);
   routeS = inject(RouteService);
 
-  permissions$ = signal<string[]>([]);
-
   constructor() {
-    this.routeS.currentPage$.pipe(takeUntilDestroyed()).subscribe(value => {
-      this.permissions$.set(value.permissions || []);
+    toObservable(this.routeS.currentPage).pipe(takeUntilDestroyed()).subscribe(value => {
+      this.permissions.set(value.permissions || []);
     });
   }
 }

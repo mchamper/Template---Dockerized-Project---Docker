@@ -2,6 +2,7 @@
 
 namespace App\Commons\Response;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
@@ -30,13 +31,19 @@ class Error
         $error = [
             'time' => round(microtime(true) - LARAVEL_START, 4),
             'status' => $status,
-            'message' => $message,
+            'message' => str_replace('`', '\'', $message),
             'body' => $body,
             'name' => $name,
             'exception' => $exception,
             'code' => $code,
             'validation' => $validation,
         ];
+
+        if (in_array($name, config('logging.channels.discord.errors'))) {
+            Log::channel('discord')->error('('. app()->environment() . ') /' . request()->path(), [
+                'response' => $error,
+            ]);
+        }
 
         return $error;
     }

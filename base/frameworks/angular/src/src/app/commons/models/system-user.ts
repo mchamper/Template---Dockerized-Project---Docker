@@ -1,7 +1,8 @@
+
 import { Moment } from "moment";
-import { AbstractModel } from "./abstract-model";
-import { IAuth } from "../services/auth.service";
+import { BaseModel } from "./base-model";
 import * as moment from "moment";
+import { IAuth } from "src/app/services/auth.service";
 
 export interface ISystemUser {
   id: number,
@@ -28,7 +29,19 @@ export interface ISystemUser {
   deletedAt: Moment | null,
 }
 
-export class SystemUser extends AbstractModel<ISystemUser> {
+export class SystemUser extends BaseModel<ISystemUser> {
+
+  /* -------------------- */
+
+  hasRole(roles: string | string[], matchAll: boolean = true): boolean {
+    if (!isArray(roles)) roles = [roles];
+    return roles[matchAll ? 'every' : 'some'](role => this.data.rolesAndPermissions.roles.includes(role));
+  }
+
+  can(permissions: string | string[], matchAll: boolean = true): boolean {
+    if (!isArray(permissions)) permissions = [permissions];
+    return permissions[matchAll ? 'every' : 'some'](permission => this.data.rolesAndPermissions.permissions?.includes(permission));
+  }
 
   /* -------------------- */
 
@@ -55,7 +68,7 @@ export class SystemUser extends AbstractModel<ISystemUser> {
       picture: this.data.picture,
       roles: this.data.rolesAndPermissions.roles,
       permissions: this.data.rolesAndPermissions.permissions,
-      _raw: this,
+      model: this,
     };
   }
 }

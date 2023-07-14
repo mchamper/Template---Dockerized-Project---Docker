@@ -1,6 +1,5 @@
 import { DOCUMENT } from "@angular/common";
-import { Inject, Injectable } from "@angular/core";
-import { BehaviorSubject, map, Observable } from "rxjs";
+import { Inject, Injectable, WritableSignal, signal } from "@angular/core";
 import { SsrService } from "./ssr.service";
 
 @Injectable({
@@ -8,7 +7,7 @@ import { SsrService } from "./ssr.service";
 })
 export class ViewportService {
 
-  width$: BehaviorSubject<number>;
+  width: WritableSignal<number>;
 
   sizes = {
     xs: 0,
@@ -16,6 +15,8 @@ export class ViewportService {
     md: 768,
     lg: 992,
     xl: 1200,
+    xxl: 1400,
+    xxxl: 1600,
   };
 
   constructor(
@@ -23,21 +24,17 @@ export class ViewportService {
     private _ssrS: SsrService,
   ) {
 
-    this.width$ = new BehaviorSubject(this._ssrS.isBrowser() ? this._dom.defaultView?.innerWidth || 1920 : 1920);
+    this.width = signal(this._ssrS.isBrowser() ? this._dom.defaultView?.innerWidth || 1920 : 1920);
 
     if (this._ssrS.isBrowser()) {
       this._dom.defaultView?.addEventListener('resize', () => {
         const width = this._dom.defaultView?.innerWidth;
 
         if (width) {
-          this.width$.next(width);
+          this.width.set(width);
         }
       });
     }
-  }
-
-  get width() {
-    return this.width$.value;
   }
 
   /* -------------------- */
@@ -53,16 +50,10 @@ export class ViewportService {
   /* -------------------- */
 
   up(size: number | string): boolean {
-    return this.width > this._getSize(size);
-  }
-  up$(size: number | string): Observable<boolean> {
-    return this.width$.pipe(map(() => this.up(size)));
+    return this.width() > this._getSize(size);
   }
 
   down(size: number | string): boolean {
-    return this.width < this._getSize(size);
-  }
-  down$(size: number | string): Observable<boolean> {
-    return this.width$.pipe(map(() => this.down(size)));
+    return this.width() < this._getSize(size);
   }
 };

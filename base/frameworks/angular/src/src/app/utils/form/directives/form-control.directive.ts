@@ -1,15 +1,15 @@
-import { Directive, ElementRef, Input, Optional } from '@angular/core';
-import { FormControl, FormGroup, FormGroupDirective, NgControl } from '@angular/forms';
+import { DestroyRef, Directive, ElementRef, Injector, Input, Optional, inject, signal } from '@angular/core';
+import { FormControl, FormControlStatus, FormGroupDirective, NgControl } from '@angular/forms';
 import { isArray } from 'lodash';
-import { SubscriptionHandler } from '../../handlers/subscription-handler';
 import { NzSelectComponent } from 'ng-zorro-antd/select';
 import { NzInputDirective, NzInputGroupComponent } from 'ng-zorro-antd/input';
 import { NzDatePickerComponent, NzRangePickerComponent } from 'ng-zorro-antd/date-picker';
-import { BehaviorSubject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { NzFormControlComponent } from 'ng-zorro-antd/form';
 import { formValidatorMessages } from '../form-validators';
 import { NzInputNumberComponent } from 'ng-zorro-antd/input-number';
 import { NzUploadComponent } from 'ng-zorro-antd/upload';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 
 @Directive({
   selector: '[formControl],[formControlName],[ngModel],nz-upload',
@@ -23,9 +23,10 @@ export class FormControlDirective {
   formItemElem!: HTMLElement | null;
   formItemLabelElem!: HTMLElement | null;
 
-  isFocused$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  isFocused = signal<boolean>(false);
 
-  private _sh: SubscriptionHandler = new SubscriptionHandler();
+  private _injector = inject(Injector);
+  private _destroyRef = inject(DestroyRef);
 
   constructor(
     private _host: ElementRef<HTMLElement>,
@@ -48,10 +49,6 @@ export class FormControlDirective {
     this.resolveFloatingLabel();
 
     this.resolveErrors();
-  }
-
-  ngOnDestroy(): void {
-    this._sh.clean();
   }
 
   get control(): NgControl | FormControl {
@@ -107,8 +104,8 @@ export class FormControlDirective {
 
   resolveFocusOnNzInputControl(): void {
     if (this._nzInputControl) {
-      this._host.nativeElement.onfocus = () => this.isFocused$.next(true);
-      this._host.nativeElement.onblur = () => this.isFocused$.next(false);
+      this._host.nativeElement.onfocus = () => this.isFocused.set(true);
+      this._host.nativeElement.onblur = () => this.isFocused.set(false);
     }
   }
 
@@ -117,25 +114,21 @@ export class FormControlDirective {
       const inputElem = this._host.nativeElement.querySelector<HTMLInputElement>('.ant-input-number-input');
 
       if (inputElem) {
-        inputElem.onfocus = () => this.isFocused$.next(true);
-        inputElem.onblur = () => this.isFocused$.next(false);
+        inputElem.onfocus = () => this.isFocused.set(true);
+        inputElem.onblur = () => this.isFocused.set(false);
       }
     }
   }
 
   resolveFocusOnNzSelectControl(): void {
     if (this._nzSelectControl) {
-      this._sh.add(
-        this._nzSelectControl.nzOpenChange.subscribe(isOpened => this.isFocused$.next(isOpened))
-      );
+      this._nzSelectControl.nzOpenChange.pipe(takeUntilDestroyed(this._destroyRef)).subscribe(isOpened => this.isFocused.set(isOpened));
     }
   }
 
   resolveFocusOnNzDatePickerControl(): void {
     if (this._nzDatePickerControl) {
-      this._sh.add(
-        this._nzDatePickerControl.nzOnOpenChange.subscribe(isOpened => this.isFocused$.next(isOpened))
-      );
+      this._nzDatePickerControl.nzOnOpenChange.pipe(takeUntilDestroyed(this._destroyRef)).subscribe(isOpened => this.isFocused.set(isOpened));
     }
   }
 
@@ -147,20 +140,18 @@ export class FormControlDirective {
   }
 
   resolveFloatingLabelOnFocus(): void {
-    this._sh.add(
-      this.isFocused$.subscribe(isFocused => {
-        this.markLabelAsFloating(!isFocused, this.controlValue);
-      })
-    );
+    toObservable(this.isFocused, { injector: this._injector}).pipe(takeUntilDestroyed(this._destroyRef)).subscribe(isFocused => {
+      this.markLabelAsFloating(!isFocused, this.controlValue);
+    });
   }
 
-  resolveFloatingLabelOnValueChanges(subscribe: boolean = true): void {
+  resolveFloatingLabelOnValueChanges(): void {
     const onValueChange = () => {
       this.markLabelAsFloating(true, this.controlValue);
     };
 
     onValueChange();
-    this._sh.add(this.control?.valueChanges?.subscribe(() => onValueChange()));
+    this.control?.valueChanges?.pipe(takeUntilDestroyed(this._destroyRef)).subscribe(() => onValueChange());
   }
 
   /* -------------------- */
@@ -168,7 +159,7 @@ export class FormControlDirective {
   markLabelAsFloating(mustMark: boolean, value?: any): void {
     mustMark = mustMark
       && !this.hasValue(value)
-      && !this.isFocused$.value
+      && !this.isFocused()
       ;
 
     if (this.formItemLabelElem) {
@@ -179,38 +170,31 @@ export class FormControlDirective {
 
   /* -------------------- */
 
-  resolveErrors(subscribe: boolean = true): void {
-    if (!subscribe) {
+  resolveErrors(): void {
+    const onStatusChange = () => {
       if (this._nzFormControl) {
         this._nzFormControl.nzErrorTip = undefined;
 
         if (this.control?.status === 'INVALID') {
           this.setErrors();
-          this._nzFormControl.nzErrorTip = this.control?.getError('error');
+          this._nzFormControl.nzErrorTip = this.control?.getError('localError') || this.control?.getError('apiError');
         }
       }
+    };
 
-      return;
-    }
-
-    this.resolveErrors(false);
-
-    this._sh.add(
-      this.control?.statusChanges?.subscribe(value => {
-        this.resolveErrors(false);
-      })
-    );
+    onStatusChange();
+    (this.control?.statusChanges as Observable<FormControlStatus>).pipe(takeUntilDestroyed(this._destroyRef)).subscribe(() => onStatusChange());
   }
 
   setErrors(): void {
-    if (this.control.getError('error')) {
+    if (this.control.getError('localError') || this.control.getError('apiError')) {
       return;
     }
 
     const formControl = this.uploadControl || this._formGroup.form.get(this._control.path || '');
 
     if (formControl) {
-      formControl.setErrors({ error: this.getLocalErrorMessage() }, {
+      formControl.setErrors({ localError: this.getLocalErrorMessage() }, {
         emitEvent: false
       });
     }
@@ -228,6 +212,16 @@ export class FormControlDirective {
         if (key === 'mask') {
           const mask = this.control.errors[key].requiredMask;
           return message(mask);
+        }
+
+        if (key === 'maxlength') {
+          const maxLength = this.control.errors[key].requiredLength;
+          return message(maxLength);
+        }
+
+        if (key === 'max') {
+          const max = this.control.errors[key].max;
+          return message(max);
         }
 
         return message;
