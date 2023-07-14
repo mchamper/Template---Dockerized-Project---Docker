@@ -39,7 +39,7 @@ class AppClient extends Authenticatable
     protected  function statusEnum(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->status->value(),
+            get: fn () => $this->status ? $this->status->value() : null,
         );
     }
 }

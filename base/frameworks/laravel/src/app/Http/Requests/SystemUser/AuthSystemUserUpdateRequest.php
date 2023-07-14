@@ -19,7 +19,6 @@ class AuthSystemUserUpdateRequest extends BaseRequest
             'last_name' => ['bail', 'required', 'string'],
             'password' => ['bail', 'nullable', 'string', 'confirmed', Password::min(6)],
             'password_current' => ['bail', 'nullable', 'current_password'],
-            // 'picture' => ['bail', 'nullable', 'file', File::types(['jpg', 'png', 'webp'])->max(1024)],
         ];
     }
 }

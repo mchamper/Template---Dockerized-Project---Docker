@@ -16,6 +16,7 @@ class SystemUserUpdateRequest extends BaseRequest
         return [
             'first_name' => ['bail', 'required', 'string'],
             'last_name' => ['bail', 'required', 'string'],
+            'picture' => ['bail', 'nullable'],
         ];
     }
 }

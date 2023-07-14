@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\v1\Backoffice;
+namespace App\Http\Controllers\Api\Backoffice\v1;
 
 use App\Commons\Auth\Auth;
 use App\Commons\Response\Response;
@@ -19,8 +19,10 @@ class SystemUserController extends Controller
 {
     public function index()
     {
+        $systemUserQuery = SystemUser::noRoot();
+
         $systemUsers = (new RESTful(
-            SystemUser::query(),
+            $systemUserQuery,
             request()->query(),
         ))->paginate();
 
@@ -31,8 +33,10 @@ class SystemUserController extends Controller
 
     public function show(int $systemUserId)
     {
+        $systemUserQuery = SystemUser::noRoot();
+
         $systemUser = (new RESTful(
-            SystemUser::query(),
+            $systemUserQuery,
             request()->query(),
         ))->findOrFail($systemUserId);
 
@@ -66,7 +70,7 @@ class SystemUserController extends Controller
     }
     public function update(int $systemUserId)
     {
-        $systemUser = SystemUser::where('id', '!=', Auth::systemUser()->id)->findOrFail($systemUserId);
+        $systemUser = SystemUser::noRoot()->where('id', '!=', Auth::systemUser()->id)->findOrFail($systemUserId);
 
         $input = request()->post();
         $validated = Validator::make($input, SystemUserUpdateRequest::rules())->validate();
@@ -84,7 +88,7 @@ class SystemUserController extends Controller
 
     public function delete(int $systemUserId)
     {
-        $systemUser = SystemUser::where('id', '!=', Auth::systemUser()->id)->findOrFail($systemUserId);
+        $systemUser = SystemUser::noRoot()->where('id', '!=', Auth::systemUser()->id)->findOrFail($systemUserId);
 
         DB::beginTransaction();
 
@@ -101,7 +105,7 @@ class SystemUserController extends Controller
 
     public function activate(int $systemUserId)
     {
-        $systemUser = SystemUser::findOrFail($systemUserId);
+        $systemUser = SystemUser::noRoot()->findOrFail($systemUserId);
 
         DB::beginTransaction();
 
@@ -117,7 +121,7 @@ class SystemUserController extends Controller
 
     public function deactivate(int $systemUserId)
     {
-        $systemUser = SystemUser::findOrFail($systemUserId);
+        $systemUser = SystemUser::noRoot()->findOrFail($systemUserId);
 
         DB::beginTransaction();
 

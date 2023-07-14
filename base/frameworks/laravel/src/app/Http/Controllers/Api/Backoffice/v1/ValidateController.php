@@ -1,8 +1,8 @@
 <?php
 
-namespace Teatrix\Http\Controllers\Common\API;
+namespace App\Http\Controllers\Api\Backoffice\v1;
 
-use Exception;
+use App\Commons\Response\ErrorEnum;
 use Illuminate\Support\Facades\Validator;
 use App\Commons\Response\Response;
 
@@ -17,7 +17,7 @@ class ValidateController
         switch ($concept) {
             // case 'example_entity_create': $rules = (new ExampleEntityCreateRequest())->rulesFrom($input); break;
 
-            default: throw new Exception('Invalid request concept.');
+            default: ErrorEnum::INVALID_REQUEST_CONCEPT->throw();
         }
 
         $validated = Validator::make($input, $rules)->validate();

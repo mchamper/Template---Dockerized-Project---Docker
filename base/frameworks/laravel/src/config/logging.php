@@ -121,17 +121,14 @@ return [
 
         /* -------------------- */
 
-        'pipedrive_webhook' => [
-            'driver' => 'single',
-            'path' => storage_path('logs/pipedrive-webhook.log'),
-            'level' => env('LOG_LEVEL', 'debug'),
-        ],
-
-        'pipedrive_webhook_discord' => [
+        'discord' => [
             'driver' => 'custom',
             'via' => MarvinLabs\DiscordLogger\Logger::class,
-            'url' => env('PIPEDRIVE_WEBHOOK_DISCORD_BOT_URL'),
+            'url' => env('LOG_DISCORD_BOT_URL'),
             'level' => env('LOG_LEVEL', 'debug'),
+            'errors' => [
+                // 'EQUIFAX_VERAZ_API_DEFAULT_ERROR',
+            ],
         ],
     ],
 

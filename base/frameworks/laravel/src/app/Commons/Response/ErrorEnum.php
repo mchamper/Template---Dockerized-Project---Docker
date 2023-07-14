@@ -20,6 +20,7 @@ enum ErrorEnum
     case EXPIRED_HASH_ERROR;
     case INVALID_HASH_TOKEN_ERROR;
     case ALREADY_VERIFIED_EMAIL_ADDRESS_ERROR;
+    case INVALID_REQUEST_CONCEPT;
 
     /* -------------------- */
 
@@ -119,6 +120,14 @@ enum ErrorEnum
                 'message' => match(Lang::getLocale()) {
                     'es' => 'Esta dirección de correo ya ha sido verificada.',
                     'en' => 'This email address has already been verified.',
+                }
+            ],
+            self::INVALID_REQUEST_CONCEPT => [
+                'code' => 12,
+                'status' => 400,
+                'message' => match(Lang::getLocale()) {
+                    'es' => 'Concepto de petición inválido.',
+                    'en' => 'Invalid request concept.',
                 }
             ],
         };

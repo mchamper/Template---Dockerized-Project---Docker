@@ -2,7 +2,10 @@
 
 namespace App\Repositories;
 
+use App\Enums\RoleEnum;
 use App\Enums\SystemUserStatusEnum;
+use App\Enums\SystemUserTypeEnum;
+use App\Models\Channel;
 use App\Models\SystemUser;
 
 class SystemUserRepository extends BaseRepository
@@ -27,7 +30,6 @@ class SystemUserRepository extends BaseRepository
             'social_driver',
             'social_avatar',
             'status',
-            /* -------------------- */
         ], $input, $systemUser);
 
         $systemUser->saveOrFail();
@@ -36,6 +38,10 @@ class SystemUserRepository extends BaseRepository
             'picture',
             'photos' => true,
         ], $input, $systemUser);
+
+        if (array_key_exists('roles', $input)) {
+            $systemUser->syncRoles(RoleEnum::tryFromNames($input['roles']));
+        }
 
         $systemUser->refresh();
 
