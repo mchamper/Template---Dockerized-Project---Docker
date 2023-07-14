@@ -14,7 +14,6 @@ if [[ ${CMD} = "install" ]]; then
     composer install
     cp -n .env.example .env
     php artisan key:generate
-    php artisan jwt:secret
     php artisan storage:link
   "
 

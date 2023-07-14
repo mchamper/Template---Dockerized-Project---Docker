@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SERVICE="backoffice"
+SERVICE="webapp"
 GIT_URL="git@github.com:project-name/project-name.git"
 GIT_BRANCH="develop"
 GIT_FLOW=true

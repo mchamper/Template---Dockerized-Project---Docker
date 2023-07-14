@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SERVICE="web"
+SERVICE="website"
 GIT_URL="git@github.com:project-name/project-name.git"
 GIT_BRANCH="develop"
 GIT_FLOW=true
@@ -13,15 +13,20 @@ SSH_PORT="22"
 
 ##############################
 
+if [[ ${CMD} = "install" ]]; then
+  bash ${THIS} npm-install
+  exit
+fi
+
+if [[ ${CMD} = "build" ]]; then
+  bash ${THIS} npm-build
+  exit
+fi
+
 if [[ ${CMD} = "upload" ]]; then
   bash base/bin/aws/s3-upload.sh ${SERVICE} "dist" "bucket-name" --delete
   bash base/bin/aws/cloudfront-invalidate.sh ${SERVICE} "distribution-id"
 
-  exit
-fi
-
-if [[ ${CMD} = "download" ]]; then
-  bash base/bin/aws/s3-download.sh ${SERVICE} "bucket-name" "dist"
   exit
 fi
 

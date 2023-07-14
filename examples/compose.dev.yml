@@ -2,7 +2,7 @@ version: '3'
 
 services:
 
-  web:
+  website:
     build:
       context: ./base/dockerfiles/node
       dockerfile: Dockerfile.alpine
@@ -16,9 +16,8 @@ services:
     volumes:
       - ./credentials/.ssh/:/home/node/.ssh/
       - ./credentials/.aws/:/home/node/.aws/
-      - ${SRC_WEB}:/docker/src
-
-  web-dist-server:
+      - ${SRC_WEBSITE}:/docker/src
+  website-dist-server:
     build:
       context: ./base/dockerfiles/nginx
       dockerfile: Dockerfile.alpine
@@ -30,9 +29,8 @@ services:
       - ${PORT}0101:80
       - ${PORT}1101:443
     volumes:
-      - ${SRC_WEB}:/docker/src
-
-  web-dist-ssr:
+      - ${SRC_WEBSITE}:/docker/src
+  website-dist-ssr:
     build:
       context: ./base/dockerfiles/node
       dockerfile: Dockerfile.alpine
@@ -42,8 +40,8 @@ services:
         ANGULAR_VERSION: "16"
     command: /bin/sh -c "npm run serve:ssr; tail -f /dev/null"
     volumes:
-      - ${SRC_WEB}:/docker/src
-  web-dist-ssr-server:
+      - ${SRC_WEBSITE}:/docker/src
+  website-dist-ssr-server:
     build:
       context: ./base/dockerfiles/nginx
       dockerfile: Dockerfile.alpine
@@ -56,7 +54,36 @@ services:
       - ${PORT}0201:80
       - ${PORT}1201:443
     volumes:
-      - ${SRC_WEB}:/docker/src
+      - ${SRC_WEBSITE}:/docker/src
+
+  webapp:
+    build:
+      context: ./base/dockerfiles/node
+      dockerfile: Dockerfile.alpine
+      args:
+        NODE_VERSION: "18"
+        NPM_VERSION: "9"
+        ANGULAR_VERSION: "16"
+    command: /bin/sh -c "npm start -- --host 0.0.0.0; tail -f /dev/null"
+    ports:
+      - ${PORT}0002:4200
+    volumes:
+      - ./credentials/.ssh/:/home/node/.ssh/
+      - ./credentials/.aws/:/home/node/.aws/
+      - ${SRC_WEBAPP}:/docker/src
+  webapp-dist-server:
+    build:
+      context: ./base/dockerfiles/nginx
+      dockerfile: Dockerfile.alpine
+      args:
+        NGINX_VERSION: "1.23.2"
+        NGINX_CONF: html
+        NGINX_ROOT: /docker/src/dist/app
+    ports:
+      - ${PORT}0102:80
+      - ${PORT}1102:443
+    volumes:
+      - ${SRC_WEBAPP}:/docker/src
 
   mobile:
     build:
@@ -67,9 +94,9 @@ services:
         NPM_VERSION: "9"
         ANGULAR_VERSION: "16"
         IONIC_VERSION: "7"
-    command: /bin/sh -c "npm start; tail -f /dev/null;"
+    command: /bin/sh -c "npm start -- --host 0.0.0.0; tail -f /dev/null;"
     ports:
-      - ${PORT}0002:8100
+      - ${PORT}0003:8100
     volumes:
       - ${SRC_MOBILE}:/docker/src
 
@@ -83,12 +110,11 @@ services:
         ANGULAR_VERSION: "16"
     command: /bin/sh -c "npm start -- --host 0.0.0.0 --port 3000; tail -f /dev/null"
     ports:
-      - ${PORT}0003:3000
+      - ${PORT}0004:3000
     volumes:
       - ./credentials/.ssh/:/home/node/.ssh/
       - ./credentials/.aws/:/home/node/.aws/
       - ${SRC_BACKOFFICE}:/docker/src
-
   backoffice-dist-server:
     build:
       context: ./base/dockerfiles/nginx
