@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { SharedModule } from 'src/app/shared.module';
 import { RouterModule } from '@angular/router';
-import { SvgTriviasFunLogoComponent, SvgTriviasFunShortLogoComponent } from '../../svg/svg.components';
+import { SvgCoffeeBreakLogoComponent } from '../../svg/svg.components';
 import { RouteService } from 'src/app/services/route.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown'
@@ -17,8 +17,7 @@ import { SearchbarOffcanvasComponent } from '../../offcanvas/searchbar-offcanvas
   imports: [
     SharedModule,
     RouterModule,
-    SvgTriviasFunLogoComponent,
-    SvgTriviasFunShortLogoComponent,
+    SvgCoffeeBreakLogoComponent,
     NzDropDownModule,
     NzIconModule,
     SearchbarComponent,
