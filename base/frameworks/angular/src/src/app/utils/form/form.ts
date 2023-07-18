@@ -1,5 +1,5 @@
 import { AbstractControl, FormArray, FormControl, FormGroup } from "@angular/forms";
-import { cloneDeep, get, isDate } from "lodash";
+import { cloneDeep, get, isArray, isDate, isObject } from "lodash";
 import { Observable, Subscription, of, tap } from "rxjs";
 import * as moment from "moment";
 import { IHttpErrorResponse } from "src/app/interceptors/error.interceptor";
@@ -66,7 +66,7 @@ export class Form<Data = any> {
           onMove?: (eachControl: FormControl, newIndex: number) => any,
         },
       },
-      combos?: string,
+      combos?: string | { [key: string]: any[] },
       dataRequest?: Request['_options'],
       request?: {
         prepare?: FormPrepareOptions,
@@ -89,15 +89,19 @@ export class Form<Data = any> {
     this.group.markAsUntouched();
 
     if (this._options.combos) {
-      this.combosRequest = new Request({
-        send: () => this._combosHttpS.get(this._options.combos || ''),
-        body: 'combos',
-        success: () => {
-          this.combos.set(this.combosRequest.body());
-        }
-      });
+      if (typeof this._options.combos === 'string') {
+        this.combosRequest = new Request({
+          send: () => this._combosHttpS.get(this._options.combos as string),
+          body: 'combos',
+          success: () => {
+            this.combos.set(this.combosRequest.body());
+          }
+        });
 
-      this.combosRequest.run();
+        this.combosRequest.run();
+      } else {
+        this.combos.set(this._options.combos);
+      }
     }
 
     if (this._options.dataRequest) {

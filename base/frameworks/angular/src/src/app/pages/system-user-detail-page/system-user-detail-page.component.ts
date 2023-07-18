@@ -8,7 +8,7 @@ import { SharedModule } from 'src/app/shared.module';
 import { FormModule } from 'src/app/utils/form/form.module';
 import { Form } from 'src/app/utils/form/form';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
-import { SystemUserActionComponent, SystemUserActionSuccessEvent } from 'src/app/components/core/system-user/system-user-action/system-user-action.component';
+import { SystemUserActionsComponent, SystemUserActionsSuccessEvent } from 'src/app/components/core/system-user/system-user-action/system-user-action.component';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { SectionTitleComponent } from 'src/app/components/layouts/section-title/section-title/section-title.component';
 import { FormSectionTitleComponent } from 'src/app/components/layouts/form-section-title/form-section-title.component';
@@ -30,7 +30,7 @@ import { SystemUser } from 'src/app/commons/models/system-user';
     SectionTitleComponent,
     NzBreadCrumbModule,
     RouterModule,
-    SystemUserActionComponent,
+    SystemUserActionsComponent,
     NzTagModule,
     NzIconModule,
     FormSectionTitleComponent,
@@ -99,7 +99,7 @@ export default class SystemUserDetailPageComponent {
 
   /* -------------------- */
 
-  onActionSuccess(event: SystemUserActionSuccessEvent) {
+  onActionSuccess(event: SystemUserActionsSuccessEvent) {
     switch (event.action) {
       case 'activate':
       case 'deactivate': {

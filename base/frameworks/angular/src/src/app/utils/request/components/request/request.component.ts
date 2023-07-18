@@ -14,16 +14,20 @@ import { Request } from '../../request';
 })
 export class RequestComponent implements OnInit {
 
-  @Input({ required: true }) request!: Request;
+  @Input() request!: Request;
+  @Input() requests: Request[] = [];
   @Input() type!: 'default' | 'form' | 'spinner';
   @Input() spinnerSize: number = 1.5;
   @Input() minHeight!: string;
 
-  @ContentChild('content') contentTpl!: TemplateRef<any>;
+  @ContentChild('body') bodyTpl!: TemplateRef<any>;
   @ContentChild('placeholder') placeholderTpl!: TemplateRef<any>;
   @ContentChild('loading') loadingTpl!: TemplateRef<any>;
   @ContentChild('success') successTpl!: TemplateRef<any>;
   @ContentChild('error') errorTpl!: TemplateRef<any>;
+
+  firstRequest!: Request;
+  remainingRequests: number = 0;
 
   get isLoading(): boolean {
     return this.request.isLoading() && !this.placeholderTpl;
@@ -34,6 +38,13 @@ export class RequestComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.requests.length) {
+      this.firstRequest = this.requests.shift() as Request;
+      this.remainingRequests = this.requests.length;
+
+      return;
+    }
+
     if (!this.type) {
       this.type = this.request.type;
     }

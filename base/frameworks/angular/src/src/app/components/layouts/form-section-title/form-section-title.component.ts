@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ContentChild, Input, TemplateRef } from '@angular/core';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { SharedModule } from 'src/app/shared.module';
@@ -20,4 +20,6 @@ export class FormSectionTitleComponent {
   @Input({ required: true }) title!: string;
   @Input() icon!: string;
   @Input() isFirst: boolean = false;
+
+  @ContentChild('extras') extrasTpl!: TemplateRef<any>;
 }

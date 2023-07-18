@@ -10,7 +10,7 @@ import { List } from 'src/app/utils/list/list';
 import { ListModule } from 'src/app/utils/list/list.module';
 import { FiltersComponent } from 'src/app/components/layouts/filters/filters.component';
 import { FormBuilder } from '@angular/forms';
-import { SystemUserActionComponent, SystemUserActionSuccessEvent } from 'src/app/components/core/system-user/system-user-action/system-user-action.component';
+import { SystemUserActionsComponent, SystemUserActionsSuccessEvent } from 'src/app/components/core/system-user/system-user-actions/system-user-actions.component';
 import { SystemUser } from 'src/app/commons/models/system-user';
 import { SectionTitleComponent } from 'src/app/components/layouts/section-title/section-title/section-title.component';
 import { RequestComponent } from 'src/app/utils/request/components/request/request.component';
@@ -27,7 +27,7 @@ import { Form } from 'src/app/utils/form/form';
     FormModule,
     FiltersComponent,
     SectionTitleComponent,
-    SystemUserActionComponent,
+    SystemUserActionsComponent,
   ],
   templateUrl: './system-users-page.component.html',
   styleUrls: ['./system-users-page.component.scss'],
@@ -95,7 +95,7 @@ export default class SystemUsersPageComponent {
 
   /* -------------------- */
 
-  onActionSuccess(event: SystemUserActionSuccessEvent) {
+  onActionSuccess(event: SystemUserActionsSuccessEvent) {
     this.list.refresh();
   }
 }
