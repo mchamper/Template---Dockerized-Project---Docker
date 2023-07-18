@@ -11,7 +11,7 @@ import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 
-export interface SystemUserActionSuccessEvent {
+export interface SystemUserActionsSuccessEvent {
   action:
     | 'activate'
     | 'deactivate'
@@ -21,7 +21,7 @@ export interface SystemUserActionSuccessEvent {
 }
 
 @Component({
-  selector: 'app-system-user-action',
+  selector: 'app-system-user-actions',
   standalone: true,
   imports: [
     CommonModule,
@@ -31,18 +31,18 @@ export interface SystemUserActionSuccessEvent {
     NzIconModule,
     NzDropDownModule,
   ],
-  templateUrl: './system-user-action.component.html',
-  styleUrls: ['./system-user-action.component.scss'],
+  templateUrl: './system-user-actions.component.html',
+  styleUrls: ['./system-user-actions.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SystemUserActionComponent implements OnInit {
+export class SystemUserActionsComponent implements OnInit {
 
   @Input({ required: true }) systemUser!: SystemUser | null;
   @Input() type: 'buttons' | 'dropdown' = 'buttons';
   @Input() notify = false;
   @Input() request = new Request();
 
-  @Output() onSuccess$: EventEmitter<SystemUserActionSuccessEvent> = new EventEmitter();
+  @Output() onSuccess$: EventEmitter<SystemUserActionsSuccessEvent> = new EventEmitter();
 
   activateRequest!: Request;
   deactivateRequest!: Request;
@@ -58,25 +58,25 @@ export class SystemUserActionComponent implements OnInit {
 
   ngOnInit(): void {
     this.activateRequest = new Request({
+      bind: this.request,
       send: () => this._systemUserHttpS.activate(this.systemUser?.data.id || 0),
       success: (res) => this.onSuccess$.emit({ action: 'activate', data: res.body.system_user }),
-      bind: this.request,
       notifySuccess: this.notify,
       injector: this._injector,
     });
 
     this.deactivateRequest = new Request({
+      bind: this.request,
       send: () => this._systemUserHttpS.deactivate(this.systemUser?.data.id || 0),
       success: (res) => this.onSuccess$.emit({ action: 'activate', data: res.body.system_user }),
-      bind: this.request,
       notifySuccess: this.notify,
       injector: this._injector,
     });
 
     this.deleteRequest = new Request({
+      bind: this.request,
       send: () => this._systemUserHttpS.delete(this.systemUser?.data.id || 0),
       success: (res) => this.onSuccess$.emit({ action: 'delete', data: res.body.system_user }),
-      bind: this.request,
       notifySuccess: this.notify,
       injector: this._injector,
     });

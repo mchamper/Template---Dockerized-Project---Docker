@@ -169,6 +169,15 @@ export class List<Item = any> {
 
   /* -------------------- */
 
+  getRequests(): Request[] {
+    return [
+      this.request,
+      this.actionRequest,
+    ];
+  }
+
+  /* -------------------- */
+
   reset(): void {
     this.data.set([]);
     this.currentPage.set(1);

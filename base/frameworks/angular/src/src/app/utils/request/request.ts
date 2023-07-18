@@ -159,7 +159,7 @@ export class Request<Body = any> {
     return observable;
   }
 
-  send(...params: any): Observable<IHttpResponse> {
+  send(params?: any): Observable<IHttpResponse> {
     if (this.isLoading()) {
       return of();
     }
@@ -235,6 +235,6 @@ export class Request<Body = any> {
   }
 
   run = (...params: any): Subscription => {
-    return this.send(...params).subscribe();
+    return this.send(params).subscribe();
   }
 }

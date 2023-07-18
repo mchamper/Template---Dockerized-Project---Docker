@@ -11,70 +11,68 @@
 
 <div class="container-fluid">
   <div class="box">
-    <app-request [request]="form.combosRequest">
-      <app-request [request]="form.request">
-        <form class="form-default floating-label" nz-form nzLayout="vertical" [formGroup]="form.group" (ngSubmit)="form.submit()">
-          <app-form-section-title [title]="'Información del usuario'" icon="info-circle" [isFirst]="true" />
+    <app-request [requests]="form.getRequests()">
+      <form class="form-default floating-label" nz-form nzLayout="vertical" [formGroup]="form.group" (ngSubmit)="form.submit()">
+        <app-form-section-title [title]="'Información del usuario'" icon="info-circle" [isFirst]="true" />
 
-          <div class="ps-3">
-            <div class="row">
-              <nz-form-item class="col-60 col-lg-30 col-xl-15">
-                <nz-form-control>
-                  <nz-form-label>Nombre</nz-form-label>
-                  <input nz-input formControlName="first_name">
-                </nz-form-control>
-              </nz-form-item>
+        <div class="ps-3">
+          <div class="row">
+            <nz-form-item class="col-60 col-lg-30 col-xl-15">
+              <nz-form-control>
+                <nz-form-label>Nombre</nz-form-label>
+                <input nz-input formControlName="first_name">
+              </nz-form-control>
+            </nz-form-item>
 
-              <nz-form-item class="col-60 col-lg-30 col-xl-15">
-                <nz-form-control>
-                  <nz-form-label>Apellido</nz-form-label>
-                  <input nz-input formControlName="last_name">
-                </nz-form-control>
-              </nz-form-item>
+            <nz-form-item class="col-60 col-lg-30 col-xl-15">
+              <nz-form-control>
+                <nz-form-label>Apellido</nz-form-label>
+                <input nz-input formControlName="last_name">
+              </nz-form-control>
+            </nz-form-item>
 
-              <nz-form-item class="col-60 col-lg-30 col-xl-15">
-                <nz-form-control>
-                  <nz-form-label>Email</nz-form-label>
-                  <input nz-input formControlName="email">
-                </nz-form-control>
-              </nz-form-item>
-            </div>
+            <nz-form-item class="col-60 col-lg-30 col-xl-15">
+              <nz-form-control>
+                <nz-form-label>Email</nz-form-label>
+                <input nz-input formControlName="email">
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+
+        <app-form-section-title [title]="'Contraseña'" icon="lock" />
+
+        <div class="ps-3">
+          <div class="row">
+            <nz-form-item>
+              <nz-form-control>
+                <nz-radio-group formControlName="password_input_type">
+                  <label class="d-block mb-1" nz-radio nzValue="random">Crear contraseña aleatoria</label>
+                  <label class="d-block mb-1" nz-radio nzValue="manual">Ingresar contraseña manualmente</label>
+                </nz-radio-group>
+              </nz-form-control>
+            </nz-form-item>
           </div>
 
-          <app-form-section-title [title]="'Contraseña'" icon="lock" />
+          <div *ngIf="form.group.get('password_input_type')?.value === 'manual'" class="row">
+            <nz-form-item class="col-60 col-lg-30 col-xl-15">
+              <nz-form-control>
+                <nz-form-label>Contraseña</nz-form-label>
+                <input nz-input type="password" formControlName="password">
+              </nz-form-control>
+            </nz-form-item>
 
-          <div class="ps-3">
-            <div class="row">
-              <nz-form-item>
-                <nz-form-control>
-                  <nz-radio-group formControlName="password_input_type">
-                    <label class="d-block mb-1" nz-radio nzValue="random">Crear contraseña aleatoria</label>
-                    <label class="d-block mb-1" nz-radio nzValue="manual">Ingresar contraseña manualmente</label>
-                  </nz-radio-group>
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-
-            <div *ngIf="form.group.get('password_input_type')?.value === 'manual'" class="row">
-              <nz-form-item class="col-60 col-lg-30 col-xl-15">
-                <nz-form-control>
-                  <nz-form-label>Contraseña</nz-form-label>
-                  <input nz-input type="password" formControlName="password">
-                </nz-form-control>
-              </nz-form-item>
-
-              <nz-form-item class="col-60 col-lg-30 col-xl-15">
-                <nz-form-control>
-                  <nz-form-label>Confirmar contraseña</nz-form-label>
-                  <input nz-input type="password" formControlName="password_confirmation">
-                </nz-form-control>
-              </nz-form-item>
-            </div>
+            <nz-form-item class="col-60 col-lg-30 col-xl-15">
+              <nz-form-control>
+                <nz-form-label>Confirmar contraseña</nz-form-label>
+                <input nz-input type="password" formControlName="password_confirmation">
+              </nz-form-control>
+            </nz-form-item>
           </div>
+        </div>
 
-          <app-form-footer [form]="form" buttonText="Crear" />
-        </form>
-      </app-request>
+        <app-form-footer [form]="form" buttonText="Crear" />
+      </form>
     </app-request>
   </div>
 </div>
