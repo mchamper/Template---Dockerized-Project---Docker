@@ -1,4 +1,4 @@
-import { Injectable, WritableSignal, signal } from '@angular/core';
+import { Injectable, WritableSignal, effect, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { isArray } from 'lodash';
 import * as moment from 'moment';
@@ -65,10 +65,7 @@ export class AuthService {
         }
       }
 
-      const auth = signal<IAuth | null>(defaultValue);
-      toObservable(auth).subscribe(value => this._storageS.setSecure(`auth.${guard}`, value));
-
-      this.auths[guard] = auth;
+      this.auths[guard] = signal<IAuth | null>(defaultValue);
     });
   }
 
@@ -84,6 +81,12 @@ export class AuthService {
     return {
       guard: () => {
         return auth;
+      },
+
+      /* -------------------- */
+
+      persist: () => {
+        this._storageS.setSecure(`auth.${guard}`, auth());
       },
 
       /* -------------------- */
@@ -128,12 +131,14 @@ export class AuthService {
 
       login: (value: IAuth): void => {
         auth.set(value);
+        this.guard(guard).persist();
       },
 
       logout: (): void => {
         if (!this.guard(guard).isLoggedIn()) return;
 
         auth.set(null);
+        this.guard(guard).persist();
 
         switch (guard) {
           case 'appClient': {
