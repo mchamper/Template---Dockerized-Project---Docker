@@ -237,6 +237,18 @@ export class Form<Data = any> {
 
   /* -------------------- */
 
+  getRequests(): Request[] {
+    return [
+      this.request,
+      this.dataRequest,
+      this.combosRequest,
+      this.actionRequest,
+    ];
+  }
+
+  /* -------------------- */
+
+
   getValue(key: string, field?: string): any {
     let value = this.group.get(key)?.value;
 
