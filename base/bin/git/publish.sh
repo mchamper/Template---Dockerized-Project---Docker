@@ -12,13 +12,17 @@ function publish() {
   cd "${source}"
   local current_branch=$(git branch --show-current)
 
+  git checkout develop && git fetch && git pull
+  git checkout ${current_branch} && git fetch && git pull
+
   git merge develop || exit 1
+
   git checkout develop
   git merge ${current_branch} || exit 1
   git checkout ${current_branch}
 
   if [[ ${commit} = "--commit" ]]; then
-    git push --all
+    git push
   fi
 }
 
