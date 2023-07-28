@@ -143,6 +143,29 @@ services:
       - ./credentials/.ssh/:/home/docker/.ssh/
       - ./credentials/.aws/:/home/docker/.aws/
       - ${SRC_BACKEND}:/docker/src
+  backend-websocket-server:
+    build:
+      context: ./base/dockerfiles/php
+      dockerfile: Dockerfile.alpine
+      args:
+        PHP_VERSION: 8.1.8-fpm
+        COMPOSER_VERSION: --2
+    command: /bin/sh -c "php artisan websockets:serve; tail -f /dev/null"
+    ports:
+      - ${PORT}6011:6001
+    volumes:
+      - ${SRC_BACKEND_LARAVEL}:/docker/src
+  backend-cronjobs-server:
+    build:
+      context: ./base/dockerfiles/php
+      dockerfile: Dockerfile.alpine
+      args:
+        PHP_VERSION: 8.1.8-fpm
+        COMPOSER_VERSION: --2
+    user: root
+    command: /bin/sh -c "crond -f; tail -f /dev/null"
+    volumes:
+      - ${SRC_BACKEND_LARAVEL}:/docker/src
   backend-server:
     build:
       context: ./base/dockerfiles/nginx
