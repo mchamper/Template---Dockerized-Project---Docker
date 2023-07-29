@@ -22,7 +22,7 @@ function publish() {
   git checkout ${current_branch}
 
   if [[ ${commit} = "--commit" ]]; then
-    git push
+    git push --all
   fi
 }
 
