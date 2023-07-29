@@ -18,7 +18,7 @@ function sync() {
   git merge develop || exit 1
 
   if [[ ${commit} = "--commit" ]]; then
-    git push
+    git push --all
   fi
 }
 
