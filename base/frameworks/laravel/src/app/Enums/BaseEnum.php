@@ -66,7 +66,7 @@ trait BaseEnum
     public static function tryFromValue($value, string $key = ''): ?static
     {
         foreach (static::cases() as $case) {
-            if (Arr::get($case->value(), $key) === $value) {
+            if (Arr::get($case->value(), $key, $case->value()) === $value) {
                 return $case;
             }
         }

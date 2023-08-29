@@ -12,7 +12,6 @@ use App\Commons\RESTful\Resolvers\RESTfulSearchResolver;
 use App\Commons\RESTful\Resolvers\RESTfulSortResolver;
 use App\Commons\RESTful\Resolvers\RESTfulAppendsResolver;
 use App\Commons\RESTful\Resolvers\RESTfulGroupByResolver;
-use Illuminate\Support\Facades\Log;
 
 class RESTful
 {
@@ -78,7 +77,6 @@ class RESTful
     public function getQuery(bool $mustClone = false)
     {
         // dd($this->_resource->toSql());
-        // Log::debug('RESTful sql', [$this->_resource->toSql()]);
 
         if ($mustClone) {
             return clone $this->_resource;
