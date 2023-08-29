@@ -56,5 +56,6 @@ RUN npm i -g cordova-res --unsafe-perm; exit 0
 USER node
 
 # Install aws cli
-RUN pip3 install awscli --upgrade --user; exit 0
-RUN pip3 install awsebcli --upgrade --user; exit 0
+RUN pip3 install PyYAML==5.3.1
+RUN pip3 install awscli --upgrade --user
+RUN pip3 install awsebcli --upgrade --user
