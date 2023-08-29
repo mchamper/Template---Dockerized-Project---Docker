@@ -3,6 +3,7 @@
 namespace App\Commons\RESTful\Resolvers;
 
 use App\Commons\RESTful\Resolvers\IRESTfulResolver;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class RESTfulAppendsResolver implements IRESTfulResolver
@@ -22,11 +23,11 @@ class RESTfulAppendsResolver implements IRESTfulResolver
     {
         if ($this->_appends) {
             foreach ($this->_appends as $append) {
-                if (Str::contains($append, '.')) {
-                    $appends = explode('.', $append, 2);
-                    $resource = $res[$appends[0]];
+                if (Str::contains($append, ':')) {
+                    $appends = explode(':', $append, 2);
+                    $properties = explode('.', $appends[0]);
 
-                    $this->_setAppends($resource, [$appends[1]]);
+                    $this->_setAppends($res, [$appends[1]], $properties);
                 } else {
                     $this->_setAppends($res, $append);
                 }
@@ -36,14 +37,24 @@ class RESTfulAppendsResolver implements IRESTfulResolver
         return $res;
     }
 
-    private function _setAppends($res, $appends)
+    private function _setAppends($res, $appends, $properties = [])
     {
         if (method_exists($res, 'append')) {
+            if (!empty($properties)) {
+                $property = $properties[0];
+                return $this->_setAppends($res->$property, $appends, array_values(Arr::except($properties, 0)));
+            }
+
             return $res->append($appends);
         }
 
         if ($res) {
-            $res->data = $res->each(function ($item, $key) use ($appends) {
+            $res->data = $res->each(function ($item, $key) use ($appends, $properties) {
+                if (!empty($properties)) {
+                    $property = $properties[0];
+                    return $this->_setAppends($item->$property, $appends, array_values(Arr::except($properties, 0)));
+                }
+
                 return $item->append($appends);
             });
         }

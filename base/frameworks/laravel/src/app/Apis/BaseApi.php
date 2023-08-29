@@ -133,8 +133,10 @@ abstract class BaseApi
         return false;
     }
 
-    protected function _try(Closure $callback, ?Closure $onError = null, int $maxTries = 0, int $sleep = 2)
+    protected function _try(Closure $callback, ?Closure $onError = null, int $maxTries = 0, float $delay = 2)
     {
+        $sleep = $delay * 1000000;
+
         $tries = 0;
         $maxTries = $maxTries > 0 ? $maxTries : $this->_maxTries;
 
@@ -150,7 +152,8 @@ abstract class BaseApi
                 if ($tries === 1 && $onError) {
                     if (call_user_func($onError, $this->_throw($e, tries: $tries, return: true)) === true) {
                         $maxTries++;
-                        sleep(1);
+                        usleep(1000000);
+
                         continue;
                     }
                 }
@@ -159,15 +162,15 @@ abstract class BaseApi
                     $this->_throw($e, tries: $tries);
                 }
 
-                sleep($sleep + $tries);
+                usleep($sleep + ($tries * 1000000));
             }
         } while ($retryError && $tries < $maxTries);
 
         return $res;
     }
 
-    protected function _tryOne(Closure $callback, ?Closure $onError = null)
+    protected function _tryOne(Closure $callback, ?Closure $onError = null, float $delay = 0)
     {
-        return $this->_try($callback, $onError, 1, 0);
+        return $this->_try($callback, $onError, 1, $delay);
     }
 }
