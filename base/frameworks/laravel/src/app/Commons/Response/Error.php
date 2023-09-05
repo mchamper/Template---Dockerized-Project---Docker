@@ -24,7 +24,7 @@ class Error
         $code = $e instanceof ErrorEnumException ? $e->innerCode : 0;
         $validation = $e instanceof ValidationException ? $e->errors() : null;
 
-        if ($status < 200 || $status > 599) {
+        if (!is_numeric($status) || $status < 200 || $status > 599) {
             $status = 500;
         }
 
