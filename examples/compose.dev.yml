@@ -151,11 +151,9 @@ services:
         PHP_VERSION: 8.1.8-fpm
         COMPOSER_VERSION: --2
     command: /bin/sh -c "php artisan websockets:serve; tail -f /dev/null"
-    ports:
-      - ${PORT}6011:6001
     volumes:
       - ${SRC_BACKEND_LARAVEL}:/docker/src
-  backend-cronjobs-server:
+  backend-cronjob-server:
     build:
       context: ./base/dockerfiles/php
       dockerfile: Dockerfile.alpine
@@ -172,10 +170,11 @@ services:
       dockerfile: Dockerfile.alpine
       args:
         NGINX_VERSION: "1.23.2"
-        NGINX_CONF: php
+        NGINX_CONF: php-with-websocket
         NGINX_ROOT: /docker/src/public
     links:
       - backend:php
+      - backend-websocket-server:websocket
     ports:
       - ${PORT}0111:80
       - ${PORT}1111:443
