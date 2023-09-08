@@ -35,6 +35,11 @@ if [[ ${CMD} = "sync" ]]; then
   exit
 fi
 
+if [[ ${CMD} = "branch" ]]; then
+  bash base/bin/git/branch.sh ${SERVICE}
+  exit
+fi
+
 if [[ ${CMD} = "create" ]]; then
   bash base/bin/create-project/${ARG1}.sh ${SERVICE} "${ARG2}" "${ARG3}" "${ARG4}" "${ARG5}"
   exit
