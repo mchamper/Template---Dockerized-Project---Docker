@@ -8,7 +8,14 @@ ARGS=(
   --env-file base/apps/locust/.env
 )
 
+if [[ ${CMD} = "build" ]]; then
+  docker compose "${ARGS[@]}" build
+  exit
+fi
+
 if [[ ${CMD} = "start" ]]; then
+  echo "LOCUST_FILE=${ARG1:=locustfile}.py" > base/apps/locust/.env
+
   docker compose "${ARGS[@]}" up -d --scale worker=4
   exit
 fi
