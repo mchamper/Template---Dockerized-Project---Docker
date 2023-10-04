@@ -1,5 +1,5 @@
 import { DestroyRef, Directive, ElementRef, Injector, Input, Optional, inject, signal } from '@angular/core';
-import { FormControl, FormControlStatus, FormGroupDirective, NgControl } from '@angular/forms';
+import { FormControl, FormControlName, FormControlStatus, FormGroupDirective, NgControl } from '@angular/forms';
 import { isArray } from 'lodash';
 import { NzSelectComponent } from 'ng-zorro-antd/select';
 import { NzInputDirective, NzInputGroupComponent } from 'ng-zorro-antd/input';
@@ -49,6 +49,8 @@ export class FormControlDirective {
     this.resolveFloatingLabel();
 
     this.resolveErrors();
+
+    this.resolveChangeDetectionErrors();
   }
 
   get control(): NgControl | FormControl {
@@ -229,5 +231,16 @@ export class FormControlDirective {
     }
 
     return '';
+  }
+
+  /* -------------------- */
+
+  resolveChangeDetectionErrors(): void {
+    if (this._nzDatePickerControl) {
+      this._nzDatePickerControl.nzOnOk.subscribe(value =>  {
+        (this.control as FormControlName).control.setValue(value);
+        (this.control as FormControlName).control.markAsDirty();
+      });
+    }
   }
 }

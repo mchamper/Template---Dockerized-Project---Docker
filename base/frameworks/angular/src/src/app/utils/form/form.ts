@@ -1,9 +1,9 @@
 import { AbstractControl, FormArray, FormControl, FormGroup } from "@angular/forms";
-import { cloneDeep, get, isArray, isDate, isObject } from "lodash";
-import { Observable, Subscription, of, tap } from "rxjs";
+import { cloneDeep, get, isDate } from "lodash";
+import { Observable, Subscription, debounceTime, distinctUntilChanged, of, skip, tap } from "rxjs";
 import * as moment from "moment";
 import { IHttpErrorResponse } from "src/app/interceptors/error.interceptor";
-import { Injector, inject, signal } from "@angular/core";
+import { Injector, ProviderToken, inject, signal } from "@angular/core";
 import { environment } from "src/environments/environment";
 import { IHttpResponse } from "src/app/interceptors/success.interceptor";
 import { Request } from "../request/request";
@@ -46,12 +46,12 @@ export class Form<Data = any> {
   group: FormGroup;
   combos = signal<{ [key: string]: any[] }>({});
 
-  request = new Request({ type: 'form' });
-  actionRequest = new Request();
-  dataRequest = new Request<Data>();
-  combosRequest = new Request();
+  request = new Request({ type: 'form', injector: this._options.injector });
+  actionRequest = new Request({ injector: this._options.injector });
+  dataRequest = new Request<Data>({ injector: this._options.injector });
+  combosRequest = new Request({ injector: this._options.injector });
 
-  private _combosHttpS = inject(CombosHttpService);
+  private _combosHttpS = this._inject(CombosHttpService);
 
   constructor(
     group: FormGroup = new FormGroup({}),
@@ -95,7 +95,8 @@ export class Form<Data = any> {
           body: 'combos',
           success: () => {
             this.combos.set(this.combosRequest.body());
-          }
+          },
+          injector: this._options.injector,
         });
 
         this.combosRequest.run();
@@ -105,7 +106,11 @@ export class Form<Data = any> {
     }
 
     if (this._options.dataRequest) {
-      this.dataRequest = new Request(this._options.dataRequest);
+      this.dataRequest = new Request({
+        ...this._options.dataRequest,
+        injector: this._options.injector,
+      });
+
       this.dataRequest.run();
     }
 
@@ -113,8 +118,15 @@ export class Form<Data = any> {
       this.request = new Request({
         ...this._options.request,
         type: 'form',
+        injector: this._options.injector,
       });
     }
+  }
+
+  /* -------------------- */
+
+  private _inject<T = any>(token: ProviderToken<T>) {
+    return this._options.injector?.get(token) || inject(token);
   }
 
   /* -------------------- */
@@ -129,6 +141,14 @@ export class Form<Data = any> {
     if (this._options.onInitSubscriptions) {
       this._options.onInitSubscriptions(this);
     }
+  }
+
+  changes(key: string, skips: number = 0) {
+    return this.group.get(key)?.valueChanges.pipe(
+      debounceTime(0),
+      distinctUntilChanged(),
+      skip(skips),
+    );
   }
 
   submit() {
@@ -168,6 +188,8 @@ export class Form<Data = any> {
 
     this.reset();
     this.request.reset();
+
+    this.group.markAsPristine();
   }
 
   /* -------------------- */
@@ -429,6 +451,14 @@ export class Form<Data = any> {
     }
   }
 
+  arrayCheckValueInUse(control: FormArray | string, key: string, value: any): boolean {
+    if (typeof control === 'string') {
+      control = this.group.get(control) as FormArray;
+    }
+
+    return control.controls.some(item => item.get(key)?.value === value);
+  }
+
   /* -------------------- */
 
   asFC(control: AbstractControl | null): FormControl {
@@ -497,14 +527,24 @@ export class Form<Data = any> {
     const formGroup = group || this.group;
 
     Object.keys(formGroup.controls).forEach((key: string) => {
-      const abstractControl = formGroup.get(key);
+      const abstractControl = formGroup.get(key)!;
 
       if (abstractControl instanceof FormGroup || abstractControl instanceof FormArray) {
         this.validate(abstractControl);
       } else {
-        if (!abstractControl?.getError('apiError')) {
-          abstractControl?.markAsTouched();
-          abstractControl?.updateValueAndValidity({ onlySelf: true });
+        if (!abstractControl.getError('apiError')) {
+          const isPreviouslyDisabled = abstractControl.disabled;
+
+          if (isPreviouslyDisabled) {
+            abstractControl.enable({ onlySelf: true, emitEvent: false });
+          }
+
+          abstractControl.markAsTouched();
+          abstractControl.updateValueAndValidity({ onlySelf: true });
+
+          if (isPreviouslyDisabled) {
+            abstractControl.disable({ onlySelf: true, emitEvent: false });
+          }
         }
       }
     });

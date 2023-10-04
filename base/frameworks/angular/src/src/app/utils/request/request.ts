@@ -1,4 +1,4 @@
-import { Injector, inject, signal } from '@angular/core';
+import { Injector, ProviderToken, inject, signal } from '@angular/core';
 import { Observable, Subscription, forkJoin, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { IHttpErrorResponse } from 'src/app/interceptors/error.interceptor';
@@ -16,11 +16,12 @@ export class Request<Body = any> {
 
   type: RequestComponent['type'] = 'default';
 
-  private _nzNotificationS = this._options.injector?.get(NzNotificationService) || inject(NzNotificationService);
+  private _nzNotificationS = this._inject(NzNotificationService);
 
   constructor(
     private _options: {
       send?: (...params: any) => Observable<any> | Observable<any>[],
+      when?: () => boolean,
       before?: () => void,
       success?: (res: IHttpResponse) => void,
       error?: (err: IHttpErrorResponse) => void,
@@ -43,6 +44,14 @@ export class Request<Body = any> {
     if (this._options.type) {
       this.type = this._options.type;
     }
+  }
+
+  /* -------------------- */
+
+  /* -------------------- */
+
+  private _inject<T = any>(token: ProviderToken<T>) {
+    return this._options.injector?.get(token) || inject(token);
   }
 
   /* -------------------- */
@@ -170,6 +179,10 @@ export class Request<Body = any> {
       notifySuccess: get(this._options, 'notifySuccess', false),
       notifyError: get(this._options, 'notifyError', true),
     };
+
+    if (options.when && !options.when()) {
+      return of();
+    }
 
     if (options.before) {
       options.before();

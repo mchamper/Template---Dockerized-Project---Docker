@@ -90,6 +90,13 @@ export class List<Item = any> {
     if (this._options.request) {
       this.request = new Request({
         ...this._options.request,
+        success: (res) => {
+          if (this._options.request?.success) {
+            this._options.request?.success(res);
+          }
+
+          this.set(this.request.body());
+        },
         type: 'default',
       });
     }
