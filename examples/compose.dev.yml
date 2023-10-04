@@ -136,13 +136,29 @@ services:
       args:
         PHP_VERSION: 8.2.8-fpm
         COMPOSER_VERSION: --2
-    ports:
-      - ${PORT}0011:9000
-      - ${PORT}5011:8089
     volumes:
       - ./credentials/.ssh/:/home/docker/.ssh/
       - ./credentials/.aws/:/home/docker/.aws/
       - ${SRC_BACKEND}:/docker/src
+  backend-server:
+    build:
+      context: ./base/dockerfiles/nginx
+      dockerfile: Dockerfile.alpine
+      args:
+        NGINX_VERSION: "1.23.2"
+        NGINX_CONF: php-with-websocket
+        NGINX_ROOT: /docker/src/public
+    links:
+      - backend:php
+      - backend-websocket-server:websocket
+    ports:
+      - ${PORT}0011:80
+      - ${PORT}1011:443
+    volumes:
+      - ${SRC_BACKEND}:/docker/src
+    networks:
+      - default
+      # - dp-locust_default
   backend-websocket-server:
     build:
       context: ./base/dockerfiles/php
@@ -164,25 +180,6 @@ services:
     command: /bin/sh -c "crond -f; tail -f /dev/null"
     volumes:
       - ${SRC_BACKEND_LARAVEL}:/docker/src
-  backend-server:
-    build:
-      context: ./base/dockerfiles/nginx
-      dockerfile: Dockerfile.alpine
-      args:
-        NGINX_VERSION: "1.23.2"
-        NGINX_CONF: php-with-websocket
-        NGINX_ROOT: /docker/src/public
-    links:
-      - backend:php
-      - backend-websocket-server:websocket
-    ports:
-      - ${PORT}0111:80
-      - ${PORT}1111:443
-    volumes:
-      - ${SRC_BACKEND}:/docker/src
-    networks:
-      - default
-      # - dp-locust_default
 
   database:
     build:
@@ -214,6 +211,18 @@ services:
   #   volumes:
   #     - ./database-exports/:/docker/exports/
   #     - database:/var/lib/postgresql/data
+
+  0-utils:
+    build:
+      context: ./base/dockerfiles/alpine
+      dockerfile: Dockerfile
+      args:
+        ALPINE_VERSION: "3.18.4"
+    command: /bin/sh -c "tail -f /dev/null"
+    volumes:
+      - ./credentials/.ssh/:/home/docker/.ssh/
+      - ./credentials/.aws/:/home/docker/.aws/
+      - ./environments/:/docker/environments/
 
 volumes:
   database:
