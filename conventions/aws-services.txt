@@ -42,10 +42,10 @@ https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies.ht
 
 ----------
 
-aws1-coffeebreak-backend-storage-production
+aws1-coffeebreak-backend-storage-prod
 aws1-coffeebreak-backend-storage-staging
 
-aws1-coffeebreak-web-production
+aws1-coffeebreak-web-prod
 aws1-coffeebreak-web-staging
 
 aws1-coffeebreak-images || aws1-images.coffeebreakgame.com
@@ -64,6 +64,23 @@ aws1-coffeebreak-images || aws1-images.coffeebreakgame.com
       "Resource": [
         "arn:aws:s3:::aws1-coffeebreak-images/*"
       ]
+    }
+  ]
+}
+
+{
+  "Version": "2008-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::585606210266:role/aws-elasticbeanstalk-ec2-role"
+      },
+      "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion"
+      ],
+      "Resource": "arn:aws:s3:::aws1-example-environments/*"
     }
   ]
 }
