@@ -85,6 +85,9 @@ ARG COMPOSER_VERSION=
 RUN curl -sL https://getcomposer.org/installer | php -- --install-dir /usr/bin --filename composer
 RUN composer self-update ${COMPOSER_VERSION}
 
+# PHP ini options
+COPY php.ini /usr/local/etc/php/conf.d/local.ini
+
 # Config cronjobs
 RUN mkdir -p /etc/cron.d
 RUN touch /etc/cron.d/crontab
