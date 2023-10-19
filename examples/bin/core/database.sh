@@ -47,10 +47,10 @@ fi
 if [[ ${CMD} = "export-remote" ]]; then
   bash ${THIS} add-ip
 
-  bash base/bin/docker/exec.sh database "
+  bash base/bin/docker/exec-as.sh database "
     cd /docker/bin
     bash export-remote.sh
-  "
+  " docker
 
   exit
 fi
@@ -58,10 +58,10 @@ fi
 if [[ ${CMD} = "import" ]]; then
   bash ${THIS} truncate
 
-  bash base/bin/docker/exec.sh database "
+  bash base/bin/docker/exec-as.sh database "
     cd /docker/bin
     bash import.sh
-  "
+  " docker
 
   bash base/bin/docker/run.sh backend "
     php artisan app-client:generate
