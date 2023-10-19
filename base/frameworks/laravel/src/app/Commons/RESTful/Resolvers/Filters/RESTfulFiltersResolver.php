@@ -6,6 +6,7 @@ use App\Commons\RESTful\Resolvers\IRESTfulResolver;
 use App\Commons\RESTful\Resolvers\Filters\RESTfulFiltersDefaultResolver;
 use App\Commons\RESTful\Resolvers\Filters\RESTfulFiltersAdvanceResolver;
 use App\Commons\RESTful\Mappers\RESTfulOperationsMapper;
+use Carbon\Carbon;
 use Illuminate\Support\Str;
 
 abstract class RESTfulFiltersResolver implements IRESTfulResolver
@@ -103,6 +104,26 @@ abstract class RESTfulFiltersResolver implements IRESTfulResolver
             case '!between': {
                 $method = $isOr ? 'orWhereNotBetween' : 'whereNotBetween';
                 return $query->$method($field, explode(',', $value));
+            }
+
+            case 'betweenDates': {
+                $method = $isOr ? 'orWhereBetween' : 'whereBetween';
+
+                $dates = explode(',', $value);
+                $firstDate = Carbon::createFromFormat('Y-m-d', $dates[0])->startOfDay()->timezone($dates[2] ?? 0);
+                $lastDate = Carbon::createFromFormat('Y-m-d', $dates[1])->endOfDay()->timezone($dates[2] ?? 0);
+
+                return $query->$method($field, [$firstDate, $lastDate]);
+            }
+
+            case '!betweenDates': {
+                $method = $isOr ? 'orWhereNotBetween' : 'whereNotBetween';
+
+                $dates = explode(',', $value);
+                $firstDate = Carbon::createFromFormat('Y-m-d', $dates[0])->startOfDay()->timezone($dates[2] ?? 0);
+                $lastDate = Carbon::createFromFormat('Y-m-d', $dates[1])->endOfDay()->timezone($dates[2] ?? 0);
+
+                return $query->$method($field, [$firstDate, $lastDate]);
             }
 
             case 'date': {
