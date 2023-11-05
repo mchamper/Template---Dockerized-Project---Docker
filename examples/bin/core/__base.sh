@@ -143,6 +143,11 @@ if [[ ${CMD} = "npm-add" ]]; then
   exit
 fi
 
+if [[ ${CMD} = "npm-add-dev" ]]; then
+  bash ${THIS} run "npm install --save-dev ${ARG1}"
+  exit
+fi
+
 if [[ ${CMD} = "npm-remove" ]]; then
   bash ${THIS} run "npm uninstall ${ARG1}"
   exit
