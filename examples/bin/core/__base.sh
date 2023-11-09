@@ -124,6 +124,11 @@ if [[ ${CMD} = "artisan" ]]; then
   exit
 fi
 
+if [[ ${CMD} = "ng" ]]; then
+  bash ${THIS} run "ng ${ARG1}"
+  exit
+fi
+
 ##############################
 
 if [[ ${CMD} = "npm-clean" ]]; then
@@ -203,6 +208,18 @@ fi
 
 if [[ ${CMD} = "composer-dump-autoload" ]]; then
   bash ${THIS} run "composer dump-autoload"
+  exit
+fi
+
+##############################
+
+if [[ ${CMD} = "laravel-remove-cache" ]]; then
+  bash base/bin/docker/exec-as.sh ${SERVICE} "
+    GLOBIGNORE=.gitignore
+    rm -r storage/framework/cache/data/*
+    unset GLOBIGNORE
+  " root
+
   exit
 fi
 
