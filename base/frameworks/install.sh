@@ -4,6 +4,7 @@
 
 SERVICE=${1}
 FRAMEWORK=${2}
+KEEP_ORIGINALS=${3}
 
 DIR=$(dirname ${0})
 SOURCE="${DIR}/${FRAMEWORK}/src"
@@ -16,8 +17,10 @@ for FILE in $(find ${SOURCE} -type f); do
   TARGET_FILE=${TARGET}/${FILE#${SOURCE}\/}
   FILE=${FILE#${SOURCE}\/}
 
-  if [[ -f ${TARGET_FILE} ]]; then
-    mv ${TARGET_FILE} ${TARGET_FILE}.original
+  if [[ ${KEEP_ORIGINALS} = "--keep" ]]; then
+    if [[ -f ${TARGET_FILE} ]]; then
+      mv ${TARGET_FILE} ${TARGET_FILE}.original
+    fi
   fi
 
   rsync -a --mkpath --ignore-existing ${SOURCE_FILE} ${TARGET_FILE}
