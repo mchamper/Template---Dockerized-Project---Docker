@@ -23,5 +23,5 @@ for FILE in $(find ${SOURCE} -type f); do
     fi
   fi
 
-  rsync -a --mkpath --ignore-existing ${SOURCE_FILE} ${TARGET_FILE}
+  rsync -a --mkpath ${SOURCE_FILE} ${TARGET_FILE}
 done
