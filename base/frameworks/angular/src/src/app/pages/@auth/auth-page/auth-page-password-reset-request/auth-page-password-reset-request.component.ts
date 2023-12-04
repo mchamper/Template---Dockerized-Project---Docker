@@ -1,20 +1,18 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { SharedModule } from 'src/app/shared.module';
-import { FormModule } from 'src/app/utils/form/form.module';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
-import { Form } from 'src/app/utils/form/form';
-import { AuthSystemUserPasswordResetHttpService } from 'src/app/services/http/auth-system-user-password-reset-http.service';
 import { FormBuilder, Validators } from '@angular/forms';
-import { authPasswordResetRequestFormMock } from 'src/app/mocks/auth-password-reset-request-form.mock';
-import { RequestComponent } from 'src/app/utils/request/components/request/request.component';
+import { FormModule } from '../../../../core/features/form/form.module';
+import { Form } from '../../../../core/features/form/form.class';
+import { AuthSystemUserPasswordResetHttpService } from '../../../../services/http/auth-system-user-password-reset-http.service';
+import { authPasswordResetRequestFormMock } from '../../../../mocks/auth-password-reset-request-form.mock';
 
 @Component({
   selector: 'app-auth-page-password-reset-request',
   standalone: true,
   imports: [
-    SharedModule,
+    CommonModule,
     FormModule,
-    RequestComponent,
     NzAlertModule,
   ],
   templateUrl: './auth-page-password-reset-request.component.html',
@@ -23,21 +21,21 @@ import { RequestComponent } from 'src/app/utils/request/components/request/reque
 })
 export class AuthPagePasswordResetRequestComponent {
 
+  private _fb = inject(FormBuilder);
+
+  private _authSystemUserPasswordResetHttpS = inject(AuthSystemUserPasswordResetHttpService);
+
   form: Form;
 
-  constructor(
-    private _authSystemUserPasswordResetHttpS: AuthSystemUserPasswordResetHttpService,
-    private _fb: FormBuilder,
-  ) {
-
+  constructor() {
     this.form = new Form(this._fb.group({
       email: ['', [Validators.required, Validators.email]],
     }), {
-      mock: authPasswordResetRequestFormMock(),
       request: {
         send: () => this._authSystemUserPasswordResetHttpS.request({ ...this.form.group.value }),
-        reset: true,
       },
+      reset: true,
+      mock: authPasswordResetRequestFormMock(),
     });
   }
 }

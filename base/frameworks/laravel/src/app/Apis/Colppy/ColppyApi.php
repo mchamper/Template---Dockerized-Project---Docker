@@ -2,7 +2,7 @@
 
 namespace App\Apis\Colppy;
 
-use App\Apis\BaseApi;
+use App\Core\Bases\BaseApi;
 use GuzzleHttp\Client;
 
 abstract class ColppyApi extends BaseApi
@@ -18,8 +18,7 @@ abstract class ColppyApi extends BaseApi
     public function __construct()
     {
         parent::__construct(
-            _maxTries: 1,
-            _retryAll: true,
+            _retries: 1,
         );
 
         $this->_url = config('services.colppy_api.url');
@@ -52,7 +51,7 @@ abstract class ColppyApi extends BaseApi
         }
 
         $this->_apiToken = $this->_remember('apiToken', function () {
-            return $this->_tryOne(function () {
+            return $this->_tryAuth(function () {
                 $input = [
                     'auth' => [
                         'usuario' => $this->_authUser,
@@ -72,7 +71,7 @@ abstract class ColppyApi extends BaseApi
                     'json' => $input,
                 ]);
 
-                return $this->_getResponse($res)['response']['data']['claveSesion'];
+                return $res['response']['data']['claveSesion'];
             });
         });
 
@@ -93,7 +92,7 @@ abstract class ColppyApi extends BaseApi
         ];
     }
 
-    protected function _getResponse($res)
+    protected function _res($res)
     {
         $code = 0;
 

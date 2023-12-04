@@ -8,14 +8,14 @@ use Illuminate\Support\Str;
 
 trait AppClientTrait
 {
-    public function checkStatus()
+    public function verifyStatus()
     {
         if (!$this->status->is(AppClientStatusEnum::Active)) {
             ErrorEnum::INACTIVE_APP_CLIENT_ERROR->throw();
         }
     }
 
-    public function checkHost()
+    public function verifyHost()
     {
         if (!app()->environment('local')) {
             if ($this->hosts !== '*') {
@@ -36,7 +36,7 @@ trait AppClientTrait
         }
     }
 
-    public function checkScope()
+    public function verifyScope()
     {
         if ($this->scopes !== '*') {
             $scopes = array_merge($this->scopes, ['auth']);

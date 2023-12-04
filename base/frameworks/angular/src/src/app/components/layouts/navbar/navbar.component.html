@@ -1,57 +1,72 @@
 <nav class="navbar navbar-expand">
   <div class="container-fluid h-100">
-    <a class="navbar-brand" routerLink="/" aria-label="CoffeeBreak">
-      <svg-coffee-break-logo style="width: 2rem;"></svg-coffee-break-logo>
-      <strong class="d-none d-md-inline ms-2">CoffeeBreak</strong>
+    <a class="navbar-brand" routerLink="/" aria-label="Backoffice">
+      <!-- <svg-hoggax-logo style="width: 99px;"></svg-hoggax-logo> -->
+      <strong class="d-block app-fs-20">Backoffice</strong>
     </a>
 
     <div class="collapse navbar-collapse h-100" id="navbarSupportedContent">
       <ul class="col navbar-nav align-items-center ms-4 me-3">
         <li class="d-none d-md-flex nav-item w-100">
-          <app-searchbar></app-searchbar>
+          <!-- <app-searchbar></app-searchbar> -->
         </li>
       </ul>
 
       <ul class="col-auto navbar-nav align-items-center">
         <li class="nav-item d-md-none">
-          <button class="nav-link btn-styless app-fs-24" data-bs-toggle="offcanvas" data-bs-target="#searchbarOffcanvas">
+          <button class="nav-link btn-styless app-fs-24">
             <span nz-icon nzType="search" nzTheme="outline"></span>
           </button>
         </li>
 
-        <li class="nav-item">
-          <button class="nav-link btn-styless app-fs-24" nz-dropdown [nzDropdownMenu]="quickActionsMenu" nzPlacement="bottomRight">
-            <span nz-icon nzType="thunderbolt" nzTheme="outline"></span>
-          </button>
-          <nz-dropdown-menu #quickActionsMenu="nzDropdownMenu">
-            <ul nz-menu>
-              <li nz-menu-item class="text-primary app-fs-16">
-                <strong>Acciones rápidas</strong>
-              </li>
-              <li nz-menu-divider></li>
-              <li nz-menu-item nzDisabled>
-                Borrar fianza mal exportada
-              </li>
-              <li nz-menu-item nzDisabled>
-                Agregar datos faltantes para generación de seguro
-              </li>
-            </ul>
-          </nz-dropdown-menu>
-        </li>
+        @if (authS.systemUser().activeSession()?.can(['BailDelete'])) {
+          <li class="nav-item">
+            <button class="nav-link btn-styless app-fs-20" nz-dropdown [nzDropdownMenu]="quickActionsMenu" nzPlacement="bottomRight">
+              <span nz-icon nzType="thunderbolt" nzTheme="outline"></span>
+            </button>
+            <nz-dropdown-menu #quickActionsMenu="nzDropdownMenu">
+              <ul nz-menu>
+                <li nz-menu-group nzTitle="Acciones rápidas">
+                  <ul>
+                    <li nz-menu-divider></li>
+                    @if (authS.systemUser().activeSession()?.can(['BailDelete'])) {
+                      <li nz-menu-item>
+                        <!-- <app-bail-delete-for-reimport-action layout="modal"> -->
+                          <button class="btn-styless">
+                            Borrar fianza para reimportación
+                          </button>
+                        <!-- </app-bail-delete-for-reimport-action> -->
+                      </li>
+                    }
+                  </ul>
+                </li>
+              </ul>
+            </nz-dropdown-menu>
+          </li>
+        }
 
-        <li class="nav-item">
-          <button class="nav-link btn-styless app-fs-24" nz-dropdown [nzDropdownMenu]="configMenu" nzPlacement="bottomRight">
-            <span nz-icon nzType="setting" nzTheme="outline"></span>
-          </button>
-          <nz-dropdown-menu #configMenu="nzDropdownMenu">
-            <ul nz-menu>
-              <li nz-menu-item class="text-primary app-fs-16">
-                <strong>Configuración</strong>
-              </li>
-              <li nz-menu-divider></li>
-            </ul>
-          </nz-dropdown-menu>
-        </li>
+        @if (authS.systemUser().activeSession()?.can(['SystemUserRoleGet', 'SystemUserRoleCreate'])) {
+          <li class="nav-item">
+            <button class="nav-link btn-styless app-fs-20" nz-dropdown [nzDropdownMenu]="configMenu" nzPlacement="bottomRight">
+              <span nz-icon nzType="setting" nzTheme="outline"></span>
+            </button>
+            <nz-dropdown-menu #configMenu="nzDropdownMenu">
+              <ul nz-menu>
+                <li nz-menu-group nzTitle="Configuración">
+                  <ul>
+                    <li nz-menu-divider></li>
+                    @if (authS.systemUser().activeSession()?.can(['SystemUserRoleGet', 'SystemUserRoleCreate'])) {
+                      <li nz-menu-item>
+                        <a class="link-styless" routerLink="configuracion/roles-y-permisos">
+                          Roles y permisos
+                        </a>
+                      </li>
+                    }
+                  </ul>
+              </ul>
+            </nz-dropdown-menu>
+          </li>
+        }
 
         <li class="nav-item d-md-none">
           <button class="nav-link btn-styless app-fs-24" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas">
@@ -61,19 +76,20 @@
 
         <li class="nav-item">
           <button class="nav-link btn-styless" nz-dropdown [nzDropdownMenu]="accountMenu" nzPlacement="bottomRight">
-            <nz-avatar nzIcon="user" [nzSrc]="authS.systemUser().data()?.picture"></nz-avatar>
+            <nz-avatar nzIcon="user" [nzSrc]="authS.systemUser().activeSession()?.data?.picture"></nz-avatar>
           </button>
           <nz-dropdown-menu #accountMenu="nzDropdownMenu">
             <ul nz-menu>
-              <li nz-menu-item class="text-primary app-fs-16">
-                <strong>{{ authS.systemUser().data()?.name }}</strong>
-              </li>
-              <li nz-menu-divider></li>
-              <li nz-menu-item>
-                <a class="link-styless" routerLink="/cuenta">Cuenta</a>
-              </li>
-              <li nz-menu-item>
-                <button class="btn-styless" (click)="authS.systemUser().logout()">Cerrar sesión</button>
+              <li nz-menu-group [nzTitle]="authS.systemUser().activeSession()?.data?.name">
+                <ul>
+                  <li nz-menu-divider></li>
+                  <li nz-menu-item>
+                    <a class="link-styless" routerLink="/cuenta">Cuenta</a>
+                  </li>
+                  <li nz-menu-item>
+                    <button class="btn-styless text-danger" (click)="authS.systemUser().removeSession()">Cerrar sesión</button>
+                  </li>
+                </ul>
               </li>
             </ul>
           </nz-dropdown-menu>
@@ -82,6 +98,3 @@
     </div>
   </div>
 </nav>
-
-<app-sidebar-offcanvas class="d-md-none"></app-sidebar-offcanvas>
-<app-searchbar-offcanvas class="d-md-none"></app-searchbar-offcanvas>

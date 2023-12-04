@@ -1,0 +1,61 @@
+<app-request [requests]="list.getRequests()">
+  <nz-table
+    nzPaginationType="small"
+    [nzScroll]="{ x: scrollSize }"
+    [nzShowTotal]="listShowTotalC.tpl"
+    [nzFrontPagination]="false"
+    [nzData]="list.data()"
+    [nzTotal]="list.total()"
+    [nzPageSize]="list.limit()"
+    [nzPageIndex]="list.currentPage()"
+    [nzPageSizeOptions]="[10, 20, 50, 100]"
+    [nzShowSizeChanger]="true"
+    (nzQueryParams)="list.onNzQueryParamsChange($event)"
+  >
+    <app-list-show-total #listShowTotalC />
+
+    <thead>
+      <tr>
+        <ng-container *ngFor="let column of columns">
+          <ng-container *ngIf="column.sort; else noSortColumnTpl">
+            <th
+              [nzWidth]="column.width"
+              [nzColumnKey]="column.key"
+              [nzSortFn]="column.sort"
+              [nzAlign]="column.align || 'left'"
+              [nzRight]="column.right || false"
+            >
+              {{ column.name }}
+            </th>
+          </ng-container>
+
+          <ng-template #noSortColumnTpl>
+            <th
+              [nzWidth]="column.width"
+              [nzColumnKey]="column.key"
+              [nzAlign]="column.align || 'left'"
+              [nzRight]="column.right || false"
+            >
+              {{ column.name }}
+            </th>
+          </ng-template>
+        </ng-container>
+      </tr>
+    </thead>
+
+    <tbody>
+      <ng-container *ngFor="let item of list.data(); index as i;">
+        <tr>
+          <ng-container *ngFor="let column of columns">
+            <td
+              [nzAlign]="column.align || 'left'"
+              [nzRight]="column.right || false"
+            >
+              <ng-container *ngTemplateOutlet="column.rowTpl; context: { $implicit: item }" />
+            </td>
+          </ng-container>
+        </tr>
+      </ng-container>
+    </tbody>
+  </nz-table>
+</app-request>

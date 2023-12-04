@@ -2,6 +2,8 @@
 
 namespace App\Enums;
 
+use App\Core\Bases\BaseEnum;
+
 enum SocialDriverEnum
 {
     use BaseEnum;
@@ -11,11 +13,17 @@ enum SocialDriverEnum
 
     /* -------------------- */
 
-    public function value(): string
+    public function data(): array
     {
         return match($this) {
-            self::Google => 'Google',
-            self::Facebook => 'Facebook',
+            self::Google => [
+                'label' => 'Google',
+                'color' => '#d04b32',
+            ],
+            self::Facebook => [
+                'label' => 'Facebook',
+                'color' => '#3b5998',
+            ],
         };
     }
 }

@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Api\Backoffice\v1;
 
-use App\Commons\Auth\Auth;
-use App\Commons\Response\Response;
-use App\Commons\RESTful\RESTful;
+use App\Core\Response\Response;
+use App\Core\RESTful\RESTful;
 use App\Enums\SystemUserStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SystemUser\SystemUserCreateRequest;
@@ -70,7 +69,7 @@ class SystemUserController extends Controller
     }
     public function update(int $systemUserId)
     {
-        $systemUser = SystemUser::noRoot()->where('id', '!=', Auth::systemUser()->id)->findOrFail($systemUserId);
+        $systemUser = SystemUser::noRoot()->noAuth()->findOrFail($systemUserId);
 
         $input = request()->post();
         $validated = Validator::make($input, SystemUserUpdateRequest::rules())->validate();
@@ -88,7 +87,7 @@ class SystemUserController extends Controller
 
     public function delete(int $systemUserId)
     {
-        $systemUser = SystemUser::noRoot()->where('id', '!=', Auth::systemUser()->id)->findOrFail($systemUserId);
+        $systemUser = SystemUser::noRoot()->noAuth()->findOrFail($systemUserId);
 
         DB::beginTransaction();
 
@@ -105,7 +104,7 @@ class SystemUserController extends Controller
 
     public function activate(int $systemUserId)
     {
-        $systemUser = SystemUser::noRoot()->findOrFail($systemUserId);
+        $systemUser = SystemUser::noRoot()->noAuth()->findOrFail($systemUserId);
 
         DB::beginTransaction();
 
@@ -121,7 +120,7 @@ class SystemUserController extends Controller
 
     public function deactivate(int $systemUserId)
     {
-        $systemUser = SystemUser::noRoot()->findOrFail($systemUserId);
+        $systemUser = SystemUser::noRoot()->noAuth()->findOrFail($systemUserId);
 
         DB::beginTransaction();
 

@@ -14,7 +14,7 @@ class SystemUserGenerateRoot extends Command
      *
      * @var string
      */
-    protected $signature = 'system-user:generate-root';
+    protected $signature = 'app:system-user:generate-root';
 
     /**
      * The console command description.

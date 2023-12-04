@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\SystemUser;
 
+use App\Core\Bases\BaseRequest;
 use App\Enums\RoleEnum;
-use App\Http\Requests\BaseRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
@@ -22,7 +22,6 @@ class SystemUserCreateRequest extends BaseRequest
             'email' => ['bail', 'required', 'email', 'unique:system_users,email'],
             'password_input_type' => ['bail', 'required', 'in:random,manual'],
             'password' => ['bail', 'required_if:password_input_type,manual', 'string', 'confirmed', Password::min(6)],
-            'role' => ['bail', 'required', Rule::in(RoleEnum::names())],
         ];
     }
 }

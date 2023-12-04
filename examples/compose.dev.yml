@@ -8,8 +8,8 @@ services:
       dockerfile: Dockerfile.alpine
       args:
         NODE_VERSION: "18"
-        NPM_VERSION: "9"
-        ANGULAR_VERSION: "16"
+        NPM_VERSION: "10"
+        ANGULAR_VERSION: "17"
     command: /bin/sh -c "npm start -- --host 0.0.0.0; tail -f /dev/null"
     ports:
       - ${PORT}0001:4200
@@ -17,7 +17,7 @@ services:
       - ./credentials/.ssh/:/home/node/.ssh/
       - ./credentials/.aws/:/home/node/.aws/
       - ${SRC_WEBSITE}:/docker/src
-  website-dist-server:
+  website-server:
     build:
       context: ./base/dockerfiles/nginx
       dockerfile: Dockerfile.alpine
@@ -30,31 +30,6 @@ services:
       - ${PORT}1101:443
     volumes:
       - ${SRC_WEBSITE}:/docker/src
-  website-dist-ssr:
-    build:
-      context: ./base/dockerfiles/node
-      dockerfile: Dockerfile.alpine
-      args:
-        NODE_VERSION: "18"
-        NPM_VERSION: "9"
-        ANGULAR_VERSION: "16"
-    command: /bin/sh -c "npm run serve:ssr; tail -f /dev/null"
-    volumes:
-      - ${SRC_WEBSITE}:/docker/src
-  website-dist-ssr-server:
-    build:
-      context: ./base/dockerfiles/nginx
-      dockerfile: Dockerfile.alpine
-      args:
-        NGINX_VERSION: "1.23.2"
-        NGINX_CONF: node
-    links:
-      - web-dist-ssr:node
-    ports:
-      - ${PORT}0201:80
-      - ${PORT}1201:443
-    volumes:
-      - ${SRC_WEBSITE}:/docker/src
 
   webapp:
     build:
@@ -63,7 +38,7 @@ services:
       args:
         NODE_VERSION: "18"
         NPM_VERSION: "9"
-        ANGULAR_VERSION: "16"
+        ANGULAR_VERSION: "17"
     command: /bin/sh -c "npm start -- --host 0.0.0.0; tail -f /dev/null"
     ports:
       - ${PORT}0002:4200
@@ -71,7 +46,7 @@ services:
       - ./credentials/.ssh/:/home/node/.ssh/
       - ./credentials/.aws/:/home/node/.aws/
       - ${SRC_WEBAPP}:/docker/src
-  webapp-dist-server:
+  webapp-server:
     build:
       context: ./base/dockerfiles/nginx
       dockerfile: Dockerfile.alpine
@@ -91,8 +66,8 @@ services:
       dockerfile: Dockerfile.alpine
       args:
         NODE_VERSION: "18"
-        NPM_VERSION: "9"
-        ANGULAR_VERSION: "16"
+        NPM_VERSION: "10"
+        ANGULAR_VERSION: "17"
         IONIC_VERSION: "7"
     command: /bin/sh -c "npm start -- --host 0.0.0.0; tail -f /dev/null;"
     ports:
@@ -106,16 +81,16 @@ services:
       dockerfile: Dockerfile.alpine
       args:
         NODE_VERSION: "18"
-        NPM_VERSION: "9"
-        ANGULAR_VERSION: "16"
-    command: /bin/sh -c "npm start -- --host 0.0.0.0 --port 3000; tail -f /dev/null"
+        NPM_VERSION: "10"
+        ANGULAR_VERSION: "17"
+    command: /bin/sh -c "npm start -- --host 0.0.0.0; tail -f /dev/null"
     ports:
-      - ${PORT}0004:3000
+      - ${PORT}0004:4200
     volumes:
       - ./credentials/.ssh/:/home/node/.ssh/
       - ./credentials/.aws/:/home/node/.aws/
       - ${SRC_BACKOFFICE}:/docker/src
-  backoffice-dist-server:
+  backoffice-server:
     build:
       context: ./base/dockerfiles/nginx
       dockerfile: Dockerfile.alpine
@@ -124,8 +99,8 @@ services:
         NGINX_CONF: html
         NGINX_ROOT: /docker/src/dist/app
     ports:
-      - ${PORT}0103:80
-      - ${PORT}1103:443
+      - ${PORT}0104:80
+      - ${PORT}1104:443
     volumes:
       - ${SRC_BACKOFFICE}:/docker/src
 
@@ -159,6 +134,17 @@ services:
     networks:
       - default
       # - dp-locust_default
+  backend-cronjob-server:
+    build:
+      context: ./base/dockerfiles/php
+      dockerfile: Dockerfile.alpine
+      args:
+        PHP_VERSION: 8.2.8-fpm
+        COMPOSER_VERSION: --2
+    user: root
+    command: /bin/sh -c "crond -f; tail -f /dev/null"
+    volumes:
+      - ${SRC_BACKEND}:/docker/src
   backend-websocket-server:
     build:
       context: ./base/dockerfiles/php
@@ -169,17 +155,18 @@ services:
     command: /bin/sh -c "php artisan websockets:serve; tail -f /dev/null"
     volumes:
       - ${SRC_BACKEND_LARAVEL}:/docker/src
-  backend-cronjob-server:
+
+  mail-server:
     build:
-      context: ./base/dockerfiles/php
-      dockerfile: Dockerfile.alpine
-      args:
-        PHP_VERSION: 8.1.8-fpm
-        COMPOSER_VERSION: --2
-    user: root
-    command: /bin/sh -c "crond -f; tail -f /dev/null"
-    volumes:
-      - ${SRC_BACKEND_LARAVEL}:/docker/src
+      context: ./base/dockerfiles/mailpit
+      dockerfile: Dockerfile
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    ports:
+      - ${PORT}0015:8025
+      - ${PORT}1015:1025
 
   database:
     build:

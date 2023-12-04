@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\Backoffice\v1;
 
-use App\Commons\Response\ErrorEnum;
+use App\Core\Response\Response;
+use App\Enums\ErrorEnum;
 use Illuminate\Support\Facades\Validator;
-use App\Commons\Response\Response;
 
 class ValidateController
 {

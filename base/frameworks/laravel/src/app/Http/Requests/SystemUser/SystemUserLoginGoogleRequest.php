@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\SystemUser;
 
-use App\Http\Requests\BaseRequest;
+use App\Core\Bases\BaseRequest;
 
 class SystemUserLoginGoogleRequest extends BaseRequest
 {

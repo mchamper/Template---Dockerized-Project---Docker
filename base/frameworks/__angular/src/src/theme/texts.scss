@@ -1,0 +1,40 @@
+.fw-lighter {
+  @include app-ff-primary-l();
+}
+
+.fw-light {
+  @include app-ff-primary-l();
+}
+
+.fw-normal {
+  @include app-ff-primary-r();
+}
+
+.fw-bold,
+strong,
+th {
+  @include app-ff-primary-b();
+}
+
+.fw-bolder {
+  @include app-ff-primary-eb();
+}
+
+.fw-bolderest {
+  @include app-ff-primary-eb();
+}
+
+/* -------------------- */
+
+.fw-default {
+  @include app-ff-primary-r();
+}
+
+/* -------------------- */
+
+a {
+  &.no-link, &.link-styless {
+    color: inherit;
+    text-decoration: none;
+  }
+}

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Auth\v1;
 
-use App\Commons\Auth\Auth;
-use App\Commons\Response\Response;
+use App\Core\Response\Response;
+use App\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
@@ -18,6 +18,8 @@ class AuthSystemUserVerificationController extends Controller
 
     public function verify()
     {
+        sleep(1);
+
         DB::beginTransaction();
 
         Auth::systemUser()->verifyFromVerificationRequest(request()->query());

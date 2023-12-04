@@ -5,3 +5,4 @@
 /build.sh
 /start.sh
 /stop.sh
+/bin/core/*

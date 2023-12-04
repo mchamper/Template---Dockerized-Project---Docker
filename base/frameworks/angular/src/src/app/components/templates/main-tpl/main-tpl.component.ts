@@ -1,35 +1,30 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { SharedModule } from 'src/app/shared.module';
-import { RouterModule } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from '../../layouts/navbar/navbar.component';
-import { SidebarComponent } from '../../layouts/sidebar/sidebar.component';
+import { SiderComponent } from '../../layouts/sider/sider.component';
 import { FooterComponent } from '../../layouts/footer/footer.component';
+import { FixedComponent } from '../../../core/components/functionals/fixed/fixed.component';
 import { NzIconModule } from 'ng-zorro-antd/icon';
-import { ForbiddenComponent } from '../../auth/forbidden/forbidden.component';
+import { UiState } from '../../../states/ui.state';
 
 @Component({
-  selector: 'app-default-layout',
+  selector: 'app-main-tpl',
   standalone: true,
   imports: [
-    SharedModule,
-    RouterModule,
+    CommonModule,
+    RouterOutlet,
     NavbarComponent,
-    SidebarComponent,
+    SiderComponent,
     FooterComponent,
+    FixedComponent,
     NzIconModule,
-    ForbiddenComponent,
   ],
   templateUrl: './main-tpl.component.html',
-  styleUrls: ['./main-tpl.component.scss'],
+  styleUrl: './main-tpl.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MainTplComponent implements OnInit {
+export class MainTplComponent {
 
-  sidebarVisible: boolean = true;
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+  public uiState = inject(UiState);
 }

@@ -1,0 +1,32 @@
+<ng-container *ngIf="{
+  more: form.extraGroup.get('more')?.value,
+} as vm">
+  <app-form [form]="form">
+    <ng-content />
+
+    @if (moreTpl) {
+      <nz-collapse class="headless" nzGhost>
+        <nz-collapse-panel [nzActive]="vm.more">
+          <nz-divider class="m-0 mb-3"></nz-divider>
+          <ng-container *ngTemplateOutlet="moreTpl"></ng-container>
+        </nz-collapse-panel>
+      </nz-collapse>
+    }
+
+    <div class="d-flex align-items-center mt-3">
+      <a href="javascript:;" class="text-muted" (click)="form.reset(true)">
+        <span nz-icon nzType="clear" nzTheme="outline"></span> Limpiar filtros
+      </a>
+
+      @if (moreTpl) {
+        <span class="mx-2">|</span>
+        <!-- <nz-label nz-checkbox [formControl]="src.moreFiltersControl">Mostrar filtros avanzados</nz-label> -->
+
+        <a href="javascript:;" class="link-primary" (click)="form.extraGroup.get('more')!.setValue(!vm.more)">
+          {{ vm.more ? 'Ocultar' : 'Mostrar' }} filtros avanzados
+          <span nz-icon [nzType]="vm.more ? 'up' : 'down'" nzTheme="outline"></span>
+        </a>
+      }
+    </div>
+  </app-form>
+</ng-container>

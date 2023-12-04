@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
 
 class Media extends BaseMedia
@@ -17,6 +19,14 @@ class Media extends BaseMedia
             $media->saveOrFail();
 
             return false;
+        });
+
+        static::deleted(function (Media $media) {
+            // FIX: La librería de Spatie, por alguna razón cuando el disk es s3, no elimina automáticamente
+            // los archivos existentes en los buckets.
+            if (Str::startsWith($media->disk, 's3')) {
+                Storage::disk($media->disk)->delete($media->getPath());
+            }
         });
     }
 }

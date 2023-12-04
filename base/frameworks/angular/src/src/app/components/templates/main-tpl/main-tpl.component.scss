@@ -1,50 +1,54 @@
-@import "node_modules/bootstrap/scss/functions";
-@import "node_modules/bootstrap/scss/variables";
-@import "node_modules/bootstrap/scss/mixins";
-
-@include media-breakpoint-up(lg) { }
-
 :host {
-  display: grid;
-  position: relative;
-  height: 100vh;
-  grid-template-rows: auto 1fr;
-  grid-template-columns: auto 1fr;
-  grid-template-areas:
-    'header header'
-    'sidebar body'
-    ;
+  --app-sidebar-width: 250px;
 
-  > header {
-    grid-area: header;
-  }
+  > div {
+    display: grid;
+    position: relative;
+    height: 100dvh;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      'header header'
+      'sider main'
+      ;
 
-  > aside {
-    grid-area: sidebar;
-    width: 250px;
-    overflow: auto;
-    transition: 0.2s ease all;
-
-    &.hide {
-      width: 0;
-      transform: translateX(-100%);
+    > header {
+      grid-area: header;
+      z-index: 1100;
     }
 
-    @include media-breakpoint-down(md) {
-      width: 0;
-      transform: translateX(-100%);
+    > .sider {
+      grid-area: sider;
+      width: var(--app-sidebar-width);
+      overflow: clip;
+      transition: all 0.3s ease;
+
+      > .sider-content {
+        width: var(--app-sidebar-width);
+        position: relative;
+        top: 7.5px;
+      }
+
+      &.hide {
+        width: 80px;
+      }
     }
-  }
 
-  > main {
-    grid-area: body;
-    overflow: auto;
-    /* -------------------- */
-    display: flex;
-    flex-direction: column;
+    > main {
+      grid-area: main;
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
 
-    > footer {
-      margin-top: auto;
+      // > .main-content {
+      //   min-height: 200dvh;
+      // }
+
+      > footer {
+        margin-top: auto;
+      }
     }
   }
 }
+
+

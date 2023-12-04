@@ -1,28 +1,27 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpContext } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
-import { GUARD } from 'src/app/interceptors/contexts';
+import { GUARD } from '../../core/interceptors/contexts';
+import { environment } from '../../../environments/environment';
+import { THttpResponse } from '../../core/types/http-response.type';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthSystemUserPasswordResetHttpService {
 
-  constructor(
-    private _httpClient: HttpClient,
-  ) { }
+  private _httpClient = inject(HttpClient);
 
   /* -------------------- */
 
   request = (input: any) => {
-    return this._httpClient.post(`${environment.backendUrl}/auth/v1/system-user/password-reset/request`, input, {
+    return this._httpClient.post<THttpResponse>(`${environment.backendUrl}/auth/v1/system-user/password-reset/request`, input, {
       context: new HttpContext()
         .set(GUARD, 'appClient')
     });
   }
 
   update = (hash: string, input: any) => {
-    return this._httpClient.patch(`${environment.backendUrl}/auth/v1/system-user/password-reset/update?hash=${hash}`, input, {
+    return this._httpClient.patch<THttpResponse>(`${environment.backendUrl}/auth/v1/system-user/password-reset/update?hash=${hash}`, input, {
       context: new HttpContext()
         .set(GUARD, 'appClient')
     });

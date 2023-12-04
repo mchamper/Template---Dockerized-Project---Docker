@@ -1,0 +1,101 @@
+<ng-template #projectedContentTpl>
+  <ng-content />
+</ng-template>
+
+<!-- -------------------- -->
+
+<ng-template #multiRequestTpl let-childRequest>
+  <app-request [request]="childRequest" [type]="type" [layer]="layer" [spinnerSize]="spinnerSize" [minHeight]="minHeight">
+    @if (requests.length) {
+      <ng-container *ngTemplateOutlet="multiRequestTpl; context: { $implicit: requests.shift() }" />
+    } @else {
+      <ng-container *ngTemplateOutlet="projectedContentTpl;" />
+    }
+  </app-request>
+</ng-template>
+
+@if (requests.length) {
+  <ng-container *ngTemplateOutlet="multiRequestTpl; context: { $implicit: requests.shift() }" />
+} @else {
+  <ng-container *ngTemplateOutlet="oneRequestTpl" />
+}
+
+<!-- -------------------- -->
+
+<ng-template #oneRequestTpl>
+  <div [style.minHeight]="minHeight">
+    <ng-container *ngTemplateOutlet="projectedContentTpl" />
+
+    @switch (type) {
+      @case ('default') { <ng-container *ngTemplateOutlet="typeDefaultTpl" /> }
+      @case ('spinner') { <ng-container *ngTemplateOutlet="typeSpinnerTpl" /> }
+      @case ('form') { <ng-container *ngTemplateOutlet="typeFormTpl" /> }
+      @case ('input') { <ng-container *ngTemplateOutlet="typeInputTpl" /> }
+    }
+
+    <!-- -------------------- -->
+
+    <ng-template #typeDefaultTpl>
+      @if (request.hasValue()) {
+        <ng-container *ngTemplateOutlet="bodyTpl" />
+      } @else {
+        <ng-container *ngTemplateOutlet="placeholderTpl" />
+      }
+
+      @if (mustDisableInteraction) {
+        <div class="interaction-disabled" [class.show-layer]="layer">
+          <div>
+            <ng-container *ngIf="isLoading" [ngTemplateOutlet]="loadingTpl || defaultLoadingTpl" />
+            <ng-container *ngIf="request.hasError()" [ngTemplateOutlet]="errorTpl || defaultErrorTpl" />
+          </div>
+        </div>
+      }
+    </ng-template>
+
+    <ng-template #typeSpinnerTpl>
+      @if (request.isLoading()) {
+        <div class="interaction-disabled" [class.show-layer]="layer">
+          <div>
+            <ng-container *ngIf="isLoading" [ngTemplateOutlet]="loadingTpl || defaultLoadingTpl" />
+          </div>
+        </div>
+      }
+    </ng-template>
+
+    <ng-template #typeFormTpl>
+      @if (request.isLoading()) {
+        <div class="interaction-disabled bg-white opacity-50"></div>
+      }
+    </ng-template>
+
+    <ng-template #typeInputTpl>
+      @if (request.isLoading()) {
+        <div class="interaction-disabled align-items-end">
+          <div class="me-3 mt-1">
+            <ng-container *ngIf="isLoading" [ngTemplateOutlet]="loadingTpl || defaultLoadingTpl" />
+          </div>
+        </div>
+      }
+    </ng-template>
+
+    <!-- -------------------- -->
+
+    <ng-template #defaultErrorTpl>
+      <div class="text-center p-3">
+        <p class="lead mb-0 text-danger"><strong>Ha ocurrido un error</strong></p>
+        <p class="mb-0 text-dark">No podemos mostrar esta información por el momento</p>
+      </div>
+    </ng-template>
+
+    <ng-template #defaultLoadingTpl>
+      <div class="spinner-border text-primary" role="status"
+        [ngStyle]="{
+          'width': spinnerSize + 'rem',
+          'height': spinnerSize + 'rem',
+        }"
+      >
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </ng-template>
+  </div>
+</ng-template>

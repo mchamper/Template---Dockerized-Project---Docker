@@ -18,9 +18,4 @@ class GoogleDriveApi extends GoogleApi
     }
 
     /* -------------------- */
-
-    public function test()
-    {
-        //
-    }
 }

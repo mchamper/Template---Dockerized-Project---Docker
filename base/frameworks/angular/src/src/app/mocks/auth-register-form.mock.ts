@@ -1,11 +1,9 @@
-import { environment } from "src/environments/environment";
+import { simpleMockFactory } from "../core/utils/factories/mock.factory";
 
-export const authRegisterFormMock = () => {
-  return !environment.production && environment.mock ? {
-    first_name: 'User',
-    last_name: 'Example',
-    email: 'user@example.com',
-    password: 'master122333',
-    password_confirmation: 'master122333',
-  } : null;
-}
+export const authRegisterFormMock = () => simpleMockFactory({
+  first_name: 'User',
+  last_name: 'Example',
+  email: 'user@example.com',
+  password: 'master122333',
+  password_confirmation: 'master122333',
+});

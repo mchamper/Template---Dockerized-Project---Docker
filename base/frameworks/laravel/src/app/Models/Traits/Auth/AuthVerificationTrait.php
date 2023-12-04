@@ -2,7 +2,7 @@
 
 namespace App\Models\Traits\Auth;
 
-use App\Commons\Response\ErrorEnum;
+use App\Enums\ErrorEnum;
 use App\Mail\AuthVerificationEmail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Crypt;
@@ -58,7 +58,7 @@ trait AuthVerificationTrait
             ErrorEnum::EXPIRED_HASH_ERROR->throw();
         }
 
-        if (!Hash::check($hashData['tkn'], $this->token_for_email_verification)) {
+        if (!$this->token_for_email_verification || !Hash::check($hashData['tkn'], $this->token_for_email_verification)) {
             ErrorEnum::INVALID_HASH_TOKEN_ERROR->throw();
         }
 

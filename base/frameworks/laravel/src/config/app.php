@@ -56,7 +56,8 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
-    'web_url' => env('WEB_URL', 'http://localhost'),
+    'website_url' => env('WEBSITE_URL', 'http://localhost'),
+    'webapp_url' => env('WEBAPP_URL', 'http://localhost'),
     'backoffice_url' => env('BACKOFFICE_URL', 'http://localhost'),
 
     'asset_url' => env('ASSET_URL'),
@@ -143,7 +144,7 @@ return [
 
     'maintenance' => [
         'driver' => 'file',
-        // 'store'  => 'redis',
+        // 'store' => 'redis',
     ],
 
     /*
@@ -170,6 +171,8 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\TelescopeServiceProvider::class,
+        // App\Core\Redis\Providers\RedisServiceProvider::class,
     ])->toArray(),
 
     /*

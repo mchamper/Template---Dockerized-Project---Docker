@@ -2,23 +2,20 @@
 
 namespace App\Repositories;
 
+use App\Core\Bases\BaseRepository;
 use App\Enums\RoleEnum;
 use App\Enums\SystemUserStatusEnum;
-use App\Enums\SystemUserTypeEnum;
-use App\Models\Channel;
 use App\Models\SystemUser;
 
 class SystemUserRepository extends BaseRepository
 {
     public static function save(array $input, ?SystemUser $systemUser = null): SystemUser
     {
-        $isNew = false;
+        $isNew = !$systemUser;
 
-        if (!$systemUser) {
+        if ($isNew) {
             $systemUser = new SystemUser();
             $systemUser->status = SystemUserStatusEnum::Active;
-
-            $isNew = true;
         }
 
         static::_fill([

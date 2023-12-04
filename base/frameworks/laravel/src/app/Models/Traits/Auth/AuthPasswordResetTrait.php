@@ -2,7 +2,7 @@
 
 namespace App\Models\Traits\Auth;
 
-use App\Commons\Response\ErrorEnum;
+use App\Enums\ErrorEnum;
 use App\Mail\AuthPasswordResetEmail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Crypt;
@@ -67,7 +67,7 @@ trait AuthPasswordResetTrait
             ErrorEnum::NOT_USER_FOUND_IN_HASH->throw();
         }
 
-        if (!Hash::check($hashData['tkn'], $user->token_for_password_reset)) {
+        if (!$user->token_for_password_reset || !Hash::check($hashData['tkn'], $user->token_for_password_reset)) {
             ErrorEnum::INVALID_HASH_TOKEN_ERROR->throw();
         }
 

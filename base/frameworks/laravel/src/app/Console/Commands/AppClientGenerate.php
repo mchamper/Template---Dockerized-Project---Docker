@@ -13,7 +13,7 @@ class AppClientGenerate extends Command
      *
      * @var string
      */
-    protected $signature = 'app-client:generate';
+    protected $signature = 'app:app-client:generate';
 
     /**
      * The console command description.

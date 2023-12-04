@@ -1,21 +1,35 @@
-<div class="d-inline-block text-start" style="width: 100%; max-width: 350px; height: 550px;">
-  <nz-tabset>
-    <ng-container *ngIf="passwordResetHash">
-      <nz-tab nzTitle="Cambiar contraseña">
-        <app-auth-page-password-reset-update></app-auth-page-password-reset-update>
+<div class="box d-inline-block text-start w-100 p-5" style="max-width: 450px;">
+  @if (authS.systemUser().activeSession()) {
+    <div class="text-center">
+      <p class="app-fs-16">
+        Bienvenido<br>
+        <strong class="app-fs-24">{{ authS.systemUser().activeSession()!.data?.firstName }}</strong>
+      </p>
+
+      <div class="d-grid gap-2 mt-5">
+        <a class="btn btn-primary" routerLink="/">Entrar</a>
+        <a class="btn btn-link text-danger" (click)="authS.systemUser().removeSession()">Salir</a>
+      </div>
+    </div>
+  } @else {
+    <nz-tabset>
+      @if (passwordResetHash) {
+        <nz-tab nzTitle="Cambiar contraseña">
+          <app-auth-page-password-reset-update />
+        </nz-tab>
+      }
+
+      <nz-tab nzTitle="Login">
+        <app-auth-page-login />
       </nz-tab>
-    </ng-container>
 
-    <nz-tab nzTitle="Login">
-      <app-auth-page-login></app-auth-page-login>
-    </nz-tab>
+      <nz-tab nzTitle="Registro">
+        <app-auth-page-register />
+      </nz-tab>
 
-    <nz-tab nzTitle="Registro">
-      <app-auth-page-register></app-auth-page-register>
-    </nz-tab>
-
-    <nz-tab nzTitle="¿Olvidaste tu contraseña?">
-      <app-auth-page-password-reset-request></app-auth-page-password-reset-request>
-    </nz-tab>
-  </nz-tabset>
+      <nz-tab nzTitle="¿Olvidaste tu contraseña?">
+        <app-auth-page-password-reset-request />
+      </nz-tab>
+    </nz-tabset>
+  }
 </div>

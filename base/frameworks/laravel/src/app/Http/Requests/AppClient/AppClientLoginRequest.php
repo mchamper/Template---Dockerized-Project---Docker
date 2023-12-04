@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\AppClient;
 
-use App\Http\Requests\BaseRequest;
+use App\Core\Bases\BaseRequest;
 
 class AppClientLoginRequest extends BaseRequest
 {

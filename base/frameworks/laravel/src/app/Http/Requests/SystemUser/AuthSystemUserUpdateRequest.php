@@ -2,7 +2,8 @@
 
 namespace App\Http\Requests\SystemUser;
 
-use App\Http\Requests\BaseRequest;
+use App\Core\Bases\BaseRequest;
+use Illuminate\Validation\Rules\File;
 use Illuminate\Validation\Rules\Password;
 
 class AuthSystemUserUpdateRequest extends BaseRequest
@@ -19,6 +20,7 @@ class AuthSystemUserUpdateRequest extends BaseRequest
             'last_name' => ['bail', 'required', 'string'],
             'password' => ['bail', 'nullable', 'string', 'confirmed', Password::min(6)],
             'password_current' => ['bail', 'nullable', 'current_password'],
+            'picture' => ['bail', 'nullable'],
         ];
     }
 }
