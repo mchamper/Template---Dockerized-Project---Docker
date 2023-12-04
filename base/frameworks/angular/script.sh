@@ -20,6 +20,7 @@ bash base/bin/docker/run.sh ${SERVICE} "
     ngx-device-detector \
     ngx-pixel \
     angular-google-tag-manager \
+    animate.css \
     simplebar \
     swiper;
 
