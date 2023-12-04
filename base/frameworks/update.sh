@@ -25,6 +25,6 @@ if [[ ${CORE_SOURCE} != "" ]]; then
     TARGET_FILE=${TARGET}/${FILE#${SOURCE}\/}
     FILE=${FILE#${SOURCE}\/}
 
-    rsync -a --mkpath --ignore-existing ${SOURCE_FILE} ${TARGET_FILE}
+    rsync -a --mkpath ${SOURCE_FILE} ${TARGET_FILE}
   done
 fi
