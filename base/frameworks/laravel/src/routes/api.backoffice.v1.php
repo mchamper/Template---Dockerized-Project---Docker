@@ -1,6 +1,6 @@
 <?php
 
-use App\Commons\Response\Response;
+use App\Core\Response\Response;
 use App\Enums\PermissionEnum;
 use Illuminate\Support\Facades\Route;
 

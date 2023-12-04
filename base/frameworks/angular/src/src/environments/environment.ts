@@ -1,13 +1,12 @@
-import { IEnvironment } from "src/app/commons/types/IEnvironment";
+import { TEnvironment } from "../app/core/types/environment.type";
 
-export const environment: IEnvironment = {
+export const environment: TEnvironment = {
   production: false,
   name: 'dev',
   storageVersion: 1,
-  storageKey: '',
   mock: true,
-  appUrl: 'http://localhost:10003',
-  backendUrl: 'http://localhost:10111',
+  appUrl: 'http://localhost:50004',
+  backendUrl: 'http://localhost:50011',
   backendAppClientKey: '1|local',
   backendAppClientSecret: 'local',
   gtmId: 'GTM-ABCDEFG',

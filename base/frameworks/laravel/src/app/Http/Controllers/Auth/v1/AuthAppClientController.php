@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Auth\v1;
 
-use App\Commons\Auth\Auth;
-use App\Commons\Response\ErrorEnum;
-use App\Commons\Response\Response;
+use App\Core\Response\Response;
+use App\Enums\ErrorEnum;
+use App\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AppClient\AppClientLoginRequest;
 use App\Models\AppClient;
@@ -24,9 +24,7 @@ class AuthAppClientController extends Controller
             ErrorEnum::INVALID_CREDENTIALS_ERROR->throw();
         }
 
-        Auth::appClientCheck($appClient);
-
-        // $appClient->tokens()->delete();
+        Auth::verifyAppClient($appClient);
 
         $token = $appClient->createToken(
             name: '',

@@ -1,5 +1,9 @@
-<nz-result nzStatus="403" nzTitle="403" nzSubTitle="Lo sentimos, no tienes permisos para acceder a esta página.">
-  <div nz-result-extra>
-    <a class="btn btn-outline-secondary" routerLink="/">Volver</a>
+<div class="container-fluid mt-3">
+  <div class="">
+    <nz-result nzStatus="403" nzTitle="Acceso denegado" nzSubTitle="Lo sentimos, no tienes permisos para acceder a esta página.">
+      <div nz-result-extra>
+        <button class="btn btn-outline-secondary" (click)="appS.back()">Volver</button>
+      </div>
+    </nz-result>
   </div>
-</nz-result>
+</div>

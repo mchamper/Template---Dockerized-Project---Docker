@@ -1,5 +1,9 @@
-<nz-result nzStatus="404" nzTitle="404" nzSubTitle="Lo sentimos, la página a la que intentas acceder no existe.">
-  <div nz-result-extra>
-    <a class="btn btn-outline-secondary" (click)="navS.back()">Volver</a>
+<div class="container-fluid mt-3">
+  <div class="">
+    <nz-result nzStatus="404" nzTitle="Página no encontrada" nzSubTitle="Lo sentimos, la página a la que intentas acceder no existe.">
+      <div nz-result-extra>
+        <button class="btn btn-outline-secondary" (click)="appS.back()">Volver</button>
+      </div>
+    </nz-result>
   </div>
-</nz-result>
+</div>

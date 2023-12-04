@@ -1,0 +1,75 @@
+form[nz-form].form-oneline {
+  // --default-input-height: var(--app-px-34);
+
+  // --label-font-size: var(--app-px-16);
+  // --input-font-size: var(--app-px-16);
+
+  @mixin input-value {
+    @include app-ff-primary-eb();
+    color: var(--bs-primary) !important;
+  }
+
+  @mixin input-styles {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(0,0,0,0.125) !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* -------------------- */
+
+  nz-form-label {
+    left: 0 !important;
+  }
+  label {
+    @include app-ff-primary-eb();
+    color: var(--bs-secondary);
+  }
+
+  /* -------------------- */
+
+  [nz-input]:not(.input-in-group),
+  nz-input-group,
+  nz-input-group input[nz-input],
+  nz-input-number input,
+  nz-select:not(.ant-select-multiple) nz-select-item,
+  nz-select:not(.ant-select-multiple) nz-select-search input,
+  nz-date-picker input,
+  nz-range-picker input
+  {
+    @include input-value();
+  }
+
+  [nz-input]:not(.input-in-group),
+  nz-input-group,
+  nz-input-number,
+  nz-select nz-select-top-control,
+  nz-date-picker,
+  nz-range-picker
+  {
+    @include input-styles();
+  }
+
+  /* -------------------- */
+
+  nz-input-number {
+    input {
+      padding-left: 0;
+    }
+  }
+
+  nz-select {
+    &.ant-select-multiple {
+      nz-select-top-control {
+        nz-select-item {
+          @include input-value();
+          background: white;
+          border-radius: 50rem;
+          border-color: rgba(0,0,0,0.125);
+        }
+      }
+    }
+  }
+}

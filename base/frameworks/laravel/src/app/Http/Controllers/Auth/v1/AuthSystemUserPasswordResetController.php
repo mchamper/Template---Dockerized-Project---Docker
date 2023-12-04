@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Auth\v1;
 
-use App\Commons\Response\Response;
+use App\Core\Response\Response;
 use App\Http\Controllers\Controller;
 use App\Models\SystemUser;
 use Illuminate\Support\Facades\DB;

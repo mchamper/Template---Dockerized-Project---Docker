@@ -1,10 +1,9 @@
-import { IEnvironment } from "src/app/commons/types/IEnvironment";
+import { TEnvironment } from "../app/core/types/environment.type";
 
-export const environment: IEnvironment = {
+export const environment: TEnvironment = {
   production: true,
   name: 'prod',
   storageVersion: 1,
-  storageKey: '',
   mock: false,
   appUrl: 'https://example.com',
   backendUrl: 'https://backend.example.com',

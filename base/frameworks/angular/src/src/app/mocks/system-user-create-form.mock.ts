@@ -1,11 +1,9 @@
-import * as moment from "moment";
-import { environment } from "src/environments/environment";
+import { simpleMockFactory } from "../core/utils/factories/mock.factory";
+import moment from "moment";
 
-export const systemUserCreateFormMock = () => {
-  return !environment.production && environment.mock ? {
-    first_name: 'Mock',
-    last_name: 'User',
-    email: `${moment().unix()}@example.com`,
-    password_input_type: 'random',
-  } : null;
-}
+export const systemUserCreateFormMock = () => simpleMockFactory({
+  first_name: 'Mock',
+  last_name: 'User',
+  email: `${moment().unix()}@example.com`,
+  password_input_type: 'random',
+});

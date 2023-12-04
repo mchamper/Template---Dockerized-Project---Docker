@@ -13,8 +13,6 @@ aws s3 cp s3://aws1-exmaple-environments/backend-prod/.env .env
 
 composer.phar install --optimize-autoloader --no-dev
 
-php artisan cache:clear
-
 php artisan config:clear
 php artisan route:clear
 php artisan view:clear

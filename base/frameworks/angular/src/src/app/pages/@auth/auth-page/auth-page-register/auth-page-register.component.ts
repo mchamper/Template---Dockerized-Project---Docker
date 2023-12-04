@@ -1,20 +1,18 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { Form } from 'src/app/utils/form/form';
-import { SharedModule } from 'src/app/shared.module';
-import { FormModule } from 'src/app/utils/form/form.module';
-import { AuthSystemUserHttpService } from 'src/app/services/http/auth-system-user-http.service';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
-import { authRegisterFormMock } from 'src/app/mocks/auth-register-form.mock';
-import { RequestComponent } from 'src/app/utils/request/components/request/request.component';
+import { FormModule } from '../../../../core/features/form/form.module';
+import { Form } from '../../../../core/features/form/form.class';
+import { AuthSystemUserHttpService } from '../../../../services/http/auth-system-user-http.service';
+import { authRegisterFormMock } from '../../../../mocks/auth-register-form.mock';
 
 @Component({
   selector: 'app-auth-page-register',
   standalone: true,
   imports: [
-    SharedModule,
+    CommonModule,
     FormModule,
-    RequestComponent,
     NzAlertModule,
   ],
   templateUrl: './auth-page-register.component.html',
@@ -23,13 +21,13 @@ import { RequestComponent } from 'src/app/utils/request/components/request/reque
 })
 export class AuthPageRegisterComponent {
 
+  private _fb = inject(FormBuilder);
+
+  private _authSystemUserHttpS = inject(AuthSystemUserHttpService);
+
   form: Form;
 
-  constructor(
-    private _authSystemUserHttpS: AuthSystemUserHttpService,
-    private _fb: FormBuilder,
-  ) {
-
+  constructor() {
     this.form = new Form(this._fb.group({
       first_name: ['', [Validators.required]],
       last_name: ['', [Validators.required]],
@@ -37,11 +35,11 @@ export class AuthPageRegisterComponent {
       password: ['', [Validators.required]],
       password_confirmation: ['', [Validators.required]],
     }), {
-      mock: authRegisterFormMock(),
       request: {
         send: () => this._authSystemUserHttpS.register({ ...this.form.group.value }),
-        reset: true,
       },
+      reset: true,
+      mock: authRegisterFormMock(),
     });
   }
 }

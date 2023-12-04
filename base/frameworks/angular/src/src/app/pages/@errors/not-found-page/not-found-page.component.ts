@@ -1,24 +1,20 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { NavService } from 'src/app/services/nav.service';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { NzResultModule } from 'ng-zorro-antd/result';
-import { SharedModule } from 'src/app/shared.module';
-import { NzButtonModule } from 'ng-zorro-antd/button';
+import { AppService } from '../../../core/services/app.service';
 
 @Component({
   selector: 'app-not-found-page',
   standalone: true,
   imports: [
-    SharedModule,
+    CommonModule,
     NzResultModule,
-    NzButtonModule
   ],
   templateUrl: './not-found-page.component.html',
   styleUrls: ['./not-found-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class NotFoundPageComponent {
+export class NotFoundPageComponent {
 
-  constructor(
-    public navS: NavService,
-  ) { }
+  appS = inject(AppService);
 }

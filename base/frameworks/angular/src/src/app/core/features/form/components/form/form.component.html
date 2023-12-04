@@ -1,0 +1,5 @@
+<app-request [requests]="form.getRequests()">
+  <form [ngClass]="'form-' + type" [class.floating-label]="floatingLabel" nz-form nzLayout="vertical">
+    <ng-content />
+  </form>
+</app-request>

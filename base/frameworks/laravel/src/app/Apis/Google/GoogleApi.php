@@ -2,7 +2,7 @@
 
 namespace App\Apis\Google;
 
-use App\Apis\BaseApi;
+use App\Core\Bases\BaseApi;
 use Google;
 
 abstract class GoogleApi extends BaseApi
@@ -13,8 +13,7 @@ abstract class GoogleApi extends BaseApi
     public function __construct(?string $subject = null)
     {
         parent::__construct(
-            _maxTries: 3,
-            _retryAll: true,
+            _retries: 3,
         );
 
         $jsonKey = json_decode(config('services.google.application_credentials'), true);
@@ -25,5 +24,19 @@ abstract class GoogleApi extends BaseApi
         if ($subject) {
             $this->_client->setSubject($subject);
         }
+
+        $this->_authorize();
+    }
+
+    /* -------------------- */
+
+    protected function _authorize(bool $force = false): void
+    {
+        //
+    }
+
+    protected function _res($res)
+    {
+        return $res;
     }
 }

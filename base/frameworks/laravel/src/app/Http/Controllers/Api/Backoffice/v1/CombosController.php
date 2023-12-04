@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\Backoffice\v1;
 
-use App\Commons\Auth\Auth;
-use App\Commons\Response\Response;
+use App\Core\Response\Response;
 use App\Enums\SystemUserStatusEnum;
 use App\Http\Controllers\Controller;
+use Exception;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -22,13 +22,13 @@ class CombosController extends Controller
             $concept = $conceptExploded[0];
 
             switch ($concept) {
-                case 'system_user_roles': {
-                    $combos[$concept] = Role::whereGuardName(Auth::$systemUserGuard)->get()->map(fn ($item) => $item['name']);
+                case 'roles': {
+                    $combos[$concept] = Role::all()->pluck('name');
                     break;
                 }
 
-                case 'system_user_permissions': {
-                    $combos[$concept] = Permission::whereGuardName(Auth::$systemUserGuard)->get()->map(fn ($item) => $item['name']);
+                case 'permissions': {
+                    $combos[$concept] = Permission::all()->pluck('name');
                     break;
                 }
 

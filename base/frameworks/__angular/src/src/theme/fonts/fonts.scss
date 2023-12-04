@@ -1,0 +1,10 @@
+@import "primary.scss";
+@import "secondary.scss";
+@import "app-icons.scss";
+
+[class^="app-icon-"], [class*=" app-icon-"] {
+  &.icon-fw {
+    width: 2rem;
+    display: inline-block;
+  }
+}

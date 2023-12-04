@@ -1,26 +1,22 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { NavService } from 'src/app/services/nav.service';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { NzResultModule } from 'ng-zorro-antd/result';
-import { SharedModule } from 'src/app/shared.module';
-import { NzButtonModule } from 'ng-zorro-antd/button';
-import { RouterModule } from '@angular/router';
+import { AppService } from '../../../core/services/app.service';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
 
 @Component({
   selector: 'app-forbidden-page',
   standalone: true,
   imports: [
-    SharedModule,
-    RouterModule,
+    CommonModule,
     NzResultModule,
-    NzButtonModule
+    NzAlertModule,
   ],
   templateUrl: './forbidden-page.component.html',
   styleUrls: ['./forbidden-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class ForbiddenPageComponent {
+export class ForbiddenPageComponent {
 
-  constructor(
-    public navS: NavService,
-  ) { }
+  appS = inject(AppService);
 }

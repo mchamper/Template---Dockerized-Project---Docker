@@ -1,0 +1,54 @@
+<div class="box mb-3">
+  @if (verifyRequest.isLoading()) {
+    <nz-alert
+      nzBanner
+      nzType="info"
+      [nzMessage]="messageTpl"
+      [nzDescription]="descriptionTpl"
+    >
+      <ng-template #messageTpl>
+        <strong>Verificando cuenta...</strong>
+      </ng-template>
+
+      <ng-template #descriptionTpl>
+        Estamos verificando tu cuenta. Aguarda unos segundos por favor.
+      </ng-template>
+    </nz-alert>
+  }
+  @else if (authS.systemUser().activeSession()!.isVerified()) {
+    <nz-alert
+      nzBanner
+      nzType="success"
+      [nzMessage]="messageTpl"
+      [nzDescription]="descriptionTpl"
+    >
+      <ng-template #messageTpl>
+        <strong>Cuenta verificada</strong>
+      </ng-template>
+
+      <ng-template #descriptionTpl>
+        Tu cuenta ha sido verificada satisfactoriamente. Disfruta de todos los servicios.
+      </ng-template>
+    </nz-alert>
+  }
+  @else {
+    <nz-alert
+      nzBanner
+      nzType="error"
+      [nzMessage]="messageTpl"
+      [nzDescription]="descriptionTpl"
+    >
+      <ng-template #messageTpl>
+        <strong>Cuenta no verificada</strong>
+      </ng-template>
+
+      <ng-template #descriptionTpl>
+        <p>Tu cuenta aún no ha sido verificada. Revisa la bandeja de entrada (o la carpeta de SPAM) de tu dirección de correo y verifica tu cuenta para acceder a todos los servicios.</p>
+
+        <button [loading]="requestRequest.isLoading()" class="btn btn-outline-primary btn-sm" (click)="requestRequest.run()">
+          Reenviar email de verificación
+        </button>
+      </ng-template>
+    </nz-alert>
+  }
+</div>

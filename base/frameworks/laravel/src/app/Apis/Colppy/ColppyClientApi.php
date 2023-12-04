@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Apis\Colppy;
-use App\Commons\Response\ErrorException;
 
 class ColppyClientApi extends ColppyApi
 {
@@ -32,16 +31,9 @@ class ColppyClientApi extends ColppyApi
                 ],
             ];
 
-            $res = $this->_send('post', '', [
+            return $this->_send('post', '', [
                 'json' => $input,
             ]);
-
-            return $this->_getResponse($res);
-        }, function (ErrorException $e) {
-            if ($e->body['status'] === 401) {
-                $this->_authorize(true);
-                return true;
-            }
         });
 
         return $res['response']['data'];
@@ -60,16 +52,9 @@ class ColppyClientApi extends ColppyApi
                 ],
             ];
 
-            $res = $this->_send('post', '', [
+            return $this->_send('post', '', [
                 'json' => $input,
             ]);
-
-            return $this->_getResponse($res);
-        }, function (ErrorException $e) {
-            if ($e->body['status'] === 401) {
-                $this->_authorize(true);
-                return true;
-            }
         });
 
         return $res['response']['data'];
@@ -77,6 +62,32 @@ class ColppyClientApi extends ColppyApi
 
     public function getClientDataFromAfip(string $cuit)
     {
+        if (app()->environment('local')) {
+            return json_decode('
+                {
+                    "nombre": "MARCELO DANIEL MARRONE",
+                    "tipoPersona": "FISICA",
+                    "numeroDocumento": null,
+                    "mesCierre": 12,
+                    "idActividad": null,
+                    "descActividad": null,
+                    "impuestos": [
+                        20
+                    ],
+                    "domicilioFiscal": {
+                        "codPostal": "1414",
+                        "descripcionProvincia": "CIUDAD AUTONOMA BUENOS AIRES",
+                        "direccion": "HIDALGO 1718 Piso:1 Dpto:B",
+                        "idProvincia": 0,
+                        "tipoDomicilio": "FISCAL",
+                        "provincia": "CABA"
+                    },
+                    "idCondicionIva": 4,
+                    "pais": "Argentina"
+                }
+            ', true);
+        }
+
         $res = $this->_try(function () use ($cuit) {
             $input = [
                 'service' => [
@@ -88,16 +99,9 @@ class ColppyClientApi extends ColppyApi
                 ],
             ];
 
-            $res = $this->_send('post', '', [
+            return $this->_send('post', '', [
                 'json' => $input,
             ]);
-
-            return $this->_getResponse($res);
-        }, function (ErrorException $e) {
-            if ($e->body['status'] === 401) {
-                $this->_authorize(true);
-                return true;
-            }
         });
 
         return $res['response']['data'];
@@ -135,16 +139,9 @@ class ColppyClientApi extends ColppyApi
                 ],
             ];
 
-            $res = $this->_send('post', '', [
+            return $this->_send('post', '', [
                 'json' => $input,
             ]);
-
-            return $this->_getResponse($res);
-        }, function (ErrorException $e) {
-            if ($e->body['status'] === 401) {
-                $this->_authorize(true);
-                return true;
-            }
         });
 
         return $res['response']['data'];

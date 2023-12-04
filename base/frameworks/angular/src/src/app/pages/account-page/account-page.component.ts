@@ -1,58 +1,50 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
-import { AccountVerificationComponent } from 'src/app/components/auth/account-verification/account-verification.component';
-import { AuthService } from 'src/app/services/auth.service';
-import { AuthSystemUserHttpService } from 'src/app/services/http/auth-system-user-http.service';
-import { SharedModule } from 'src/app/shared.module';
-import { FormModule } from 'src/app/utils/form/form.module';
-import { Form } from 'src/app/utils/form/form';
-import { SectionTitleComponent } from 'src/app/components/layouts/section-title/section-title/section-title.component';
-import { FormSectionTitleComponent } from 'src/app/components/layouts/form-section-title/form-section-title.component';
-import { MissingChannelWarningComponent } from 'src/app/components/auth/missing-channel-warning/missing-channel-warning.component';
-import { RequestComponent } from 'src/app/utils/request/components/request/request.component';
 import { NzIconModule } from 'ng-zorro-antd/icon';
-import { FormFooterComponent } from 'src/app/components/layouts/form-footer/form-footer.component';
+import { FormModule } from '../../core/features/form/form.module';
+import { PageTitleComponent } from '../../core/components/layouts/page-title/page-title.component';
+import { Form } from '../../core/features/form/form.class';
+import { AuthService } from '../../services/auth.service';
+import { AuthSystemUserHttpService } from '../../services/http/auth-system-user-http.service';
+import { ChAccountVerificationComponent } from './ch-account-verification/ch-account-verification.component';
 
 @Component({
   selector: 'app-account-page',
   standalone: true,
   imports: [
-    SharedModule,
-    AccountVerificationComponent,
+    CommonModule,
     FormModule,
     NzDividerModule,
-    RequestComponent,
-    SectionTitleComponent,
-    FormSectionTitleComponent,
-    FormFooterComponent,
-    MissingChannelWarningComponent,
     NzIconModule,
+    PageTitleComponent,
+    ChAccountVerificationComponent,
   ],
   templateUrl: './account-page.component.html',
   styleUrls: ['./account-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export default class AccountPageComponent {
+export class AccountPageComponent {
+
+  private _fb = inject(FormBuilder);
+  private _authSystemUserHttpS = inject(AuthSystemUserHttpService);
+  authS = inject(AuthService);
 
   form: Form;
 
-  constructor(
-    public authS: AuthService,
-    private _authSystemUserHttpS: AuthSystemUserHttpService,
-    private _fb: FormBuilder
-  ) {
-
+  constructor() {
     this.form = new Form(this._fb.group({
-      first_name: [this.authS.systemUser().data()?.firstName, [Validators.required]],
-      last_name: [this.authS.systemUser().data()?.lastName, [Validators.required]],
-      email: [this.authS.systemUser().data()?.email, [Validators.required, Validators.email]],
+      first_name: [this.authS.systemUser().activeSession()?.data?.firstName, [Validators.required]],
+      last_name: [this.authS.systemUser().activeSession()?.data?.lastName, [Validators.required]],
+      email: [this.authS.systemUser().activeSession()?.data?.email, [Validators.required, Validators.email]],
+      picture: [this.authS.systemUser().activeSession()?.data?.model?.data.picture],
       password_current: [''],
       password: [''],
       password_confirmation: [''],
     }), {
-      onInit: (form) => {
-        this.authS.systemUser().hasRole('Root')
+      init: (form) => {
+        this.authS.systemUser().activeSession()?.hasRole(['Root']) || !this.authS.systemUser().activeSession()?.isVerified()
           ? form.group.disable()
           : form.group.get('email')?.disable();
       },

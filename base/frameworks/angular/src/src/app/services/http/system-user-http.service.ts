@@ -1,75 +1,74 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpContext } from '@angular/common/http';
-import { GUARD, MAP } from 'src/app/interceptors/contexts';
-import { parseQueryParams } from 'src/app/helper';
-import { SystemUser } from 'src/app/commons/models/system-user';
-import { environment } from 'src/environments/environment';
+import { queryParamsParser } from '../../core/utils/parsers/query-param.parser';
+import { environment } from '../../../environments/environment';
+import { GUARD, MAP } from '../../core/interceptors/contexts';
+import { SystemUser } from '../../models/system-user.model';
+import { THttpResponse } from '../../core/types/http-response.type';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SystemUserHttpService {
 
-  constructor(
-    private _httpClient: HttpClient,
-  ) { }
+  private _httpClient = inject(HttpClient);
 
   /* -------------------- */
 
   getList = (params: any) => {
-    const queryParams = parseQueryParams(params);
+    const queryParams = queryParamsParser(params);
 
-    return this._httpClient.get(`${environment.backendUrl}/api/backoffice/v1/system-users?${queryParams}`, {
+    return this._httpClient.get<THttpResponse>(`${environment.backendUrl}/api/backoffice/v1/system-users?${queryParams}`, {
       context: new HttpContext()
         .set(GUARD, 'systemUser')
         .set(MAP, res => {
-          res.body.system_users.data = res.body.system_users.data.map((item: any) => new SystemUser(item, 'backend'));
+          res.body.system_users.data = res.body.system_users.data.map((item: any) => new SystemUser(item, { parser: 'backend' }));
           return res.body;
         })
     });
   }
 
   getOne = (systemUserId: number, params: any) => {
-    const queryParams = parseQueryParams(params);
+    const queryParams = queryParamsParser(params);
 
-    return this._httpClient.get(`${environment.backendUrl}/api/backoffice/v1/system-users/${systemUserId}?${queryParams}`, {
+    return this._httpClient.get<THttpResponse>(`${environment.backendUrl}/api/backoffice/v1/system-users/${systemUserId}?${queryParams}`, {
       context: new HttpContext()
         .set(GUARD, 'systemUser')
         .set(MAP, res => {
-          res.body.system_user = new SystemUser(res.body.system_user, 'backend');
+          res.body.system_user = new SystemUser(res.body.system_user, { parser: 'backend' });
           return res.body;
         })
     });
   }
 
   create = (input: any) => {
-    return this._httpClient.post(`${environment.backendUrl}/api/backoffice/v1/system-users`, input, {
+    return this._httpClient.post<THttpResponse>(`${environment.backendUrl}/api/backoffice/v1/system-users`, input, {
       context: new HttpContext()
         .set(GUARD, 'systemUser')
         .set(MAP, res => {
-          res.body.system_user = new SystemUser(res.body.system_user, 'backend');
+          res.body.system_user = new SystemUser(res.body.system_user, { parser: 'backend' });
           return res.body;
         })
     });
   }
 
   update = (systemUserId: number, input: any) => {
-    return this._httpClient.put(`${environment.backendUrl}/api/backoffice/v1/system-users/${systemUserId}`, input, {
+    return this._httpClient.put<THttpResponse>(`${environment.backendUrl}/api/backoffice/v1/system-users/${systemUserId}`, input, {
       context: new HttpContext()
         .set(GUARD, 'systemUser')
         .set(MAP, res => {
-          res.body.system_user = new SystemUser(res.body.system_user, 'backend');
+          res.body.system_user = new SystemUser(res.body.system_user, { parser: 'backend' });
           return res.body;
         })
     });
   }
 
   delete = (systemUserId: number) => {
-    return this._httpClient.delete(`${environment.backendUrl}/api/backoffice/v1/system-users/${systemUserId}`, {
+    return this._httpClient.delete<THttpResponse>(`${environment.backendUrl}/api/backoffice/v1/system-users/${systemUserId}`, {
       context: new HttpContext()
         .set(GUARD, 'systemUser')
         .set(MAP, res => {
-          res.body.system_user = new SystemUser(res.body.system_user, 'backend');
+          res.body.system_user = new SystemUser(res.body.system_user, { parser: 'backend' });
           return res.body;
         })
     });
@@ -78,22 +77,22 @@ export class SystemUserHttpService {
   /* -------------------- */
 
   activate = (systemUserId: number) => {
-    return this._httpClient.patch(`${environment.backendUrl}/api/backoffice/v1/system-users/${systemUserId}/activate`, null, {
+    return this._httpClient.patch<THttpResponse>(`${environment.backendUrl}/api/backoffice/v1/system-users/${systemUserId}/activate`, null, {
       context: new HttpContext()
         .set(GUARD, 'systemUser')
         .set(MAP, res => {
-          res.body.system_user = new SystemUser(res.body.system_user, 'backend');
+          res.body.system_user = new SystemUser(res.body.system_user, { parser: 'backend' });
           return res.body;
         })
     });
   }
 
   deactivate = (systemUserId: number) => {
-    return this._httpClient.patch(`${environment.backendUrl}/api/backoffice/v1/system-users/${systemUserId}/deactivate`, null, {
+    return this._httpClient.patch<THttpResponse>(`${environment.backendUrl}/api/backoffice/v1/system-users/${systemUserId}/deactivate`, null, {
       context: new HttpContext()
         .set(GUARD, 'systemUser')
         .set(MAP, res => {
-          res.body.system_user = new SystemUser(res.body.system_user, 'backend');
+          res.body.system_user = new SystemUser(res.body.system_user, { parser: 'backend' });
           return res.body;
         })
     });

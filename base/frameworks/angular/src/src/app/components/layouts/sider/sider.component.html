@@ -1,0 +1,55 @@
+<ul nz-menu nzMode="inline" [nzInlineCollapsed]="!uiState.sidebar.isVisible.value()">
+  <li nz-menu-item
+    nz-tooltip
+    nzTooltipPlacement="right"
+    [nzTooltipTitle]="!uiState.sidebar.isVisible.value() ? 'Dashboard' : ''"
+    routerLink="/"
+    nzMatchRouter
+    nzMatchRouterExact
+  >
+    <span nz-icon nzType="dashboard"></span>
+    <span>Dashboard</span>
+  </li>
+
+  <li nz-menu-item
+    nz-tooltip
+    nzTooltipPlacement="right"
+    [nzTooltipTitle]="!uiState.sidebar.isVisible.value() ? 'Usuarios' : ''"
+    routerLink="/usuarios"
+    nzMatchRouter
+  >
+    <span nz-icon nzType="user"></span>
+    <span>Usuarios</span>
+  </li>
+
+  <li nz-menu-item
+    nz-tooltip
+    nzTooltipPlacement="right"
+    [nzTooltipTitle]="!uiState.sidebar.isVisible.value() ? 'Not found' : ''"
+    routerLink="/qwert"
+    nzMatchRouter
+  >
+    <span nz-icon nzType="info-circle"></span>
+    <span>Not found</span>
+  </li>
+
+  <!-- <li nz-submenu nzTitle="Navigation Two" nzIcon="appstore">
+    <ul>
+      <li nz-menu-item>Option 5</li>
+      <li nz-menu-item>Option 6</li>
+      <li nz-submenu nzTitle="Submenu">
+        <ul>
+          <li nz-menu-item>Option 7</li>
+          <li nz-menu-item>Option 8</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li nz-submenu nzTitle="Navigation Three" nzIcon="setting">
+    <ul>
+      <li nz-menu-item>Option 9</li>
+      <li nz-menu-item>Option 10</li>
+      <li nz-menu-item>Option 11</li>
+    </ul>
+  </li> -->
+</ul>

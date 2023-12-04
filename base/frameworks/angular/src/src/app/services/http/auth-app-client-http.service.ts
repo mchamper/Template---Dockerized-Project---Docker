@@ -1,29 +1,28 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpContext } from '@angular/common/http';
-import { GUARD, ON_ERROR, ON_SUCCESS } from 'src/app/interceptors/contexts';
+import { GUARD, ON_ERROR, ON_SUCCESS } from '../../core/interceptors/contexts';
 import { AuthService } from '../auth.service';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../environments/environment';
+import { THttpResponse } from '../../core/types/http-response.type';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthAppClientHttpService {
 
-  constructor(
-    private _httpClient: HttpClient,
-    private _authS: AuthService,
-  ) { }
+  private _httpClient = inject(HttpClient);
+  private _authS = inject(AuthService);
 
   /* -------------------- */
 
   login = (input: { key: string, secret: string }) => {
-    return this._httpClient.post(`${environment.backendUrl}/auth/v1/app-client/login`, input, {
+    return this._httpClient.post<THttpResponse>(`${environment.backendUrl}/auth/v1/app-client/login`, input, {
       context: new HttpContext()
         .set(ON_SUCCESS, res => {
           const token = res.body.token;
           const tokenExpiresAt = res.body.token_expires_at;
 
-          this._authS.appClient().login({
+          this._authS.appClient().addSession({
             token,
             tokenExpiresAt,
           });
@@ -32,21 +31,21 @@ export class AuthAppClientHttpService {
   }
 
   logout = () => {
-    this._authS.appClient().logout();
+    this._authS.appClient().removeSession();
 
-    return this._httpClient.post(`${environment.backendUrl}/auth/v1/app-client/logout`, null, {
+    return this._httpClient.post<THttpResponse>(`${environment.backendUrl}/auth/v1/app-client/logout`, null, {
       context: new HttpContext()
         .set(GUARD, 'appClient')
     });
   }
 
   me = () => {
-    return this._httpClient.get(`${environment.backendUrl}/auth/v1/app-client/me`, {
+    return this._httpClient.post<THttpResponse>(`${environment.backendUrl}/auth/v1/app-client/me`, null, {
       context: new HttpContext()
         .set(GUARD, 'appClient')
         .set(ON_ERROR, err => {
           if (err.status === 401) {
-            this._authS.appClient().logout();
+            this._authS.appClient().removeSession();
           }
         })
     });

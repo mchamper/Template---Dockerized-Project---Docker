@@ -1,27 +1,33 @@
-<header class="border-bottom">
-  <div class="d-flex bg-primary text-white">
-    <button class="d-none d-md-block btn-styless app-fs-20 ps-3 pe-1" (click)="sidebarVisible = !sidebarVisible">
-      <span nz-icon [nzType]="sidebarVisible ? 'menu-fold' : 'menu-unfold'" nzTheme="outline"></span>
-    </button>
+<div>
+  <header>
+    <app-fixed [height]="50">
+      <div class="d-flex align-items-center bg-white shadow-sm animate__faster"
+        [class.animate__animated]="false"
+        [class.animate__slideInDown]="uiState.header.isVisible()"
+        [class.animate__slideOutUp]="!uiState.header.isVisible()"
+      >
+        <button class="btn btn-link app-fs-20" (click)="uiState.sidebar.isVisible.toggle()">
+          <span nz-icon [nzType]="uiState.sidebar.isVisible.value() ? 'menu-fold' : 'menu-unfold'" nzTheme="outline"></span>
+        </button>
 
-    <app-navbar class="flex-fill"></app-navbar>
-  </div>
-</header>
+        <app-navbar class="flex-fill" />
+      </div>
+    </app-fixed>
+  </header>
 
-<aside class="border-end bg-white" [class.hide]="!sidebarVisible">
-  <app-sidebar></app-sidebar>
-</aside>
+  <aside class="sider bg-white shadow-sm" [class.hide]="!uiState.sidebar.isVisible.value()">
+    <div class="sider-content">
+      <app-sider />
+    </div>
+  </aside>
 
-<main>
-  <div class="main-content pb-3">
-    <app-forbidden>
-      <ng-template #content>
-        <router-outlet></router-outlet>
-      </ng-template>
-    </app-forbidden>
-  </div>
+  <main>
+    <div class="main-content">
+      <router-outlet />
+    </div>
 
-  <footer>
-    <app-footer></app-footer>
-  </footer>
-</main>
+    <footer>
+      <app-footer />
+    </footer>
+  </main>
+</div>

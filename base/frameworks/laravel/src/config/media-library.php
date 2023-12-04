@@ -7,6 +7,7 @@ return [
      * one or more of the disks you've configured in config/filesystems.php.
      */
     'disk_name' => env('MEDIA_DISK', 'media'),
+    'disk_tmp_name' => env('MEDIA_TMP_DISK', 'media_tmp'),
 
     /*
      * The maximum file size of an item in bytes.

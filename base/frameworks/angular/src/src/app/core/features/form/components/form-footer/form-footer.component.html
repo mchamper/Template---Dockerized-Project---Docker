@@ -1,0 +1,40 @@
+<ng-container *ngIf="{
+  status: form.group.statusChanges | async
+} as vm">
+  <div class="row g-2 align-items-center mt-1">
+    @if (withInfo) {
+      <div class="col" [class.col-60]="submitPlacement === 'center'">
+        @if (alertTpl) {
+          <ng-container *ngTemplateOutlet="alertTpl" />
+        }
+
+        @if (form.group.dirty) {
+          <nz-alert nzBanner nzType="warning" [nzMessage]="messageTpl">
+            <ng-template #messageTpl>
+              Hay cambios sin guardar <a href="javascript:;" (click)="form.restore()">[descartar]</a>
+            </ng-template>
+          </nz-alert>
+        }
+      </div>
+    }
+
+    <div class="col-auto"
+      [class.order-first]="submitPlacement === 'left'"
+      [class.mx-auto]="submitPlacement === 'center'"
+      [class.ms-auto]="submitPlacement === 'right'"
+      [class.col-60]="submitPlacement === 'block'"
+    >
+      <ng-container *ngTemplateOutlet="buttonTpl" />
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #buttonTpl>
+  <button type="submit" class="btn btn-primary" (click)="form.submit()"
+    [class.w-100]="submitPlacement === 'block'"
+    [loading]="form.request.isLoading()"
+    [disabled]="disabled"
+  >
+    {{ submitText }}
+  </button>
+</ng-template>

@@ -1,18 +1,16 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { SharedModule } from 'src/app/shared.module';
-import { RouterModule } from '@angular/router';
-import { SvgCoffeeBreakLogoComponent } from '../../svg/svg.components';
+import { CommonModule } from '@angular/common';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-auth-tpl',
   standalone: true,
   imports: [
-    SharedModule,
-    RouterModule,
-    SvgCoffeeBreakLogoComponent,
+    CommonModule,
+    RouterOutlet,
   ],
   templateUrl: './auth-tpl.component.html',
-  styleUrls: ['./auth-tpl.component.scss'],
+  styleUrl: './auth-tpl.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AuthTplComponent {

@@ -1,7 +1,5 @@
-import { environment } from "src/environments/environment";
+import { simpleMockFactory } from "../core/utils/factories/mock.factory";
 
-export const authPasswordResetRequestFormMock = () => {
-  return !environment.production && environment.mock ? {
-    email: 'user@example.com',
-  } : null;
-}
+export const authPasswordResetRequestFormMock = () => simpleMockFactory({
+  email: 'user@example.com',
+});

@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+use App\Core\Bases\BaseEnum;
 use Illuminate\Support\Facades\Lang;
 
 enum SystemUserStatusEnum
@@ -13,7 +14,7 @@ enum SystemUserStatusEnum
 
     /* -------------------- */
 
-    public function value(): array
+    public function data(): array
     {
         return match($this) {
             self::Active => [

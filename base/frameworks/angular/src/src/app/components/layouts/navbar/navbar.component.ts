@@ -1,41 +1,26 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { SharedModule } from 'src/app/shared.module';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../services/auth.service';
 import { RouterModule } from '@angular/router';
-import { SvgCoffeeBreakLogoComponent } from '../../svg/svg.components';
-import { RouteService } from 'src/app/services/route.service';
-import { AuthService } from 'src/app/services/auth.service';
-import { NzDropDownModule } from 'ng-zorro-antd/dropdown'
-import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
-import { SearchbarComponent } from '../../commons/searchbar/searchbar.component';
-import { SidebarOffcanvasComponent } from '../../offcanvas/sidebar-offcanvas/sidebar-offcanvas.component';
-import { SearchbarOffcanvasComponent } from '../../offcanvas/searchbar-offcanvas/searchbar-offcanvas.component';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
   imports: [
-    SharedModule,
+    CommonModule,
     RouterModule,
-    SvgCoffeeBreakLogoComponent,
     NzDropDownModule,
-    NzIconModule,
-    SearchbarComponent,
-    SidebarOffcanvasComponent,
-    SearchbarOffcanvasComponent,
     NzAvatarModule,
+    NzIconModule,
   ],
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.scss'],
+  styleUrl: './navbar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent {
 
-  constructor(
-    public routeS: RouteService,
-    public authS: AuthService,
-  ) { }
-
-  ngOnInit(): void {
-  }
+  authS = inject(AuthService);
 }

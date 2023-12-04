@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Core\Bases\BaseModelTrait;
 use App\Enums\AppClientStatusEnum;
 use App\Models\Traits\AppClient\AppClientTrait;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -12,10 +12,11 @@ use Laravel\Sanctum\HasApiTokens;
 
 class AppClient extends Authenticatable
 {
-    use HasFactory,
-        HasApiTokens,
-        SoftDeletes,
-        AppClientTrait;
+    use HasFactory;
+    use HasApiTokens;
+    use SoftDeletes;
+    use BaseModelTrait;
+    use AppClientTrait;
 
     protected $hidden = [
         'secret',
@@ -26,20 +27,9 @@ class AppClient extends Authenticatable
     protected $casts = [
         'scopes' => 'json',
         'hosts' => 'json',
+    ];
+
+    protected $enums = [
         'status' => AppClientStatusEnum::class,
     ];
-
-    protected $appends = [
-        'status_enum',
-    ];
-
-    /**
-     * Accesors & Mutators.
-     */
-    protected  function statusEnum(): Attribute
-    {
-        return Attribute::make(
-            get: fn () => $this->status ? $this->status->value() : null,
-        );
-    }
 }

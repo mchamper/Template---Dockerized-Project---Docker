@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'app_client',
+        'guard' => '',
         'passwords' => '',
     ],
 
@@ -36,6 +36,11 @@ return [
     */
 
     'guards' => [
+        'telescope' => [
+            'driver' => 'session',
+            'provider' => 'system_users',
+        ],
+        /* -------------------- */
         'app_client' => [
             'driver' => 'sanctum',
             'provider' => 'app_clients',
@@ -44,6 +49,10 @@ return [
             'driver' => 'sanctum',
             'provider' => 'system_users',
         ],
+        // 'user' => [
+        //     'driver' => 'sanctum',
+        //     'provider' => 'users',
+        // ],
     ],
 
     /*
@@ -72,6 +81,10 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\SystemUser::class,
         ],
+        // 'users' => [
+        //     'driver' => 'eloquent',
+        //     'model' => App\Models\User::class,
+        // ],
     ],
 
     /*

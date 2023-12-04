@@ -1,20 +1,18 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { SharedModule } from 'src/app/shared.module';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { PageTitleComponent } from '../../core/components/layouts/page-title/page-title.component';
 
 @Component({
   selector: 'app-home-page',
   standalone: true,
   imports: [
-    SharedModule,
+    CommonModule,
+    PageTitleComponent,
   ],
   templateUrl: './home-page.component.html',
-  styleUrls: ['./home-page.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrl: './home-page.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export default class HomePageComponent implements OnInit {
+export class HomePageComponent {
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
 }

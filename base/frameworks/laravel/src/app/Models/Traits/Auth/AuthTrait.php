@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 
 trait AuthTrait
 {
-    use AuthVerificationTrait,
-        AuthPasswordResetTrait;
+    use AuthVerificationTrait;
+    use AuthPasswordResetTrait;
 
     protected function password(): Attribute
     {

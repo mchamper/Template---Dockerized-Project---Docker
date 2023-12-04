@@ -2,7 +2,7 @@
 
 namespace App\Apis\Equifax;
 
-use App\Commons\Response\ErrorException;
+use App\Core\Response\ErrorException;
 use Illuminate\Support\Str;
 
 class EquifaxVerazApi extends EquifaxApi
@@ -18,6 +18,7 @@ class EquifaxVerazApi extends EquifaxApi
     {
         $fullName = $item['VariablesDeSalida']['nombre'] ?? $item['variablesDeEntrada']['nombre'] ?? null;
         $names = explode(',', $fullName);
+        $names = [trim($names[0] ?? ''), trim($names[1] ?? '')];
 
         return [
             'full_name_raw' => $fullName,
@@ -89,25 +90,25 @@ class EquifaxVerazApi extends EquifaxApi
                 'applicants' => $applicants
             ];
 
-            return $this->_send('post', '/business/integration-api-efx/v1/wserv', [
+            return $this->_send('post', '/execute', [
                 'json' => $input,
             ]);
-        }, function (ErrorException $e) {
-            if ($e->body['status'] === 401) {
-                $this->_authorize(true);
-                return true;
-            }
         });
 
         if ($res['clientImplementationStatus'] !== 'completed') {
             $this->_throw('El estado de la petición no es válido.');
         }
 
-        $data = collect($res['SMARTS_CONSOLIDADO_RESPONSE'][0]['integrantes'])->map(function ($item) use ($returnRaw) {
-            return $this->_parseVerazProfile($item, $returnRaw);
-        });
+        $res = collect($res['SMARTS_CONSOLIDADO_RESPONSE'][0]['integrantes'])
+            ->filter(function ($item) {
+                $document = $item['variablesDeEntrada']['documento'] ?? null;
+                return !!$document && $document !== 0;
+            })
+            ->map(function ($item) use ($returnRaw) {
+                return $this->_parseVerazProfile($item, $returnRaw);
+            });
 
-        return $data;
+        return $res;
     }
 
     /**

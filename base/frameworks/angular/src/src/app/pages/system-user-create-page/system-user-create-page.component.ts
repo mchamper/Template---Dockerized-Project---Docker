@@ -1,54 +1,39 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
-import { SystemUserHttpService } from 'src/app/services/http/system-user-http.service';
-import { SharedModule } from 'src/app/shared.module';
-import { FormModule } from 'src/app/utils/form/form.module';
-import { Form } from 'src/app/utils/form/form';
-import { NzDividerModule } from 'ng-zorro-antd/divider';
-import { Router, RouterModule } from '@angular/router';
-import { distinctUntilChanged } from 'rxjs';
-import { systemUserCreateFormMock } from 'src/app/mocks/system-user-create-form.mock';
-import { escape } from 'lodash';
-import { SectionTitleComponent } from 'src/app/components/layouts/section-title/section-title/section-title.component';
-import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
-import { NzIconModule } from 'ng-zorro-antd/icon';
-import { FormSectionTitleComponent } from 'src/app/components/layouts/form-section-title/form-section-title.component';
-import { AuthService } from 'src/app/services/auth.service';
-import { FormFooterComponent } from 'src/app/components/layouts/form-footer/form-footer.component';
-import { RequestComponent } from 'src/app/utils/request/components/request/request.component';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormModule } from '../../core/features/form/form.module';
+import { Form } from '../../core/features/form/form.class';
+import { AuthService } from '../../services/auth.service';
+import { SystemUserHttpService } from '../../services/http/system-user-http.service';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { FormBuilder, Validators } from '@angular/forms';
+import { systemUserCreateFormMock } from '../../mocks/system-user-create-form.mock';
+import { Router } from '@angular/router';
+import { PageTitleComponent } from '../../core/components/layouts/page-title/page-title.component';
+import { escape } from 'lodash';
 
 @Component({
   selector: 'app-system-user-create-page',
   standalone: true,
   imports: [
-    SharedModule,
+    CommonModule,
     FormModule,
-    RequestComponent,
-    NzDividerModule,
-    SectionTitleComponent,
-    NzBreadCrumbModule,
-    RouterModule,
-    NzIconModule,
-    FormSectionTitleComponent,
-    FormFooterComponent,
+    PageTitleComponent,
   ],
   templateUrl: './system-user-create-page.component.html',
-  styleUrls: ['./system-user-create-page.component.scss'],
+  styleUrl: './system-user-create-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export default class SystemUserCreatePageComponent {
+export class SystemUserCreatePageComponent {
+
+  private _fb = inject(FormBuilder);
+  private _router = inject(Router);
+  private _nzNotificationS = inject(NzNotificationService);
+  private _systemUserHttpS = inject(SystemUserHttpService);
+  authS = inject(AuthService);
 
   form: Form;
 
-  constructor(
-    public authS: AuthService,
-    private _systemUserHttpS: SystemUserHttpService,
-    private _nzNotificationS: NzNotificationService,
-    private _fb: FormBuilder,
-    private _router: Router,
-  ) {
-
+  constructor() {
     this.form = new Form(this._fb.group({
       first_name: ['', [Validators.required]],
       last_name: ['', [Validators.required]],
@@ -58,8 +43,8 @@ export default class SystemUserCreatePageComponent {
       password_confirmation: ['', [Validators.required]],
     }), {
       mock: systemUserCreateFormMock(),
-      onInitSubscriptions: (form) => {
-        form.group.get('password_input_type')?.valueChanges.pipe(distinctUntilChanged()).subscribe(value => {
+      subscriptions: (form) => {
+        form.changes('password_input_type').subscribe(value => {
           if (value === 'random') {
             form.group.get('password')?.setValue('');
             form.group.get('password')?.disable();
@@ -71,7 +56,6 @@ export default class SystemUserCreatePageComponent {
           }
         });
       },
-      combos: `channels_for_system_user_client_assignment`,
       request: {
         send: () => this._systemUserHttpS.create({ ...this.form.group.value }),
         success: (res) => {

@@ -9,23 +9,23 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class MediaTmp extends Model implements HasMedia
 {
-    use HasFactory,
-        InteractsWithMedia;
-
-    private static $_diskToUse = 'media_tmp';
+    use HasFactory;
+    use InteractsWithMedia;
 
     /**
      * Media collections.
      */
     public function registerMediaCollections(): void
     {
+        $disk = config('media-library.disk_tmp_name');
+
         $this->addMediaCollection('tmp_system_user_picture')
             ->acceptsMimeTypes(['image/jpeg', 'image/png'])
-            ->useDisk(self::$_diskToUse);
+            ->useDisk($disk);
 
 
         $this->addMediaCollection('tmp_system_user_photos')
             ->acceptsMimeTypes(['image/jpeg', 'image/png'])
-            ->useDisk(self::$_diskToUse);
+            ->useDisk($disk);
     }
 }

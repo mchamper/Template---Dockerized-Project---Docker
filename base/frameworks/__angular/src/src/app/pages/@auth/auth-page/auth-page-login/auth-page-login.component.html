@@ -1,0 +1,43 @@
+<ng-container *ngIf="authS.systemUser().isLoggedIn(); else noLoggedInTpl">
+  <p class="app-fs-16">Bienvenido<br><strong class="app-fs-24">{{ authS.systemUser().data()?.name }}</strong></p>
+</ng-container>
+
+<ng-template #noLoggedInTpl>
+  <app-request [request]="formLogin.request">
+    <form class="form-default floating-label" nz-form nzLayout="vertical" [formGroup]="formLogin.group" (ngSubmit)="formLogin.submit()">
+      <div class="row">
+        <nz-form-item>
+          <nz-form-control>
+            <nz-form-label>Email</nz-form-label>
+            <input nz-input formControlName="email">
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-control>
+            <nz-form-label>Contraseña</nz-form-label>
+            <input nz-input type="password" formControlName="password">
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-control>
+            <label nz-checkbox formControlName="remember_me">Recordarme</label>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div class="mt-3">
+        <button [appLoadingBtn]="formLogin.request.isLoading()" class="btn btn-primary">
+          Ingresar
+        </button>
+      </div>
+    </form>
+  </app-request>
+
+  <!-- <app-request [request]="formLoginGoogle.request" type="spinner">
+    <div class="mx-auto mt-5" style="height: 40px; width: 238px;">
+      <asl-google-signin-button type="standard" size="large"></asl-google-signin-button>
+    </div>
+  </app-request> -->
+</ng-template>

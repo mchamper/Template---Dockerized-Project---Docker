@@ -1,25 +1,25 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Form } from 'src/app/utils/form/form';
-import { SharedModule } from 'src/app/shared.module';
-import { AuthSystemUserHttpService } from 'src/app/services/http/auth-system-user-http.service';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, Validators } from '@angular/forms';
-import { FormModule } from 'src/app/utils/form/form.module';
-import { AuthService } from 'src/app/services/auth.service';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { GoogleSigninButtonModule, SocialAuthService, SocialLoginModule } from '@abacritt/angularx-social-login';
-import { filter, skip } from 'rxjs';
-import { authLoginFormMock } from 'src/app/mocks/auth-login-form.mock';
+import { AuthService } from '../../../../services/auth.service';
+import { AuthSystemUserHttpService } from '../../../../services/http/auth-system-user-http.service';
+import { FormModule } from '../../../../core/features/form/form.module';
+import { authLoginFormMock } from '../../../../mocks/auth-login-form.mock';
+import { Form } from '../../../../core/features/form/form.class';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { RequestComponent } from 'src/app/utils/request/components/request/request.component';
+import { filter, skip } from 'rxjs';
 
 @Component({
   selector: 'app-auth-page-login',
   standalone: true,
   imports: [
-    SharedModule,
+    CommonModule,
     FormModule,
+    NzDividerModule,
     SocialLoginModule,
-    RequestComponent,
     GoogleSigninButtonModule,
   ],
   templateUrl: './auth-page-login.component.html',
@@ -28,36 +28,37 @@ import { RequestComponent } from 'src/app/utils/request/components/request/reque
 })
 export class AuthPageLoginComponent {
 
+  private _router = inject(Router);
+  private _route = inject(ActivatedRoute);
+  private _fb = inject(FormBuilder);
+
+  private _socialAuthS = inject(SocialAuthService);
+  private _authSystemUserHttpS = inject(AuthSystemUserHttpService);
+
+  authS = inject(AuthService);
+
   formLogin: Form;
   formLoginGoogle: Form;
 
-  constructor(
-    public authS: AuthService,
-    private _authSystemUserHttpS: AuthSystemUserHttpService,
-    private _socialAuthService: SocialAuthService,
-    private _router: Router,
-    private _route: ActivatedRoute,
-    private _fb: FormBuilder,
-  ) {
-
+  constructor() {
     this.formLogin = new Form(this._fb.group({
       email: ['', [Validators.required]],
       password: ['', [Validators.required]],
       remember_me: [false, [Validators.required]],
     }), {
-      mock: authLoginFormMock(),
       request: {
         send: () => this._authSystemUserHttpS.login({ ...this.formLogin.group.value }),
         success: () => {
-          this._router.navigateByUrl(this._route.snapshot.queryParamMap.get('redirectTo') || '/', {
-            replaceUrl: true,
-          });
+          // this._router.navigateByUrl(this._route.snapshot.queryParamMap.get('redirectTo') || '/', {
+          //   replaceUrl: true,
+          // });
         },
-        reset: true,
       },
+      reset: true,
+      mock: authLoginFormMock(),
     });
 
-    /* -------------------- */
+    // /* -------------------- */
 
     this.formLoginGoogle = new Form(this._fb.group({
       token: ['', [Validators.required]],
@@ -65,15 +66,15 @@ export class AuthPageLoginComponent {
       request: {
         send: () => this._authSystemUserHttpS.loginGoogle({ ...this.formLoginGoogle.group.value }),
         success: () => {
-          this._router.navigateByUrl(this._route.snapshot.queryParamMap.get('redirectTo') || '/', {
-            replaceUrl: true,
-          });
+          // this._router.navigateByUrl(this._route.snapshot.queryParamMap.get('redirectTo') || '/', {
+          //   replaceUrl: true,
+          // });
         },
-        reset: true,
       },
+      reset: true,
     });
 
-    this._socialAuthService.authState.pipe(
+    this._socialAuthS.authState.pipe(
       takeUntilDestroyed(),
       skip(1),
       filter(socialUser => !!socialUser)

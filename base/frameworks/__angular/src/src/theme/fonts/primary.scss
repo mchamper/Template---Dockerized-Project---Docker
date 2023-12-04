@@ -1,0 +1,13 @@
+@mixin app-ff-primary-l  { font-family: "Roboto", calibri, sans-serif !important; font-weight: 300 !important; }
+@mixin app-ff-primary-r  { font-family: "Roboto", calibri, sans-serif !important; font-weight: 400 !important; }
+@mixin app-ff-primary-sb { font-family: "Roboto", calibri, sans-serif !important; font-weight: 600 !important; }
+@mixin app-ff-primary-b  { font-family: "Roboto", calibri, sans-serif !important; font-weight: 700 !important; }
+@mixin app-ff-primary-eb { font-family: "Roboto", calibri, sans-serif !important; font-weight: 800 !important; }
+
+.app-ff-primary-l  { @include app-ff-primary-l(); }
+.app-ff-primary-r  { @include app-ff-primary-r(); }
+.app-ff-primary-sb { @include app-ff-primary-sb(); }
+.app-ff-primary-b  { @include app-ff-primary-b(); }
+.app-ff-primary-eb { @include app-ff-primary-eb(); }
+/* -------------------- */
+.app-ff-primary-d  { @include app-ff-primary-r(); }

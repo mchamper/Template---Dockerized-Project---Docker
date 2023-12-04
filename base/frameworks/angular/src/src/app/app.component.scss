@@ -1,0 +1,14 @@
+:host {
+  .content {
+    display: flex;
+    position: fixed;
+    width: 100dvw;
+    height: 100dvh;
+    top: 0;
+    left: 0;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    z-index: 999999;
+  }
+}

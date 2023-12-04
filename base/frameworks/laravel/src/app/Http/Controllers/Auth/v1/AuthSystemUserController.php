@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Auth\v1;
 
-use App\Commons\Auth\Auth;
-use App\Commons\Response\ErrorEnum;
-use App\Commons\Response\Response;
+use App\Core\Response\Response;
+use App\Enums\ErrorEnum;
 use App\Enums\SocialDriverEnum;
-use App\Enums\SystemUserStatusEnum;
+use App\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SystemUser\AuthSystemUserUpdateRequest;
 use App\Http\Requests\SystemUser\SystemUserLoginGoogleRequest;
@@ -56,17 +55,15 @@ class AuthSystemUserController extends Controller
             ErrorEnum::INVALID_CREDENTIALS_ERROR->throw();
         }
 
-        Auth::systemUserCheck($systemUser);
+        Auth::verifySystemUser($systemUser);
 
-        $expiresAt = Carbon::now()->addMinutes(60);
-
-        if ($validated['remember_me']) {
-            $expiresAt = Carbon::now()->addDays(7);
-        }
+        $expiresAt = $validated['remember_me']
+            ? Carbon::now()->addDays(7)
+            : Carbon::now()->addMinutes(60);
 
         DB::beginTransaction();
 
-        $systemUser->tokens()->delete();
+        // $systemUser->tokens()->delete();
 
         $token = $systemUser->createToken(
             name: 'app_client|' . Auth::appClient()->id,
@@ -114,7 +111,7 @@ class AuthSystemUserController extends Controller
             $input['email'] = $socialUser->getEmail();
             $input['social_driver'] = SocialDriverEnum::Google;
         } else {
-            Auth::systemUserCheck($systemUser);
+            Auth::verifySystemUser($systemUser);
         }
 
         $input['first_name'] = $socialUserRaw['given_name'] ?? '';
@@ -131,7 +128,7 @@ class AuthSystemUserController extends Controller
         $systemUser->email_verified_at = $socialUserRaw['email_verified'] ? now() : null;
         $systemUser->saveOrFail();
 
-        $systemUser->tokens()->delete();
+        // $systemUser->tokens()->delete();
 
         $token = $systemUser->createToken(
             name: 'app_client|' . Auth::appClient()->id,

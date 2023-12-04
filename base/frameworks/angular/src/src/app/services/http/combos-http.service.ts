@@ -1,23 +1,22 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { GUARD } from 'src/app/interceptors/contexts';
-import { environment } from 'src/environments/environment';
+import { Injectable, inject } from '@angular/core';
+import { GUARD } from '../../core/interceptors/contexts';
+import { environment } from '../../../environments/environment';
+import { THttpResponse } from '../../core/types/http-response.type';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CombosHttpService {
 
-  constructor(
-    private _httpClient: HttpClient
-  ) { }
+  private _httpClient = inject(HttpClient);
 
   /* -------------------- */
 
   get = (concepts: string) => {
-    return this._httpClient.get(`${environment.backendUrl}/api/backoffice/v1/combos?concepts=${concepts}`, {
+    return this._httpClient.get<THttpResponse>(`${environment.backendUrl}/api/backoffice/v1/combos?concepts=${concepts}`, {
       context: new HttpContext()
-        .set(GUARD, 'systemUser')
+        .set(GUARD, 'appClient')
     });
   }
 }

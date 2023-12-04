@@ -1,1 +1,20 @@
-<router-outlet></router-outlet>
+@if (state.app.ready()) {
+  <router-outlet />
+} @else if (state.app.error()) {
+  <div class="content">
+    <div>
+      <p class="mb-0">{{ state.app.error() }}</p>
+      <p class="mb-0">Por favor, vuelva a intentarlo más tarde.</p>
+    </div>
+  </div>
+} @else {
+  <div class="content">
+    <div>
+      <div class="mb-4">
+        <!-- <img class="d-block mb-2" src="assets/img/logos/logo.svg" style="width: 15rem;"> -->
+      </div>
+
+      <div class="spinner-grow text-primary" role="status" aria-hidden="true" style="width: 2rem; height: 2rem;"></div>
+    </div>
+  </div>
+}

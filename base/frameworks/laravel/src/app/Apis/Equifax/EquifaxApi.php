@@ -2,7 +2,7 @@
 
 namespace App\Apis\Equifax;
 
-use App\Apis\BaseApi;
+use App\Core\Bases\BaseApi;
 use GuzzleHttp\Client;
 
 abstract class EquifaxApi extends BaseApi
@@ -15,9 +15,9 @@ abstract class EquifaxApi extends BaseApi
     public function __construct()
     {
         parent::__construct(
-            _maxTries: 3,
-            _retryStatusRange: [500, 599],
-            _retryStatuses: [400],
+            _retries: 3,
+            _retryCodeRange: [500, 599],
+            _retryCodes: [400],
         );
 
         $this->_url = config('services.equifax.url');
@@ -44,8 +44,8 @@ abstract class EquifaxApi extends BaseApi
         }
 
         $this->_apiToken = $this->_remember('apiToken', function () {
-            return $this->_tryOne(function () {
-                return $this->_send('post', '/v2/oauth/token', [
+            return $this->_tryAuth(function () {
+                return $this->_send('post', '/token', [
                     'headers' => [
                         'Authorization' => 'Basic ' . base64_encode($this->_clientId . ':' . $this->_clientSecret),
                     ],
@@ -62,5 +62,10 @@ abstract class EquifaxApi extends BaseApi
                 'Authorization' => 'Bearer ' . $this->_apiToken,
             ],
         ];
+    }
+
+    protected function _res($res)
+    {
+        return $res;
     }
 }

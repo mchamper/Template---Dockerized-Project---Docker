@@ -2,9 +2,13 @@
 
 namespace App\Models;
 
+use App\Core\Bases\BaseModelTrait;
+use App\Core\Models\Traits\HasRolesAndPermissions;
 use App\Enums\SocialDriverEnum;
 use App\Enums\SystemUserStatusEnum;
+use App\Facades\Auth;
 use App\Models\Traits\Auth\AuthTrait;
+use App\Models\Traits\SystemUser\SystemUserTrait;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,26 +17,22 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\Permission\Traits\HasRoles;
 
 class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
 {
-    use HasApiTokens,
-        HasRoles,
-        HasFactory,
-        Notifiable,
-        SoftDeletes,
-        InteractsWithMedia,
-        AuthTrait;
+    use HasApiTokens;
+    use HasFactory;
+    use HasRolesAndPermissions;
+    use Notifiable;
+    use SoftDeletes;
+    use BaseModelTrait;
+    use SystemUserTrait;
+    use AuthTrait;
 
     protected $hidden = [
-        'media',
         'password',
         'token_for_email_verification',
         'token_for_password_reset',
-        'roles',
-        'permissions',
     ];
 
     protected $dates = [
@@ -40,18 +40,24 @@ class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
     ];
 
     protected $casts = [
+        'password' => 'hashed',
+    ];
+
+    protected $enums = [
         'social_driver' => SocialDriverEnum::class,
         'status' => SystemUserStatusEnum::class,
     ];
 
+    protected $medias = [
+        'picture' => 'single',
+        'photos' => 'multi',
+    ];
+
     protected $appends = [
         'full_name',
-        'social_driver_enum',
-        'status_enum',
-        'roles_and_permissions',
-        'picture',
-        'photos',
     ];
+
+    protected function getDefaultGuardName(): string { return Auth::getSystemUserGuardName(); }
 
     /**
      * Accesors & Mutators.
@@ -63,62 +69,14 @@ class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
         );
     }
 
-    protected function socialDriverEnum(): Attribute
-    {
-        return Attribute::make(
-            get: fn () => $this->social_driver ? $this->social_driver->value() : null,
-        );
-    }
-
-    protected function statusEnum(): Attribute
-    {
-        return Attribute::make(
-            get: fn () => $this->status ? $this->status->value() : null,
-        );
-    }
-
-    protected function rolesAndPermissions(): Attribute
-    {
-        return Attribute::make(
-            get: function () {
-                return [
-                    'roles' => $this->getRoleNames(),
-                    'permissions' => $this->getAllPermissions()->map(fn ($item) => $item['name']),
-                ];
-            }
-        );
-    }
-
-    /**
-     * Media collections.
-     */
-    public function registerMediaCollections(): void
-    {
-        $this->addMediaCollection('picture')->singleFile();
-        $this->addMediaCollection('photos');
-    }
-
-    /**
-     * Accesors & Mutators (for media collections).
-     */
-    protected function picture(): Attribute
-    {
-        return Attribute::make(
-            get: fn () => $this->getFirstMedia('picture'),
-        );
-    }
-
-    protected function photos(): Attribute
-    {
-        return Attribute::make(
-            get: fn () => $this->getMedia('photos'),
-        );
-    }
-
     /**
      * Scopes.
      */
-    public function scopeNoRoot(Builder $query) {
-        return $query->where('id', '!=', 1);
+    public function scopeNoRoot($query) {
+        return $query->where('email', '!=', 'root');
+    }
+
+    public function scopeNoAuth($query) {
+        return $query->where('id', '!=', Auth::systemUser()->id);
     }
 }
