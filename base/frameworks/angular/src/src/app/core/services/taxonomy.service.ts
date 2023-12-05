@@ -16,15 +16,7 @@ export class TaxonomyService {
   private _meta = inject(Meta);
   private _routeS = inject(RouteService);
 
-  taxonomies: TTaxonomies = [
-    {
-      page: '__DEFAULT__',
-      index: true,
-      title: 'App',
-      description: '',
-      keywords: '',
-    },
-  ];
+  taxonomies: TTaxonomies = [];
 
   get domBaseUrl(): string {
     return environment.appUrl;
@@ -33,10 +25,7 @@ export class TaxonomyService {
   /* -------------------- */
 
   init(taxonomies: TTaxonomies): void {
-    this.taxonomies = [
-      ...this.taxonomies,
-      ...taxonomies,
-    ];
+    this.taxonomies = taxonomies;
 
     this._routeS.onNavigationEnd$().subscribe(() => this._resolve());
   }
