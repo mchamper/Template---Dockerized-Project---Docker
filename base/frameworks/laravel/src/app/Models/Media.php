@@ -12,7 +12,7 @@ class Media extends BaseMedia
     {
         static::deleting(function (Media $media) {
             if ($media->collection_name === 'trash') {
-                return true;
+                return !app()->environment('local') || !Str::startsWith($media->disk, 's3');
             }
 
             $media->collection_name = 'trash';
@@ -23,7 +23,7 @@ class Media extends BaseMedia
 
         static::deleted(function (Media $media) {
             // FIX: La librería de Spatie, por alguna razón cuando el disk es s3, no elimina automáticamente
-            // los archivos existentes en los buckets.
+            // los archivos existenes en los buckets.
             if (Str::startsWith($media->disk, 's3')) {
                 Storage::disk($media->disk)->delete($media->getPath());
             }
