@@ -25,7 +25,10 @@ export class TaxonomyService {
   /* -------------------- */
 
   init(taxonomies: TTaxonomies): void {
-    this.taxonomies = taxonomies;
+    this.taxonomies = [
+      ...this.taxonomies,
+      ...taxonomies,
+    ];
 
     this._routeS.onNavigationEnd$().subscribe(() => this._resolve());
   }

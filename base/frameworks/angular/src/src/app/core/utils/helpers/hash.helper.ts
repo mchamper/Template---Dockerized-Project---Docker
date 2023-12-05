@@ -1,5 +1,11 @@
 import CryptoJS from 'crypto-js';
 
+export const md5 = (value: any) => {
+  return CryptoJS.MD5(JSON.stringify(value)).toString();
+}
+
+/* -------------------- */
+
 export const base64Encode = (value: any) => {
   return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(JSON.stringify(value)));
 }
