@@ -49,6 +49,16 @@ export class RouteService {
 
   /* -------------------- */
 
+  urlStartsWith(value: string): boolean {
+    return this.current.url().startsWith(value);
+  }
+
+  urlIs(value: string, strict: boolean = false): boolean {
+    return (strict ? this.current.url() : this.current.url().split('?')[0]) === value;
+  }
+
+  /* -------------------- */
+
   private _getSnapshot(snapshot?: ActivatedRouteSnapshot): ActivatedRouteSnapshot {
     if (!snapshot) {
       snapshot = this._route.snapshot.root;

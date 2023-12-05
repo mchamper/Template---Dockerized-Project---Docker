@@ -1,4 +1,4 @@
-import { Injector, ProviderToken, WritableSignal, inject, signal } from "@angular/core";
+import { Injector, ProviderToken, inject, signal } from "@angular/core";
 import { AbstractControl, FormArray, FormControl, FormGroup } from "@angular/forms";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { CombosHttpService } from "../../../services/http/combos-http.service";
@@ -7,9 +7,12 @@ import { environment } from "../../../../environments/environment";
 import { debounceTime, distinctUntilChanged, skip } from "rxjs";
 import { cloneDeep, entries, isArray } from "lodash";
 import { logger } from "../../utils/helpers/logger.helper";
+import { StorageService } from "../../services/storage.service";
+import { md5 } from "../../utils/helpers/hash.helper";
 
 export class Form<Data = any> {
 
+  private _storageS = this._inject(StorageService);
   private _combosHttpS = this._inject(CombosHttpService);
 
   state = {
@@ -58,6 +61,7 @@ export class Form<Data = any> {
       combos?: string | { [key: string]: any[] },
       reset?: boolean,
       persist?: boolean,
+      autoSave?: boolean,
       mock?: any,
       injector?: Injector,
     } = {},
@@ -70,14 +74,16 @@ export class Form<Data = any> {
     this._createRequests();
 
     this.state.set(!environment.production ? this._options?.mock : null);
-
     this.reset(true);
+
     this._init();
     this._subscriptions();
 
     this.state.set(this.group.getRawValue());
     this.group.markAsPristine();
     this.group.markAsUntouched();
+
+    this._initAutoSave();
   }
 
   private _inject<T = any>(token: ProviderToken<T>) {
@@ -147,6 +153,33 @@ export class Form<Data = any> {
       } else {
         this.combos.set(this._options.combos);
       }
+    }
+  }
+
+  /* -------------------- */
+
+  private _initAutoSave() {
+    const formKey = `form.${md5(this.state.init())}`;
+
+    if (this._options.autoSave) {
+      const autoSaveValueStored = this._storageS.get(formKey, { base64: true });
+
+      if (autoSaveValueStored) {
+        this.group.setValue(autoSaveValueStored, { emitEvent: false });
+
+        if (`form.${md5(autoSaveValueStored)}` !== formKey) {
+          this.group.markAsDirty();
+          this.group.markAsTouched();
+        }
+      }
+
+      this.group.valueChanges.pipe(
+        debounceTime(300),
+      ).subscribe(() => {
+        this._storageS.set(formKey, this.group.getRawValue(), { base64: true });
+      });
+    } else {
+      this._storageS.clear(formKey);
     }
   }
 
@@ -264,22 +297,6 @@ export class Form<Data = any> {
 
       (control as FormControl).setValue(controlValue, { emitEvent: false });
     });
-  }
-
-  /* -------------------- */
-
-  compareFn(o1: any, o2: any): boolean {
-    if (o1 && o2) {
-      if (o1.hasOwnProperty('value') && o2.hasOwnProperty('value')) {
-        return o1.value === o2.value;
-      }
-
-      if (o1.hasOwnProperty('id') && o2.hasOwnProperty('id')) {
-        return o1.id === o2.id;
-      }
-    }
-
-    return o1 === o2;
   }
 
   /* -------------------- */

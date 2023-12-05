@@ -1,18 +1,20 @@
 import { DestroyRef, Directive, ElementRef, Injector, Input, Optional, inject, signal } from '@angular/core';
 import { FormControl, FormControlName, FormControlStatus, FormGroupDirective, NgControl } from '@angular/forms';
-import { isArray } from 'lodash';
+import { isArray, xorWith } from 'lodash';
 import { NzSelectComponent } from 'ng-zorro-antd/select';
 import { NzInputDirective, NzInputGroupComponent } from 'ng-zorro-antd/input';
 import { NzDatePickerComponent, NzRangePickerComponent } from 'ng-zorro-antd/date-picker';
-import { Observable } from 'rxjs';
+import { Observable, startWith } from 'rxjs';
 import { NzFormControlComponent } from 'ng-zorro-antd/form';
 import { formValidatorMessages } from '../form.validators';
 import { NzInputNumberComponent } from 'ng-zorro-antd/input-number';
 import { NzUploadComponent } from 'ng-zorro-antd/upload';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { NzRadioComponent } from 'ng-zorro-antd/radio';
+import { NzCheckboxComponent } from 'ng-zorro-antd/checkbox';
 
 @Directive({
-  selector: '[formControl],[formControlName],[ngModel],nz-upload',
+  selector: '[formControl],[formControlName],[ngModel],nz-upload,[nz-radio],[nz-checkbox]',
   standalone: true
 })
 export class FormControlDirective {
@@ -36,6 +38,8 @@ export class FormControlDirective {
     @Optional() private _nzInputGroupControl: NzInputGroupComponent,
     @Optional() private _nzInputNumberControl: NzInputNumberComponent,
     @Optional() private _nzSelectControl: NzSelectComponent,
+    @Optional() private _nzRadioControl: NzRadioComponent,
+    @Optional() private _nzCheckboxControl: NzCheckboxComponent,
     @Optional() private _nzDatePickerControl: NzDatePickerComponent,
     @Optional() private _nzRangePickerControl: NzRangePickerComponent,
     @Optional() private _nzUploadControl: NzUploadComponent,
@@ -44,6 +48,8 @@ export class FormControlDirective {
 
   ngOnInit(): void {
     this.resolveItems();
+
+    this.resolveCompareWith();
 
     this.resolveFocus();
     this.resolveFloatingLabel();
@@ -57,8 +63,8 @@ export class FormControlDirective {
     return this._control || this.uploadControl;
   }
 
-  get controlValue(): NgControl | FormControl {
-    return this.control.value;
+  get controlValue(): NgControl | FormControl | undefined {
+    return this.control?.value;
   }
 
   /* -------------------- */
@@ -91,6 +97,51 @@ export class FormControlDirective {
         if (uploadElem) {
           uploadElem.classList.add('ant-upload-select-picture-card');
         }
+      }
+    }
+  }
+
+  /* -------------------- */
+
+  resolveCompareWith() {
+    const compareFn = (o1: any, o2: any, field: string): boolean => {
+      if (o1 && o2 && field) {
+        if (o1.hasOwnProperty(field) && o2.hasOwnProperty(field)) {
+          return o1[field] === o2[field];
+        }
+      }
+
+      return o1 === o2;
+    };
+
+    if (this._nzSelectControl) {
+      const compareField = this._host.nativeElement.getAttribute('compareField') || 'id';
+      this._nzSelectControl.compareWith = (o1: any, o2: any) => compareFn(o1, o2, compareField);
+    }
+
+    if (this._nzRadioControl) {
+      const compareField = this._host.nativeElement.parentElement?.getAttribute('compareField') || 'id';
+      this._nzRadioControl.isChecked = compareFn(this._control.value, this._nzRadioControl.nzValue, compareField);
+    }
+
+    if (this._nzCheckboxControl) {
+      const controlName = this._host.nativeElement.parentElement?.getAttribute('controlName') || '';
+      const control = this._formGroup.control.get(controlName);
+
+      if (control) {
+        const compareField = this._host.nativeElement.parentElement?.getAttribute('compareField') || 'id';
+
+        control.valueChanges.pipe(
+          startWith(control.value),
+        ).subscribe(value => {
+          this._nzCheckboxControl.writeValue(value.some((item: any) => compareFn(item, this._nzCheckboxControl.nzValue, compareField)))
+        });
+
+        this._nzCheckboxControl.onChange = (value) => {
+          control.setValue(xorWith(control.value, [this._nzCheckboxControl.nzValue], (o1: any, o2: any) => compareFn(o1, o2, compareField)));
+          control.markAsDirty();
+          control.markAsUntouched();
+        };
       }
     }
   }
@@ -185,7 +236,7 @@ export class FormControlDirective {
     };
 
     onStatusChange();
-    (this.control?.statusChanges as Observable<FormControlStatus>).pipe(takeUntilDestroyed(this._destroyRef)).subscribe(() => onStatusChange());
+    (this.control?.statusChanges as Observable<FormControlStatus>)?.pipe(takeUntilDestroyed(this._destroyRef)).subscribe(() => onStatusChange());
   }
 
   setErrors(): void {
