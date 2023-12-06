@@ -138,16 +138,27 @@ abstract class BaseRepository
         $keys = (array) $keys;
 
         foreach ($keys as $key => $config) {
+            if (is_numeric($key)) {
+                $key = $config;
+                $repo = null;
+                $repoModel = null;
+            } else {
+                $repo = $config[0];
+                $repoModel = $config[1];
+            }
+
             if (!array_key_exists($key, $input)) {
                 continue;
             }
 
-            $repo = $config[0];
-            $repoModel = $config[1];
             $idsForAttach = [];
 
             foreach ($input[$key] as $value) {
-                $idsForAttach[$repo::save($value, $repoModel::find($value['id'] ?? null))->id] = $value['pivot'] ?? [];
+                if ($repo && $repoModel) {
+                    $idsForAttach[$repo::save($value, $repoModel::find($value['id'] ?? null))->id] = $value['pivot'] ?? [];
+                } else {
+                    $idsForAttach[] = $value['id'];
+                }
             }
 
             $model->$key()->sync($idsForAttach);
