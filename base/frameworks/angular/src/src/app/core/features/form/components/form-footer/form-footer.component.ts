@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, ContentChild, Input, OnInit, Optional, TemplateRef, booleanAttribute, inject } from '@angular/core';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzIconModule } from 'ng-zorro-antd/icon';
-import { NzAffixModule } from 'ng-zorro-antd/affix';
 import { CommonModule } from '@angular/common';
 import { LoadingButtonDirective } from '../../../../directives/loading-button.directive';
 import { Form } from '../../form.class';
 import { FormComponent } from '../form/form.component';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
 
 @Component({
   selector: 'app-form-footer',
@@ -15,7 +15,7 @@ import { FormComponent } from '../form/form.component';
     LoadingButtonDirective,
     NzIconModule,
     NzAlertModule,
-    NzAffixModule,
+    NzDividerModule,
   ],
   templateUrl: './form-footer.component.html',
   styleUrls: ['./form-footer.component.scss'],
@@ -30,6 +30,7 @@ export class FormFooterComponent implements OnInit {
   @Input() submitPlacement: 'left' | 'center' | 'right' | 'block' = 'left';
   @Input({ transform: booleanAttribute }) disabled: boolean = false;
   @Input({ transform: booleanAttribute }) withInfo: boolean = false;
+  @Input({ transform: booleanAttribute }) withDivider: boolean = false;
   @Input({ transform: booleanAttribute }) sticky: boolean = false;
 
   @ContentChild('alertTpl') alertTpl!: TemplateRef<any>;
