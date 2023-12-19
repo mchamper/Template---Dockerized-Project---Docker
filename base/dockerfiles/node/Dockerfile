@@ -35,7 +35,7 @@ RUN apt-get update && apt-get install -y \
   python3 \
   python3-pip \
   python3-dev libffi-dev musl-dev gcc make \
-  && pip3 install --upgrade pip \
+  && pip3 install --upgrade pip --break-system-packages \
   && rm -rf /var/cache/apt/* && rm -rf /tmp/*
 
 ##############################
@@ -56,6 +56,6 @@ RUN npm i -g cordova-res --unsafe-perm; exit 0
 USER node
 
 # Install aws cli
-RUN pip3 install PyYAML==5.3.1
-RUN pip3 install awscli --upgrade --user
-RUN pip3 install awsebcli --upgrade --user
+RUN pip3 install PyYAML==5.3.1 --break-system-packages
+RUN pip3 install awscli --upgrade --user --break-system-packages
+RUN pip3 install awsebcli --upgrade --user --break-system-packages
