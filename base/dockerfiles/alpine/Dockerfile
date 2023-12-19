@@ -29,7 +29,7 @@ RUN apk add --update --no-cache \
   py3-pip \
   py3-pynacl \
   python3-dev libffi-dev openssl-dev musl-dev gcc make \
-  && pip3 install --upgrade pip \
+  && pip3 install --upgrade pip --break-system-packages \
   && rm -rf /var/cache/apk/* && rm -rf /tmp/*
 
 ##############################
@@ -38,6 +38,6 @@ RUN apk add --update --no-cache \
 USER docker
 
 # Install aws cli
-RUN pip3 install PyYAML==5.3.1
-RUN pip3 install awscli --upgrade --user
-RUN pip3 install awsebcli --upgrade --user
+RUN pip3 install PyYAML==5.3.1 --break-system-packages
+RUN pip3 install awscli --upgrade --user --break-system-packages
+RUN pip3 install awsebcli --upgrade --user --break-system-packages
