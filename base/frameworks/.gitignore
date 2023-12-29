@@ -50,12 +50,16 @@ laravel/src/**
 !laravel/src/app/Mail/**
 !laravel/src/app/Models/
 !laravel/src/app/Models/**
+!laravel/src/app/Policies/
+!laravel/src/app/Policies/**
 !laravel/src/app/Providers/
 !laravel/src/app/Providers/AppServiceProvider.php
 !laravel/src/app/Providers/RouteServiceProvider.php
 !laravel/src/app/Providers/TelescopeServiceProvider.php
 !laravel/src/app/Repositories/
 !laravel/src/app/Repositories/**
+!laravel/src/app/Services/
+!laravel/src/app/Services/**
 !laravel/src/config/
 !laravel/src/config/app.php
 !laravel/src/config/auth.php
@@ -70,6 +74,9 @@ laravel/src/**
 !laravel/src/database/migrations/*_create_app_clients_table.php
 !laravel/src/database/migrations/*_create_system_users_table.php
 !laravel/src/database/migrations/*_create_media_tmps_table.php
+!laravel/src/database/migrations/*_create_countries_table.php
+!laravel/src/database/migrations/*_create_provinces_table.php
+!laravel/src/database/migrations/*_create_localities_table.php
 !laravel/src/database/seeders/
 !laravel/src/database/seeders/**
 !laravel/src/lang/
@@ -84,4 +91,5 @@ laravel/src/**
 !laravel/src/routes/api.backoffice.v1.php
 !laravel/src/routes/auth-session.v1.php
 !laravel/src/routes/auth.v1.php
+!laravel/src/routes/frontend.php
 !laravel/src/.editorconfig

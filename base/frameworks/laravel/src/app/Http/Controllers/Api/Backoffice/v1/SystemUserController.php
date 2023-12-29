@@ -18,7 +18,7 @@ class SystemUserController extends Controller
 {
     public function index()
     {
-        $systemUserQuery = SystemUser::noRoot();
+        $systemUserQuery = SystemUser::noRoot()->noAuth();
 
         $systemUsers = (new RESTful(
             $systemUserQuery,
@@ -32,7 +32,7 @@ class SystemUserController extends Controller
 
     public function show(int $systemUserId)
     {
-        $systemUserQuery = SystemUser::noRoot();
+        $systemUserQuery = SystemUser::noRoot()->noAuth();
 
         $systemUser = (new RESTful(
             $systemUserQuery,
@@ -46,6 +46,8 @@ class SystemUserController extends Controller
 
     public function create()
     {
+        $this->authorize('create', SystemUser::class);
+
         $input = request()->post();
         $validated = Validator::make($input, SystemUserCreateRequest::rules())->validate();
 
@@ -57,7 +59,13 @@ class SystemUserController extends Controller
         }
 
         $systemUser = SystemUserRepository::save($validated);
-        $systemUser->sendVerificationEmail();
+
+        if ($validated['require_email_verification']) {
+            $systemUser->sendVerificationEmail();
+        } else {
+            $systemUser->email_verified_at = now();
+            $systemUser->saveOrFail();
+        }
 
         DB::commit();
 
@@ -67,12 +75,19 @@ class SystemUserController extends Controller
         ], 'El usuario ha sido creado con éxito.');
 
     }
+
     public function update(int $systemUserId)
     {
         $systemUser = SystemUser::noRoot()->noAuth()->findOrFail($systemUserId);
 
+        $this->authorize('update', $systemUser);
+
         $input = request()->post();
         $validated = Validator::make($input, SystemUserUpdateRequest::rules())->validate();
+
+        if (empty($validated['password'])) {
+            $validated = collect($validated)->except(['password'])->toArray();
+        }
 
         DB::beginTransaction();
 
@@ -82,12 +97,15 @@ class SystemUserController extends Controller
 
         return Response::json([
             'system_user' => $systemUser,
-        ], 'El usuario provisto ha sido actualizado con éxito.');
+        ], 'El usuario ha sido actualizado con éxito.');
+
     }
 
     public function delete(int $systemUserId)
     {
         $systemUser = SystemUser::noRoot()->noAuth()->findOrFail($systemUserId);
+
+        $this->authorize('delete', $systemUser);
 
         DB::beginTransaction();
 
@@ -97,7 +115,7 @@ class SystemUserController extends Controller
 
         return Response::json([
             'system_user' => $systemUser,
-        ], 'El usuario provisto ha sido eliminado con éxito.');
+        ], 'El usuario ha sido eliminado con éxito.');
     }
 
     /* -------------------- */
@@ -105,6 +123,8 @@ class SystemUserController extends Controller
     public function activate(int $systemUserId)
     {
         $systemUser = SystemUser::noRoot()->noAuth()->findOrFail($systemUserId);
+
+        $this->authorize('update', $systemUser);
 
         DB::beginTransaction();
 
@@ -115,12 +135,14 @@ class SystemUserController extends Controller
 
         return Response::json([
             'system_user' => $systemUser,
-        ], 'El usuario provisto ha sido activado con éxito.');
+        ], 'El usuario ha sido activado con éxito.');
     }
 
     public function deactivate(int $systemUserId)
     {
         $systemUser = SystemUser::noRoot()->noAuth()->findOrFail($systemUserId);
+
+        $this->authorize('update', $systemUser);
 
         DB::beginTransaction();
 
@@ -131,6 +153,6 @@ class SystemUserController extends Controller
 
         return Response::json([
             'system_user' => $systemUser,
-        ], 'El usuario provisto ha sido desactivado con éxito.');
+        ], 'El usuario ha sido desactivado con éxito.');
     }
 }

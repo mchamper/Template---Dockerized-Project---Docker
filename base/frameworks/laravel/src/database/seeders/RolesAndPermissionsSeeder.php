@@ -7,6 +7,8 @@ use App\Enums\RoleEnum;
 use App\Facades\Auth;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
@@ -20,51 +22,36 @@ class RolesAndPermissionsSeeder extends Seeder
 
         /* -------------------- */
 
-        DB::table(config('permission.table_names.permissions'))
-            ->whereNot(function ($query) {
-                $query->whereIn('name', PermissionEnum::names())
-                    ->where('guard_name', Auth::getSystemUserGuardName())
-                    ;
-            })
-            ->delete();
-            ;
+        $configs = [
+            PermissionEnum::class => Permission::class,
+            RoleEnum::class => Role::class,
+        ];
 
-        DB::table(config('permission.table_names.roles'))
-            ->whereNot(function ($query) {
-                $query->whereIn('name', RoleEnum::names())
-                    ->where('guard_name', Auth::getSystemUserGuardName())
-                    ;
-            })
-            ->whereNull('created_at')
-            ->delete();
-            ;
+        foreach ($configs as $enum => $model) {
+            $model::whereNot(function ($query) use ($enum) {
+                $query->whereIn('name', $enum::names())->where('guard_name', Auth::getSystemUserGuardName());
+            })->whereNull('created_at')->delete();
 
-        /* -------------------- */
-
-        collect(PermissionEnum::names())->map(function ($item, $key) {
-            return [
-                'name' => $item,
-                'guard_name' => Auth::getSystemUserGuardName(),
-            ];
-        })->each(function ($item) {
-            DB::table(config('permission.table_names.permissions'))->updateOrInsert($item, $item);
-        });
-
-        collect(RoleEnum::names())->map(function ($item, $key) {
-            return [
-                'name' => $item,
-                'guard_name' => Auth::getSystemUserGuardName(),
-            ];
-        })->each(function ($item) {
-            DB::table(config('permission.table_names.roles'))->updateOrInsert($item, $item);
-        });
+            collect($enum::names())->map(function ($item, $key) {
+                return [
+                    'name' => $item,
+                    'guard_name' => Auth::getSystemUserGuardName(),
+                    'created_at' => null,
+                    'updated_at' => null,
+                ];
+            })->each(fn ($item) => $model::updateOrCreate($item));
+        }
 
         /* -------------------- */
 
         RoleEnum::Root->model()
-            ->syncPermissions(PermissionEnum::names());
+            ->syncPermissions(collect(PermissionEnum::names())->diff([
+                //
+            ]));
 
         RoleEnum::Admin->model()
-            ->syncPermissions(PermissionEnum::names());
+            ->syncPermissions(collect(PermissionEnum::names())->diff([
+                PermissionEnum::SystemUserLoginAs->name,
+            ]));
     }
 }

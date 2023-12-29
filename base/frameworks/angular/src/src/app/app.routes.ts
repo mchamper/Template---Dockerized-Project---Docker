@@ -13,6 +13,7 @@ import { SystemUserListPageComponent } from './pages/system-user-list-page/syste
 import { AuthPageComponent } from './pages/@auth/auth-page/auth-page.component';
 import { AccountPageComponent } from './pages/account-page/account-page.component';
 import { SystemUserCreatePageComponent } from './pages/system-user-create-page/system-user-create-page.component';
+import { SystemUserUpdatePageComponent } from './pages/system-user-update-page/system-user-update-page.component';
 
 export const routes: (Route & { data?: TRouteData })[] = [
   {
@@ -41,6 +42,11 @@ export const routes: (Route & { data?: TRouteData })[] = [
             path: 'usuarios/crear',
             loadComponent: () => SystemUserCreatePageComponent,
             data: { name: 'SystemUserCreatePage', permissions: ['SystemUserCreate'] }
+          },
+          {
+            path: 'usuarios/:systemUserId',
+            loadComponent: () => SystemUserUpdatePageComponent,
+            data: { name: 'SystemUserUpdatePage', permissions: ['SystemUserUpdate'] }
           },
         ]
       },

@@ -1,14 +1,43 @@
 <div class="box d-inline-block text-start w-100 p-5" style="max-width: 450px;">
-  @if (authS.systemUser().activeSession()) {
+  @if (authS.systemUser().sessions().length) {
     <div class="text-center">
       <p class="app-fs-16">
         Bienvenido<br>
-        <strong class="app-fs-24">{{ authS.systemUser().activeSession()!.data?.firstName }}</strong>
+        <strong class="app-fs-24">Elige una cuenta</strong>
       </p>
 
+      <app-request [request]="sessionRefreshRequest" type="spinner">
+        <nz-list class="mt-4 text-start" nzBordered>
+          @for (session of authS.systemUser().sessions(); track session) {
+            <nz-list-item class="bg-gradient" [class.bg-secondary-subtle]="session.isActive">
+              <a class="link-styless w-100" (click)="!session.isActive ? selectSession($index) : null">
+                <div class="d-flex align-items-center w-100">
+                  <nz-avatar class="me-2" nzIcon="user" [nzSrc]="session.data?.picture" />
+
+                  <span class="lh-sm">
+                    <strong>{{ session.data?.firstName }} {{ session.data?.lastName }}</strong><br>
+                    <small class="text-black-50">{{ session.data?.email }}</small>
+                  </span>
+
+                  <!-- <strong class="ms-auto app-fs-12"
+                    [style.color]="session.data?.model!.data.typeEnum.color"
+                  >
+                    {{ session.data?.model!.data.typeEnum.label }}
+                  </strong> -->
+                </div>
+              </a>
+            </nz-list-item>
+          }
+        </nz-list>
+      </app-request>
+
       <div class="d-grid gap-2 mt-5">
-        <a class="btn btn-primary" routerLink="/">Entrar</a>
-        <a class="btn btn-link text-danger" (click)="authS.systemUser().removeSession()">Salir</a>
+        @if (authS.systemUser().activeSession()) {
+          <button class="btn btn-primary" (click)="enter()">Entrar</button>
+          <button class="btn btn-link text-danger" (click)="authS.systemUser().removeSession(false)">Salir</button>
+        } @else {
+          <button class="btn btn-link text-danger" (click)="authS.systemUser().removeAllSessions(false)">Salir de todas las cuentas</button>
+        }
       </div>
     </div>
   } @else {

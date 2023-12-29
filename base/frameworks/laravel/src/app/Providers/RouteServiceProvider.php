@@ -34,6 +34,12 @@ class RouteServiceProvider extends ServiceProvider
 
             /* -------------------- */
 
+            // Route::prefix('')
+            //     ->middleware('web')
+            //     ->group(base_path('routes/frontend.php'));
+
+            /* -------------------- */
+
             Route::prefix('auth/v1')
                 ->middleware('api')
                 ->namespace('App\Http\Controllers\Auth\v1')

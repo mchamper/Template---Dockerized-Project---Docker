@@ -3,12 +3,10 @@
 namespace App\Core\Bases;
 
 use App\Core\Models\Traits\HasEnums;
-use App\Core\Models\Traits\HasMedias;
 
 trait BaseModelTrait
 {
     use HasEnums;
-    use HasMedias;
 
     protected $appendAttributes = [];
 

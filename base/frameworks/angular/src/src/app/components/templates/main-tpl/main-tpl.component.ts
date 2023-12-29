@@ -26,5 +26,5 @@ import { UiState } from '../../../states/ui.state';
 })
 export class MainTplComponent {
 
-  public uiState = inject(UiState);
+  uiState = inject(UiState);
 }

@@ -6,6 +6,8 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { RequestComponent } from '../../../request/components/request/request.component';
 import { Form } from '../../form.class';
 import { FormComponent } from '../form/form.component';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-form-filters',
@@ -14,6 +16,8 @@ import { FormComponent } from '../form/form.component';
     CommonModule,
     RequestComponent,
     FormComponent,
+    ReactiveFormsModule,
+    NzCheckboxModule,
     NzIconModule,
     NzCollapseModule,
     NzDividerModule,
@@ -25,6 +29,5 @@ import { FormComponent } from '../form/form.component';
 export class FormFiltersComponent {
 
   @Input({ required: true }) form!: Form;
-
   @ContentChild('moreTpl') moreTpl!: TemplateRef<any>;
 }

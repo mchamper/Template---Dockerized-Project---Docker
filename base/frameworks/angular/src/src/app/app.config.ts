@@ -1,4 +1,4 @@
-import { registerLocaleData } from '@angular/common';
+import { APP_BASE_HREF, registerLocaleData } from '@angular/common';
 import es from '@angular/common/locales/es';
 registerLocaleData(es);
 /* -------------------- */
@@ -17,8 +17,6 @@ import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { es_ES, provideNzI18n } from 'ng-zorro-antd/i18n';
 import { provideNzConfig } from 'ng-zorro-antd/core/config';
 import { nzConfig } from './configs/nz.config';
-// import { NzMessageModule } from 'ng-zorro-antd/message';
-// import { NzModalModule } from 'ng-zorro-antd/modal';
 /* -------------------- */
 import { NgxWebstorageModule } from 'ngx-webstorage';
 import { provideEnvironmentNgxMask } from 'ngx-mask';
@@ -27,6 +25,7 @@ import { GoogleLoginProvider, SocialAuthServiceConfig } from '@abacritt/angularx
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    { provide: APP_BASE_HREF, useValue: '/' },
     { provide: LOCALE_ID, useValue: 'es' },
     provideRouter(routes, withComponentInputBinding()),
     // provideClientHydration(
@@ -45,8 +44,6 @@ export const appConfig: ApplicationConfig = {
     ),
     provideNzI18n(es_ES),
     provideNzConfig(nzConfig),
-    // importProvidersFrom(NzMessageModule),
-    // importProvidersFrom(NzModalModule),
     importProvidersFrom(NgxWebstorageModule.forRoot({ prefix: 'app', separator: '.', caseSensitive: true })),
     provideEnvironmentNgxMask({ validation: true, thousandSeparator: '.' }),
     {

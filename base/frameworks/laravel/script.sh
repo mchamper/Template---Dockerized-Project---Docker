@@ -12,6 +12,7 @@ bash base/bin/docker/run.sh ${SERVICE} "
     spatie/laravel-medialibrary:^10.0.0 \
     spatie/laravel-permission \
     laravel/telescope \
+    orangehill/iseed \
     google/apiclient;
 
   php artisan vendor:publish --provider=\"MarvinLabs\DiscordLogger\ServiceProvider\"

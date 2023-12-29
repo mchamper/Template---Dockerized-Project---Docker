@@ -1,5 +1,5 @@
 <ng-container *ngIf="{
-  more: form.extraGroup.get('more')?.value,
+  more: form.getValue('utils.moreFilters'),
 } as vm">
   <app-form [form]="form">
     <ng-content />
@@ -14,15 +14,15 @@
     }
 
     <div class="d-flex align-items-center mt-3">
-      <a href="javascript:;" class="text-muted" (click)="form.reset(true)">
+      <a href="javascript:;" class="text-muted" (click)="form.resetOnly('main', true)">
         <span nz-icon nzType="clear" nzTheme="outline"></span> Limpiar filtros
       </a>
 
       @if (moreTpl) {
         <span class="mx-2">|</span>
-        <!-- <nz-label nz-checkbox [formControl]="src.moreFiltersControl">Mostrar filtros avanzados</nz-label> -->
+        <!-- <nz-label nz-checkbox [formControl]="form.getControl('utils.moreFilters')">Mostrar filtros avanzados</nz-label> -->
 
-        <a href="javascript:;" class="link-primary" (click)="form.extraGroup.get('more')!.setValue(!vm.more)">
+        <a href="javascript:;" class="link-primary" (click)="form.getControl('utils.moreFilters').setValue(!vm.more)">
           {{ vm.more ? 'Ocultar' : 'Mostrar' }} filtros avanzados
           <span nz-icon [nzType]="vm.more ? 'up' : 'down'" nzTheme="outline"></span>
         </a>

@@ -100,6 +100,11 @@ export class Request<Body = any> {
   /* -------------------- */
 
   send = (...params: any): Observable<THttpResponse> => {
+    if (!this._options.send) {
+      logger(`Request has not "send" configured.`);
+      return of();
+    }
+
     if (!this._options.cancelable && this.isLoading()) {
       logger(`Request is not cancelable and it's loading.`);
       return of();
@@ -145,7 +150,7 @@ export class Request<Body = any> {
   };
 
   run = (...params: any) => {
-    return this.send(params).subscribe();
+    return this.send(...params).subscribe();
   }
 
   /* -------------------- */

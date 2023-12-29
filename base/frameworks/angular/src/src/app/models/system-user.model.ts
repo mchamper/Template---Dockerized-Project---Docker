@@ -28,6 +28,10 @@ export type TSystemUser = {
 
 export class SystemUser extends AbstractModel<TSystemUser, 'backend'> implements TAuthModel {
 
+  isActive(): boolean {
+    return this.data.status === 'Active';
+  }
+
   /* -------------------- */
 
   protected _parsers() {

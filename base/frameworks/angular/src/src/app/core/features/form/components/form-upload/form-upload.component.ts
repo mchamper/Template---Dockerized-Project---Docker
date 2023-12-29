@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, Input, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NzUploadFile, NzUploadListType, NzUploadModule, NzUploadType, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, distinctUntilChanged } from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { FormControlDirective } from '../../directives/form-control.directive';
@@ -81,7 +81,11 @@ export class FormUploadComponent implements OnInit {
     }
 
     onControlChange(this.control.value);
-    this.control.valueChanges.pipe(takeUntilDestroyed(this._destroyRef)).subscribe(value => onControlChange(value));
+
+    this.control.valueChanges.pipe(
+      takeUntilDestroyed(this._destroyRef),
+      distinctUntilChanged(),
+    ).subscribe(value => onControlChange(value));
   }
 
   /* -------------------- */

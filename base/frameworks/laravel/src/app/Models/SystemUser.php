@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Core\Bases\BaseModelTrait;
+use App\Core\Models\Traits\HasMedias;
 use App\Core\Models\Traits\HasRolesAndPermissions;
 use App\Enums\SocialDriverEnum;
 use App\Enums\SystemUserStatusEnum;
@@ -23,6 +24,7 @@ class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
     use HasApiTokens;
     use HasFactory;
     use HasRolesAndPermissions;
+    use HasMedias;
     use Notifiable;
     use SoftDeletes;
     use BaseModelTrait;

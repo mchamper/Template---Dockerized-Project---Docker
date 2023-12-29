@@ -1,4 +1,4 @@
-form[nz-form] {
+form[nz-form], .form-items {
   --default-input-height: var(--app-px-32);
 
   --label-font-size: var(--app-px-14);
@@ -92,6 +92,9 @@ form[nz-form] {
   }
 
   nz-input-group {
+    display: flex !important;
+    align-items: center;
+
     @include input-height-with-padding();
     font-size: var(--input-font-size);
 

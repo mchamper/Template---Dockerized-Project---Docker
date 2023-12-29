@@ -15,9 +15,9 @@ import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import { RequestComponent } from '../request/components/request/request.component';
 import { FormFooterComponent } from './components/form-footer/form-footer.component';
-import { FormSectionTitleComponent } from './components/form-section-title/form-section-title.component';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { FormFiltersComponent } from './components/form-filters/form-filters.component';
+import { BoxSectionTitleComponent } from '../../components/layouts/box-section-title/box-section-title.component';
 
 const modules = [
   FormsModule,
@@ -26,8 +26,8 @@ const modules = [
   FormComponent,
   FormFiltersComponent,
   FormFooterComponent,
-  FormSectionTitleComponent,
   FormUploadComponent,
+  BoxSectionTitleComponent,
   NzFormModule,
   NzInputModule,
   NzInputNumberModule,

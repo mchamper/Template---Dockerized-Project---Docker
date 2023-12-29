@@ -12,7 +12,7 @@ trait BaseEnum
 
         foreach (static::cases() as $case) {
             $values[] = [
-                'value' => $case->value ?? $case->name,
+                'name' => $case->value ?? $case->name,
                 'data' => $case->data(),
             ];
         }

@@ -51,8 +51,9 @@ class RESTful
         $this->_groupByResovler = new RESTfulGroupByResolver($params);
         $this->_appendsResolver = new RESTfulAppendsResolver($params);
 
-        if (!empty($params['limit'])) {
+        if (array_key_exists('limit', $params) && is_numeric($params['limit'])) {
             $this->_limit = (int) $params['limit'];
+            $this->_limit <= 0 ? $this->_limit = 9999999 : null;
         }
 
         if (!empty($params['offset'])) {

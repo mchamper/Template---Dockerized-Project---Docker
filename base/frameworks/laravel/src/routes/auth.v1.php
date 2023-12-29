@@ -1,6 +1,7 @@
 <?php
 
 use App\Core\Response\Response;
+use App\Enums\PermissionEnum;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () { return Response::jsonHello(); });
@@ -19,6 +20,7 @@ Route::middleware(['auth:app_client'])->group(function () {
 });
 
 Route::middleware(['auth:system_user'])->group(function () {
+    Route::post('/system-user/login-as', 'AuthSystemUserController@loginAs')->can(PermissionEnum::SystemUserLoginAs->name);
     Route::post('/system-user/logout', 'AuthSystemUserController@logout');
     Route::post('/system-user/me', 'AuthSystemUserController@me');
     Route::put('/system-user/update', 'AuthSystemUserController@update');

@@ -14,6 +14,7 @@ enum PermissionEnum
     case SystemUserCreate;
     case SystemUserUpdate;
     case SystemUserDelete;
+    case SystemUserLoginAs;
     case SystemUserActivate;
     case SystemUserDeactivate;
 
