@@ -4,7 +4,7 @@ import { isArray, xorWith } from 'lodash';
 import { NzSelectComponent } from 'ng-zorro-antd/select';
 import { NzInputDirective, NzInputGroupComponent } from 'ng-zorro-antd/input';
 import { NzDatePickerComponent, NzRangePickerComponent } from 'ng-zorro-antd/date-picker';
-import { Observable, startWith } from 'rxjs';
+import { Observable, debounceTime, startWith } from 'rxjs';
 import { NzFormControlComponent } from 'ng-zorro-antd/form';
 import { formValidatorMessages } from '../form.validators';
 import { NzInputNumberComponent } from 'ng-zorro-antd/input-number';
@@ -121,12 +121,12 @@ export class FormControlDirective {
 
     if (this._nzRadioControl) {
       const compareField = this._host.nativeElement.parentElement?.getAttribute('compareField') || 'id';
-      this._nzRadioControl.isChecked = compareFn(this._control.value, this._nzRadioControl.nzValue, compareField);
+      this._nzRadioControl.isChecked = compareFn(this._control?.value, this._nzRadioControl.nzValue, compareField);
     }
 
     if (this._nzCheckboxControl) {
       const controlName = this._host.nativeElement.parentElement?.getAttribute('controlName') || '';
-      const control = this._formGroup.control.get(controlName);
+      const control = this._formGroup?.control.get(controlName);
 
       if (control) {
         const compareField = this._host.nativeElement.parentElement?.getAttribute('compareField') || 'id';
@@ -244,7 +244,7 @@ export class FormControlDirective {
       return;
     }
 
-    const formControl = this.uploadControl || this._formGroup.form.get(this._control.path || '');
+    const formControl = this.uploadControl || this._formGroup.form.get(this._control.path || '') || this._control.control;
 
     if (formControl) {
       formControl.setErrors({ localError: this.getLocalErrorMessage() }, {

@@ -1,0 +1,18 @@
+@if (!isFirst) {
+  <nz-divider class="my-3" />
+}
+
+<div class="d-flex align-items-center lh-1">
+  <h3 class="fs-6 mb-0">
+    <span class="me-1 small" nz-icon [nzType]="icon" nzTheme="outline" style="top: -2px !important;"></span>
+    {{ title }}
+  </h3>
+
+  @if (extrasTpl) {
+    <div class="ms-auto app-fs-14">
+      <ng-container *ngTemplateOutlet="extrasTpl" />
+    </div>
+  }
+</div>
+
+<nz-divider class="my-3" />

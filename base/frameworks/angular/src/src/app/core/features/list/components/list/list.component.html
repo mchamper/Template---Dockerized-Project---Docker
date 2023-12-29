@@ -1,61 +1,81 @@
 <app-request [requests]="list.getRequests()">
-  <nz-table
+  <nz-table #nzTableC
     nzPaginationType="small"
     [nzScroll]="{ x: scrollSize }"
     [nzShowTotal]="listShowTotalC.tpl"
     [nzFrontPagination]="false"
     [nzData]="list.data()"
     [nzTotal]="list.total()"
-    [nzPageSize]="list.limit()"
+    [nzPageSize]="list.limit() || 9999999"
     [nzPageIndex]="list.currentPage()"
     [nzPageSizeOptions]="[10, 20, 50, 100]"
-    [nzShowSizeChanger]="true"
+    [nzShowSizeChanger]="!!list.limit()"
+    [nzShowPagination]="!!list.limit()"
     (nzQueryParams)="list.onNzQueryParamsChange($event)"
   >
     <app-list-show-total #listShowTotalC />
 
     <thead>
       <tr>
-        <ng-container *ngFor="let column of columns">
-          <ng-container *ngIf="column.sort; else noSortColumnTpl">
-            <th
-              [nzWidth]="column.width"
-              [nzColumnKey]="column.key"
-              [nzSortFn]="column.sort"
-              [nzAlign]="column.align || 'left'"
-              [nzRight]="column.right || false"
-            >
-              {{ column.name }}
-            </th>
-          </ng-container>
+        @if (dragable) {
+          <th
+            nzWidth="50px"
+            nzAlign="center"
+            [nzLeft]="true"
+          ></th>
+        }
 
-          <ng-template #noSortColumnTpl>
-            <th
-              [nzWidth]="column.width"
-              [nzColumnKey]="column.key"
-              [nzAlign]="column.align || 'left'"
-              [nzRight]="column.right || false"
-            >
-              {{ column.name }}
-            </th>
-          </ng-template>
-        </ng-container>
+        @for (column of columns; track column) {
+          @if (column.rowTpl) {
+            @if (column.sort) {
+              <th
+                [nzWidth]="column.width"
+                [nzColumnKey]="column.key"
+                [nzSortFn]="column.sort"
+                [nzAlign]="column.align || 'left'"
+                [nzRight]="column.right || false"
+              >
+                {{ column.name }}
+              </th>
+            } @else {
+              <th
+                [nzWidth]="column.width"
+                [nzColumnKey]="column.key"
+                [nzAlign]="column.align || 'left'"
+                [nzRight]="column.right || false"
+              >
+                {{ column.name }}
+              </th>
+            }
+          }
+        }
       </tr>
     </thead>
 
-    <tbody>
-      <ng-container *ngFor="let item of list.data(); index as i;">
-        <tr>
-          <ng-container *ngFor="let column of columns">
+    <tbody cdkDropList (cdkDropListDropped)="onDrop($event)">
+      @for (item of list.data(); track item; let itemIndex = $index) {
+        <tr cdkDrag [cdkDragDisabled]="!dragable">
+          @if (dragable) {
             <td
-              [nzAlign]="column.align || 'left'"
-              [nzRight]="column.right || false"
+              nzAlign="center"
+              [nzLeft]="true"
             >
-              <ng-container *ngTemplateOutlet="column.rowTpl; context: { $implicit: item }" />
+              <span cdkDragHandle class="text-primary" nz-icon nzType="holder" nzTheme="outline"></span>
             </td>
-          </ng-container>
+          }
+
+          @for (column of columns; track column) {
+            @if (column.rowTpl) {
+              <td
+                [nzAlign]="column.align || 'left'"
+                [nzRight]="column.right || false"
+              >
+                <ng-container *ngTemplateOutlet="column.rowTpl; context: { $implicit: item, index: itemIndex }" />
+              </td>
+            }
+          }
         </tr>
-      </ng-container>
+      }
     </tbody>
   </nz-table>
 </app-request>

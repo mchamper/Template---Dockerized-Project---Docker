@@ -1,0 +1,12 @@
+@import '../../../../theme/fonts/primary.scss';
+
+:host::ng-deep {
+  .ant-menu-title-content {
+    @include app-ff-primary-b();
+  }
+
+  .ant-menu-sub .ant-menu-title-content {
+    @include app-ff-primary-r();
+    font-size: var(--app-px-14);
+  }
+}

@@ -22,6 +22,7 @@ bash base/bin/docker/run.sh ${SERVICE} "
     angular-google-tag-manager \
     animate.css \
     simplebar \
+    ngxtension \
     swiper;
 
   ${MANAGER} install --save-dev \

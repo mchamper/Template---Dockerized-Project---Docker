@@ -59,6 +59,24 @@ export class AuthSystemUserHttpService {
     });
   }
 
+  loginAs = (input: any) => {
+    return this._httpClient.post<THttpResponse>(`${environment.backendUrl}/auth/v1/system-user/login-as`, input, {
+      context: new HttpContext()
+        .set(GUARD, 'systemUser')
+        .set(ON_SUCCESS, res => {
+          const systemUser = new SystemUser(res.body.data, { parser: 'backend' });
+          const token = res.body.token;
+          const tokenExpiresAt = res.body.token_expires_at;
+
+          this._authS.systemUser().addSession({
+            token,
+            tokenExpiresAt,
+            data: systemUser.getAuthData(),
+          });
+        })
+    });
+  }
+
   logout = () => {
     this._authS.systemUser().removeSession();
 

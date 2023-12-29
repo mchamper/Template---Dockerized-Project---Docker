@@ -2,15 +2,13 @@
   Usuarios
 
   <ng-template #extrasTpl>
-    <a class="btn btn-primary" routerLink="/usuarios/crear">
-      Nuevo usuario
-    </a>
+    <app-system-user-action-group layout="button" only="create" />
   </ng-template>
 </app-page-title>
 
 <div class="container-fluid">
   <div class="box mb-3">
-    <app-form-filters [form]="list.filters" [formGroup]="list.filters.group">
+    <app-form-filters [form]="list.filters" [formGroup]="list.filters.getGroup('main')">
       <div class="row">
         <nz-form-item class="col-60 col-lg-30 col-xl-15">
           <nz-form-control>
@@ -30,8 +28,8 @@
           <nz-form-control>
             <nz-form-label>Estados</nz-form-label>
             <nz-select formControlName="statuses" nzMode="multiple">
-              @for (status of list.filters.getCombo('system_user_statuses'); track status) {
-                <nz-option [nzValue]="status.value" [nzLabel]="status.data.label" />
+              @for (status of list.filters.getCombo('system_user_statuses'); track status.name) {
+                <nz-option [nzValue]="status.name" [nzLabel]="status.data.label" />
               }
             </nz-select>
           </nz-form-control>
@@ -61,76 +59,6 @@
   </div>
 
   <div class="box">
-    <app-list [list]="list" [columns]="[
-      { width: '70px', name: '#', key: 'id', sort: true, rowTpl: rowIdTpl },
-      { width: 'auto', name: 'Nombre', key: 'first_name', sort: true, rowTpl: rowNameTpl },
-      { width: '200px', name: 'Estado', key: 'status', sort: true, rowTpl: rowStatusTpl },
-      { width: '200px', name: 'Creado', key: 'created_at', sort: true, rowTpl: rowCreatedAtTpl },
-      { width: '140px', name: '', align: 'center', right: '0', rowTpl: rowActionsTpl },
-    ]">
-      <ng-template #rowIdTpl let-item>
-        {{ item.data.id }}
-      </ng-template>
-
-      <ng-template #rowNameTpl let-item>
-        {{ item.data.fullName }}
-
-        @if (item.data.emailVerifiedAt) {
-          <span class="ms-1" nz-icon nzType="check-circle" nzTheme="twotone" nzTwotoneColor="#52c41a"
-            nz-tooltip nzTooltipTitle="Dirección de correo verificada"
-          ></span>
-        }
-
-        <br>
-        <small class="text-muted" nz-typography nzCopyable [nzCopyText]="item.data.email">
-          {{ item.data.email }}
-        </small>
-      </ng-template>
-
-      <ng-template #rowStatusTpl let-item>
-        <nz-tag [nzColor]="item.data.statusEnum.color">
-          {{ item.data.statusEnum.label }}
-        </nz-tag>
-      </ng-template>
-
-      <ng-template #rowCreatedAtTpl let-item>
-        {{ item.data.createdAt.toString() | date:'longDate' }}<br>
-        <small class="text-muted">{{ item.data.createdAt.toString() | date:'HH:mm:ss' }}</small>
-      </ng-template>
-
-      <ng-template #rowActionsTpl let-item>
-
-      </ng-template>
-
-      <!-- <ng-template #rowPermissionsCountTpl let-item>
-        {{ item.all_system_user_permissions_count === item.permissions_count ? 'Todos' : item.permissions_count + ' de ' + item.all_system_user_permissions_count }}
-        <app-role-actions [role]="item" layout="icon" only="sync-permissions" (onSuccess$)="list.refresh()" />
-      </ng-template>
-
-      <ng-template #rowUsersCountTpl let-item>
-        {{ item.users_count }}
-        <app-role-actions [role]="item" layout="icon" only="sync-models" (onSuccess$)="list.refresh()" />
-      </ng-template>
-
-      <ng-template #rowCreatedAtTpl let-item>
-        {{ (item.created_at | date:'longDate') || '&nbsp;' }}<br>
-        <small class="text-muted">{{ (item.created_at | date:'HH:mm:ss') || '&nbsp;' }}</small>
-      </ng-template>
-
-      <ng-template #rowActionsTpl let-item>
-        <app-role-actions [role]="item" layout="icon" [except]="['sync-models', 'sync-permissions']" (onSuccess$)="list.refresh()" />
-      </ng-template> -->
-
-      <!-- <ng-template #filters [formGroup]="list.filters.group">
-        <div class="row">
-          <nz-form-item class="col-60 col-lg-30 col-xl-15">
-            <nz-form-control>
-              <nz-form-label>Nombre</nz-form-label>
-              <input nz-input formControlName="name">
-            </nz-form-control>
-          </nz-form-item>
-        </div>
-      </ng-template> -->
-    </app-list>
+    <app-system-user-list [list]="list" />
   </div>
 </div>

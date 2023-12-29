@@ -10,6 +10,12 @@
   [nzRemove]="remove"
   [nzMultiple]="multiple"
   [nzLimit]="max"
+  [nzDisabled]="control.disabled"
+  [nzShowUploadList]="{
+    showPreviewIcon: true,
+    showDownloadIcon: true,
+    showRemoveIcon: !control.disabled,
+  }"
 >
   <ng-container *ngIf="type === 'avatar'">
     <span class="upload-icon" nz-icon nzType="plus"></span>

@@ -14,6 +14,10 @@ class SystemUserPolicy
      */
     public function create(SystemUser $authSystemUser): Response
     {
+        if ($authSystemUser->hasRole(RoleEnum::Root->name)) {
+            return Response::allow();
+        }
+
         return $authSystemUser->hasRole(RoleEnum::Admin->name)
             ? Response::allow()
             : Response::deny('No puedes crear usuarios.');

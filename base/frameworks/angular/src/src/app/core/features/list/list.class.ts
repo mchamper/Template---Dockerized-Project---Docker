@@ -1,20 +1,20 @@
-import { Injector, ProviderToken, computed, inject, signal } from "@angular/core";
-import { FormControl } from "@angular/forms";
+import { DestroyRef, EventEmitter, Injector, ProviderToken, computed, inject, signal } from "@angular/core";
+import { FormBuilder, FormGroup } from "@angular/forms";
 import { Router } from "@angular/router";
 import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
-import { difference, get, xor } from "lodash";
+import { difference, get, isUndefined, xor } from "lodash";
 import { NzTableQueryParams } from "ng-zorro-antd/table";
-import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, skip } from "rxjs";
+import { debounceTime, distinctUntilChanged, filter, skip, startWith } from "rxjs";
 import { Request } from "../request/request.class";
 import { Form } from "../form/form.class";
 import { logger } from "../../utils/helpers/logger.helper";
-import { base64Decode, base64Encode } from "../../utils/helpers/hash.helper";
+import { base64Decode, base64Encode, md5 } from "../../utils/helpers/hash.helper";
 import { RouteService } from "../../services/route.service";
-import { ListChangeEnum } from "./enums/list-change.enum";
 import { scrollTo } from "../../utils/helpers/scroll.helper";
 
 export class List<Item = any> {
 
+  private _fb = this._inject(FormBuilder);
   private _router = this._inject(Router);
   private _routeS = this._inject(RouteService);
 
@@ -22,7 +22,7 @@ export class List<Item = any> {
   currentPage = signal(1);
   lastPage = signal(1);
   total = signal(0);
-  limit = signal(10);
+  limit = signal(!isUndefined(this._options.limit) ? this._options.limit : 10);
   sort = signal('');
   selected = signal<any[]>([]);
   extras = signal<any>(null);
@@ -31,13 +31,9 @@ export class List<Item = any> {
   actionRequest = new Request({ injector: this._options.injector });
   filters = new Form(undefined, { injector: this._options.injector });
 
-  change$ = new BehaviorSubject<ListChangeEnum>(ListChangeEnum.UNDEFINED);
-
-  urlVersion = 0;
-  queryParamHash = signal(this._routeS.current.queryParams()[this._getQueryParamName()] || '');
-  queryParams = computed(() => base64Decode(this.queryParamHash()));
-  lastQueryParamHash = signal('');
-  lastQueryParams = computed(() => base64Decode(this.lastQueryParamHash()));
+  change$ = new EventEmitter<{ name?: string, mustSubmit?: boolean } | undefined>();
+  queryParamHash = computed(() => this._routeS.current.queryParams()[this._getQueryParamName()] || '');
+  queryParams = computed(() => this.queryParamHash() ? base64Decode(this.queryParamHash()) : null);
 
   constructor(
     private _options: {
@@ -45,6 +41,8 @@ export class List<Item = any> {
       persistOnUrl?: boolean,
       scrollToTop?: boolean,
       fieldsToCheckOnSelect?: string[],
+      limit?: number,
+      data?: Item[],
       request?: Request['_options'],
       filters?: Form,
       injector?: Injector,
@@ -56,13 +54,21 @@ export class List<Item = any> {
       scrollToTop: get(this._options, 'scrollToTop', true),
     };
 
-    this._createRequests();
-
     if (this._options.filters) {
+      if (!this._options.filters.group.get('main') || !(this._options.filters.group.get('main') instanceof FormGroup)) {
+        throw('The filters form MUST have a main group named "main".');
+      }
+
       this.filters = this._options.filters;
+
+      this.filters.group.addControl('utils', this._fb.group({
+        moreFilters: [false],
+      }));
+
+      this.filters.set();
     }
 
-    this.filters.extraGroup.addControl('more', new FormControl(false));
+    this._createRequests();
 
     this._init();
   }
@@ -83,7 +89,9 @@ export class List<Item = any> {
           }
         },
         success: (httpRes) => {
-          this.set(this.request.body());
+          if (this._options.request!.watch) {
+            this.set(this.request.body());
+          }
 
           if (this._options.request!.success) {
             this._options.request!.success(httpRes);
@@ -99,83 +107,74 @@ export class List<Item = any> {
   /* -------------------- */
 
   private _getQueryParamName() {
-    return this._options.name ? this._options.name : `list`;
+    return this._options.name ? this._options.name : `listParams`;
   }
 
   private _persistOnUrl(options?: { replaceUrl?: boolean }): void {
-    logger('List persisting on url.');
-
     const newQueryParamHash = base64Encode({
       page: this.currentPage(),
       limit: this.limit(),
       sort: this.sort(),
       filters: this.filters.group.value,
-      moreFilters: this.filters.extraGroup.get('more')!.value,
     });
 
-    this.lastQueryParamHash.set(this.queryParamHash());
-    this.queryParamHash.set(newQueryParamHash);
+    if (this.queryParamHash() === newQueryParamHash) {
+      return;
+    }
+
+    logger('List persisting on url.');
 
     this._router.navigate([], {
-      queryParams: { [this._getQueryParamName()]: this.queryParamHash() },
-      replaceUrl: true,
+      queryParams: { [this._getQueryParamName()]: newQueryParamHash },
+      replaceUrl: options?.replaceUrl,
     });
-  }
-
-  private _setValuesFromUrl() {
-    if (this.queryParamHash()) {
-      this.currentPage.set(this.queryParams()['page']);
-      this.limit.set(this.queryParams()['limit']);
-      this.sort.set(this.queryParams()['sort']);
-      this.filters.group.reset(this.queryParams()['filters'], { emitEvent: true });
-      this.filters.extraGroup.get('more')!.setValue(this.queryParams()['moreFilters'], { emitEvent: true });
-    }
   }
 
   /* -------------------- */
 
   private _init() {
-    const skipValue = this.queryParamHash() ? 1 : 0;
-
-    toObservable(this.currentPage).pipe(
-      takeUntilDestroyed(),
+    toObservable(this.currentPage, { injector: this._inject(Injector) }).pipe(
+      takeUntilDestroyed(this._inject(DestroyRef)),
       skip(1),
     ).subscribe(() => {
-      this.change$.next(ListChangeEnum.PAGE);
+      this.change$.emit({ name: 'PAGE', mustSubmit: true });
     });
 
-    toObservable(this.limit).pipe(
-      takeUntilDestroyed(),
+    toObservable(this.limit, { injector: this._inject(Injector) }).pipe(
+      takeUntilDestroyed(this._inject(DestroyRef)),
       skip(1),
     ).subscribe(() => {
-      this.change$.next(ListChangeEnum.LIMIT);
+      this.change$.emit({ name: 'LIMIT', mustSubmit: true });
     });
 
-    toObservable(this.sort).pipe(
-      takeUntilDestroyed(),
+    toObservable(this.sort, { injector: this._inject(Injector) }).pipe(
+      takeUntilDestroyed(this._inject(DestroyRef)),
       skip(1),
     ).subscribe(() => {
-      this.change$.next(ListChangeEnum.SORT);
+      this.change$.emit({ name: 'SORT', mustSubmit: true });
     });
 
-    this.filters.group.valueChanges.pipe(
-      takeUntilDestroyed(),
+    this.filters.getGroup('main')?.valueChanges.pipe(
+      takeUntilDestroyed(this._inject(DestroyRef)),
+      startWith(this.filters.getValue('main')),
       debounceTime(300),
-      distinctUntilChanged(),
+      distinctUntilChanged((previous, current) => md5(previous) === md5(current)),
       filter(() => this.filters.group.valid),
-      skip(skipValue),
+      skip(1),
     ).subscribe(() => {
       this.currentPage.set(1);
-      this.change$.next(ListChangeEnum.FILTERS);
+      this.change$.emit({ name: 'FILTERS', mustSubmit: true });
     });
 
-    this.filters.extraGroup.get('more')!.valueChanges.pipe(
-      takeUntilDestroyed(),
+    this.filters.getGroup('utils')?.valueChanges.pipe(
+      takeUntilDestroyed(this._inject(DestroyRef)),
+      startWith(this.filters.getValue('utils')),
       debounceTime(300),
-      distinctUntilChanged(),
-      skip(skipValue)
+      distinctUntilChanged((previous, current) => md5(previous) === md5(current)),
+      filter(() => this.filters.group.valid),
+      skip(1),
     ).subscribe(() => {
-      this.change$.next(ListChangeEnum.MORE_FILTERS);
+      this.change$.emit({ name: 'UTILS', mustSubmit: false });
     });
 
     this._options.persistOnUrl
@@ -185,33 +184,48 @@ export class List<Item = any> {
 
   private _initWithPersistOnUrl() {
     this.change$.pipe(
-      takeUntilDestroyed(),
-      skip(1),
+      takeUntilDestroyed(this._inject(DestroyRef)),
     ).subscribe(change => {
-      logger(`List "${change}" change received.`);
+      logger(`List change received from "${change?.name}". Must submit?`, !!change?.mustSubmit);
 
-      if (![ListChangeEnum.MORE_FILTERS].includes(this.change$.value)) {
+      if (change?.mustSubmit) {
         this.submit();
       }
 
       this._persistOnUrl();
     });
 
-    !this.queryParamHash()
-      ? this._persistOnUrl({ replaceUrl: true })
-      : this._setValuesFromUrl();
+    const onQueryParamHashChange = () => {
+      if (this.queryParams()) {
+        this.currentPage.set(this.queryParams()['page']);
+        this.limit.set(this.queryParams()['limit']);
+        this.sort.set(this.queryParams()['sort']);
+        this.filters.group.reset(this.queryParams()['filters']);
+      } else {
+        this._persistOnUrl({ replaceUrl: true });
+      }
+    }
+
+    onQueryParamHashChange();
+
+    toObservable(this.queryParamHash).pipe(
+      takeUntilDestroyed(this._inject(DestroyRef)),
+      distinctUntilChanged(),
+    ).subscribe(hash => {
+      logger(`Query param hash change received. Has hash?`, !!hash);
+      onQueryParamHashChange();
+    });
 
     setTimeout(() => this.submit());
   }
 
   private _initDefault() {
     this.change$.pipe(
-      takeUntilDestroyed(),
-      skip(1),
+      takeUntilDestroyed(this._inject(DestroyRef)),
     ).subscribe(change => {
-      logger(`List "${change}" change received.`);
+      logger(`List change received from "${change?.name}". Must submit?`, !!change?.mustSubmit);
 
-      if (![ListChangeEnum.MORE_FILTERS].includes(this.change$.value)) {
+      if (change?.mustSubmit) {
         this.submit();
       }
     });
@@ -233,7 +247,7 @@ export class List<Item = any> {
       || sortValue !== this.sort()
     ) {
       this.currentPage.set(page);
-      this.limit.set(limit);
+      this.limit.set(limit === 9999999 ? this.limit() : limit);
       this.sort.set(sortValue);
     }
   }
@@ -252,6 +266,12 @@ export class List<Item = any> {
       this.request,
       this.actionRequest,
     ];
+  }
+
+  cancelRequests() {
+    for (const request of this.getRequests()) {
+      request.cancel();
+    }
   }
 
   /* -------------------- */

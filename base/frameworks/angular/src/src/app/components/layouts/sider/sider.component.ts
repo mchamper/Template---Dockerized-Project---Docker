@@ -5,6 +5,8 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { UiState } from '../../../states/ui.state';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
+import { RouteService } from '../../../core/services/route.service';
 
 @Component({
   selector: 'app-sider',
@@ -22,5 +24,7 @@ import { RouterModule } from '@angular/router';
 })
 export class SiderComponent {
 
+  authS = inject(AuthService);
+  routeS = inject(RouteService);
   uiState = inject(UiState);
 }

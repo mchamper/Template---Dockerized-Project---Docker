@@ -1,4 +1,17 @@
 <app-request [requests]="form.getRequests()">
+  @if (showDebug) {
+    <ng-container *ngIf="{
+      _: form.group.valueChanges | async
+    } as vm">
+      <div class="d-flex bg-light small mb-4">
+        <pre class="p-3 mb-0">Form: {{ form.group.getRawValue() | json }}</pre>
+        <pre class="p-3 mb-0">State (current): {{ form.state.current() | json }}</pre>
+        <pre class="p-3 mb-0">State (init): {{ form.state.init() | json }}</pre>
+        <pre class="p-3 mb-0">State (saved): {{ form.autoSaveState.value() | json }}</pre>
+      </div>
+    </ng-container>
+  }
+
   <form [ngClass]="'form-' + type" [class.floating-label]="floatingLabel" nz-form nzLayout="vertical">
     <ng-content />
   </form>

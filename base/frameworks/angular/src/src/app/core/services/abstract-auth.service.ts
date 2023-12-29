@@ -2,7 +2,6 @@ import { Injectable, Signal, WritableSignal, computed, effect, inject, signal } 
 import { AppService } from './app.service';
 import { StorageService } from './storage.service';
 import { AbstractModel } from '../models/abstract.model';
-import { isUndefined } from 'lodash';
 import moment, { Moment } from 'moment';
 
 export type TAuthGuardName = keyof AbstractAuthService['_guards'];
@@ -36,9 +35,11 @@ type TAuthGuard<DataModel = any> = {
   sessions: WritableSignal<TAuthGuardSession<DataModel>[]>,
   activeSession: Signal<TAuthGuardSession<DataModel> | undefined>,
   activeSessionIndex: Signal<number>,
-  addSession: (value: TAuthGuardRawSession) => void,
+  addSession: (value: TAuthGuardRawSession, mustReload?: boolean) => void,
   updateSession: (value: Partial<TAuthGuardRawSession>) => void,
-  removeSession: (index?: number) => void,
+  removeSession: (mustReload?: boolean) => void,
+  removeSessionAt: (index: number, mustReload?: boolean) => void,
+  removeAllSessions: (mustReload?: boolean) => void,
   selectSession: (index: number, mustReload?: boolean) => void,
 };
 
@@ -104,7 +105,7 @@ export abstract class AbstractAuthService {
     const activeSession = computed(() => sessions().find(session => session.isActive));
     const activeSessionIndex = computed(() => sessions().findIndex(session => session.isActive));
 
-    const addSession = (value: TAuthGuardRawSession) => {
+    const addSession = (value: TAuthGuardRawSession, mustReload: boolean = false) => {
       sessions.update(sessions => {
         return [
           ...sessions,
@@ -112,7 +113,7 @@ export abstract class AbstractAuthService {
         ];
       });
 
-      selectSession(sessions().length - 1, false);
+      selectSession(sessions().length - 1, mustReload);
     };
 
     const updateSession = (value: Partial<TAuthGuardRawSession>) => {
@@ -134,16 +135,28 @@ export abstract class AbstractAuthService {
       });
     };
 
-    const removeSession = (index?: number) => {
-      if (isUndefined(index)) {
-        index = activeSessionIndex();
-      }
+    const removeSession = (mustReload: boolean = true) => {
+      sessions.update(sessions => {
+        return sessions.filter((session, sessionIndex) => sessionIndex !== activeSessionIndex());
+      });
 
+      selectSession(-1, mustReload);
+    };
+
+    const removeSessionAt = (index: number, mustReload: boolean = true) => {
       sessions.update(sessions => {
         return sessions.filter((session, sessionIndex) => sessionIndex !== index);
       });
 
-      selectSession(-1);
+      selectSession(-1, mustReload);
+    };
+
+    const removeAllSessions = (mustReload: boolean = true) => {
+      sessions.update(sessions => {
+        return [];
+      });
+
+      selectSession(-1, mustReload);
     };
 
     const selectSession = (index: number, mustReload: boolean = true) => {
@@ -182,6 +195,8 @@ export abstract class AbstractAuthService {
       addSession,
       updateSession,
       removeSession,
+      removeSessionAt,
+      removeAllSessions,
       selectSession,
     };
   };
@@ -190,11 +205,11 @@ export abstract class AbstractAuthService {
     const tokenHasExpired = () => !!rawSession.tokenExpiresAt && rawSession.tokenExpiresAt! < moment();
     const isVerified = () => !!rawSession.data?.isVerified;
 
-    const hasRole = (roles: string[], matchAll: boolean = true): boolean => {
+    const hasRole = (roles: string[], matchAll: boolean = false): boolean => {
       return roles[matchAll ? 'every' : 'some'](role => rawSession.data?.roles?.includes(role));
     };
 
-    const can = (permissions: string[], matchAll: boolean = true): boolean => {
+    const can = (permissions: string[], matchAll: boolean = false): boolean => {
       return permissions[matchAll ? 'every' : 'some'](permission => rawSession.data?.permissions?.includes(permission));
     };
 

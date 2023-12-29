@@ -3,35 +3,28 @@
     nz-tooltip
     nzTooltipPlacement="right"
     [nzTooltipTitle]="!uiState.sidebar.isVisible.value() ? 'Dashboard' : ''"
+    [class.ant-menu-item-selected]="routeS.urlIs('/')"
     routerLink="/"
-    nzMatchRouter
-    nzMatchRouterExact
   >
     <span nz-icon nzType="dashboard"></span>
     <span>Dashboard</span>
   </li>
 
-  <li nz-menu-item
-    nz-tooltip
-    nzTooltipPlacement="right"
-    [nzTooltipTitle]="!uiState.sidebar.isVisible.value() ? 'Usuarios' : ''"
-    routerLink="/usuarios"
-    nzMatchRouter
-  >
-    <span nz-icon nzType="user"></span>
-    <span>Usuarios</span>
-  </li>
-
-  <li nz-menu-item
-    nz-tooltip
-    nzTooltipPlacement="right"
-    [nzTooltipTitle]="!uiState.sidebar.isVisible.value() ? 'Not found' : ''"
-    routerLink="/qwert"
-    nzMatchRouter
-  >
-    <span nz-icon nzType="info-circle"></span>
-    <span>Not found</span>
-  </li>
+  @if (this.authS.systemUser().activeSession()?.can(['SystemUserGet', 'SystemUserCreate'])) {
+    <li nz-submenu nzTitle="Usuarios" nzIcon="user"
+      [class.ant-menu-item-active]="routeS.urlStartsWith('/usuarios')"
+      [nzOpen]="routeS.urlStartsWith('/usuarios')"
+    >
+      <ul>
+        @if (this.authS.systemUser().activeSession()?.can(['SystemUserGet'])) {
+          <li [class.ant-menu-item-selected]="routeS.urlIs('/usuarios')" nz-menu-item routerLink="/usuarios">Listado de usuarios</li>
+        }
+        @if (this.authS.systemUser().activeSession()?.can(['SystemUserCreate'])) {
+          <li [class.ant-menu-item-selected]="routeS.urlIs('/usuarios/crear')" nz-menu-item routerLink="/usuarios/crear">Nuevo usuario</li>
+        }
+      </ul>
+    </li>
+  }
 
   <!-- <li nz-submenu nzTitle="Navigation Two" nzIcon="appstore">
     <ul>

@@ -1,0 +1,76 @@
+<ng-template #contentTpl>
+  <ng-content />
+</ng-template>
+
+<ng-template #alertMessageTpl>
+  Escriba la palabra <strong><em>{{ confirmText }}</em></strong> para continuar.
+</ng-template>
+
+<!-- -------------------- -->
+
+@switch (layout) {
+  @case ('modal') {
+    <span (click)="modal.open()">
+      <ng-container *ngTemplateOutlet="contentTpl" />
+    </span>
+
+    <nz-modal
+      (nzOnCancel)="modal.close()"
+      [nzVisible]="modal.isVisible()"
+      [nzTitle]="modalTitleTpl"
+      [nzContent]="modalContentTpl"
+      [nzFooter]="null"
+      [nzCentered]="false"
+      [nzWidth]="modal.width"
+    >
+      <ng-template #modalTitleTpl>
+        {{ modalTitle }}
+      </ng-template>
+
+      <ng-template #modalContentTpl>
+        <app-form [form]="form" [formGroup]="form.group">
+          <nz-alert class="mb-3" nzBanner nzType="info" [nzMessage]="alertMessageTpl" />
+
+          <div class="row">
+            <nz-form-item class="col">
+              <nz-form-control>
+                <input nz-input formControlName="confirmText">
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <app-form-footer [submitText]="submitText" submitPlacement="right" withDivider [disabled]="!canDelete()" />
+        </app-form>
+      </ng-template>
+    </nz-modal>
+  }
+
+  @case ('popover') {
+    <span
+      nz-popover
+      nzPopoverTrigger="click"
+      [nzPopoverContent]="popoverTpl"
+      (nzPopoverVisibleChange)="$event === true ? onInit() : null"
+    >
+      <ng-container *ngTemplateOutlet="contentTpl" />
+
+      <ng-template #popoverTpl>
+        <app-form [form]="form" [formGroup]="form.group">
+          <nz-alert class="mb-2" nzBanner nzType="info" [nzMessage]="alertMessageTpl" />
+
+          <div class="row gx-2 align-items-center">
+            <nz-form-item class="col mb-0">
+              <nz-form-control>
+                <input nz-input formControlName="confirmText">
+              </nz-form-control>
+            </nz-form-item>
+
+            <div class="col-auto">
+              <app-form-footer [submitText]="submitText" [disabled]="!canDelete()" />
+            </div>
+          </div>
+        </app-form>
+      </ng-template>
+    </span>
+  }
+}

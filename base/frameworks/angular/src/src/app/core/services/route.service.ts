@@ -1,5 +1,7 @@
 import { Injectable, Signal, WritableSignal, computed, inject, signal } from '@angular/core';
 import { Router, NavigationStart, NavigationEnd, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, Scroll, ActivatedRoute, Params } from '@angular/router';
+import { injectQueryParams } from 'ngxtension/inject-query-params';
+import { injectParams } from 'ngxtension/inject-params';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { TRouteData } from '../types/route-data.type';
@@ -16,15 +18,15 @@ export class RouteService {
     url: WritableSignal<string>,
     snapshot: WritableSignal<ActivatedRouteSnapshot>,
     state: WritableSignal<{ [key: string]: any } | undefined>,
-    queryParams: WritableSignal<Params>,
-    params: WritableSignal<Params>,
+    queryParams: Signal<Params>,
+    params: Signal<Params>,
     data: Signal<TRouteData>,
   } = {
     url: signal(''),
     snapshot: signal(this._getSnapshot()),
     state: signal(this._router.getCurrentNavigation()?.extras.state),
-    queryParams: signal(this._route.snapshot.queryParams),
-    params: signal(this._route.snapshot.params),
+    queryParams: injectQueryParams(),
+    params: injectParams(),
     data: computed(() => this.current.snapshot().data as TRouteData),
   };
 
@@ -33,17 +35,9 @@ export class RouteService {
       this.current.url.set(value.url);
     });
 
-    this.onActivationEnd$().subscribe(value => {
+    this.onActivationStart$().subscribe(value => {
       this.current.snapshot.set(this._getSnapshot(value));
       this.current.state.set(this._router.getCurrentNavigation()?.extras.state);
-    });
-
-    this._route.queryParams.subscribe(value => {
-      this.current.queryParams.set(value);
-    });
-
-    this._route.params.subscribe(value => {
-      this.current.params.set(value);
     });
   }
 

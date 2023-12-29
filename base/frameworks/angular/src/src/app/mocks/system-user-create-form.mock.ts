@@ -6,4 +6,5 @@ export const systemUserCreateFormMock = () => simpleMockFactory({
   last_name: 'User',
   email: `${moment().unix()}@example.com`,
   password_input_type: 'random',
+  require_email_verification: false,
 });

@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, Validators } from '@angular/forms';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { GoogleSigninButtonModule, SocialAuthService, SocialLoginModule } from '@abacritt/angularx-social-login';
@@ -28,10 +27,7 @@ import { filter, skip } from 'rxjs';
 })
 export class AuthPageLoginComponent {
 
-  private _router = inject(Router);
-  private _route = inject(ActivatedRoute);
   private _fb = inject(FormBuilder);
-
   private _socialAuthS = inject(SocialAuthService);
   private _authSystemUserHttpS = inject(AuthSystemUserHttpService);
 
@@ -47,29 +43,19 @@ export class AuthPageLoginComponent {
       remember_me: [false, [Validators.required]],
     }), {
       request: {
-        send: () => this._authSystemUserHttpS.login({ ...this.formLogin.group.value }),
-        success: () => {
-          // this._router.navigateByUrl(this._route.snapshot.queryParamMap.get('redirectTo') || '/', {
-          //   replaceUrl: true,
-          // });
-        },
+        send: () => this._authSystemUserHttpS.login(this.formLogin.group.value),
       },
       reset: true,
       mock: authLoginFormMock(),
     });
 
-    // /* -------------------- */
+    /* -------------------- */
 
     this.formLoginGoogle = new Form(this._fb.group({
       token: ['', [Validators.required]],
     }), {
       request: {
-        send: () => this._authSystemUserHttpS.loginGoogle({ ...this.formLoginGoogle.group.value }),
-        success: () => {
-          // this._router.navigateByUrl(this._route.snapshot.queryParamMap.get('redirectTo') || '/', {
-          //   replaceUrl: true,
-          // });
-        },
+        send: () => this._authSystemUserHttpS.loginGoogle(this.formLoginGoogle.group.value),
       },
       reset: true,
     });

@@ -1,3 +1,5 @@
+import { cloneDeep } from "lodash";
+
 let id = 0;
 
 export const newId = () => {
@@ -24,4 +26,14 @@ export const isAdBlockEnabled = (): Promise<boolean> => {
       .then(() => resolve(false))
       .catch(() => resolve(true));
   });
+}
+
+export const matchIndexes = (target: any[], source: any[], compareFn: (source: any, target: any) => boolean, defaultValue: any) => {
+  const values = [];
+
+  for (const [key, value] of source.entries()) {
+    values[key] = target.find((item: any) => compareFn(item, value)) || defaultValue;
+  }
+
+  return values;
 }

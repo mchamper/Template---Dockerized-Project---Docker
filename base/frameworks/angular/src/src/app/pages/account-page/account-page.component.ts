@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -39,19 +39,24 @@ export class AccountPageComponent {
       last_name: [this.authS.systemUser().activeSession()?.data?.lastName, [Validators.required]],
       email: [this.authS.systemUser().activeSession()?.data?.email, [Validators.required, Validators.email]],
       picture: [this.authS.systemUser().activeSession()?.data?.model?.data.picture],
-      password_current: [''],
-      password: [''],
-      password_confirmation: [''],
+      password_current: [null],
+      password: [null],
+      password_confirmation: [null],
     }), {
-      init: (form) => {
-        this.authS.systemUser().activeSession()?.hasRole(['Root']) || !this.authS.systemUser().activeSession()?.isVerified()
-          ? form.group.disable()
-          : form.group.get('email')?.disable();
-      },
       request: {
-        send: () => this._authSystemUserHttpS.update({ ...this.form.group.value }),
+        send: () => this._authSystemUserHttpS.update(this.form.group.value),
+        success: (res) => this.form.persist({ ...res.body.data, password_current: null, password: null, password_confirmation: null }),
         notify: true,
       }
     });
+
+    effect(() => {
+      if (this.authS.systemUser().activeSession()?.hasRole(['Root']) || !this.authS.systemUser().activeSession()?.isVerified()) {
+        this.form.group.disable();
+      } else {
+        this.form.group.enable();
+        this.form.getControl('email').disable();
+      }
+    }, { allowSignalWrites: true });
   }
 }

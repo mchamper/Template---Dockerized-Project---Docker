@@ -1,10 +1,10 @@
-import { Injector, ProviderToken, inject, signal } from "@angular/core";
+import { DestroyRef, Injector, ProviderToken, inject, signal } from "@angular/core";
 import { AbstractControl, FormArray, FormControl, FormGroup } from "@angular/forms";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { CombosHttpService } from "../../../services/http/combos-http.service";
 import { Request } from "../request/request.class";
 import { environment } from "../../../../environments/environment";
-import { debounceTime, distinctUntilChanged, skip } from "rxjs";
+import { debounceTime, distinctUntilChanged, skip, startWith } from "rxjs";
 import { cloneDeep, entries, isArray } from "lodash";
 import { logger } from "../../utils/helpers/logger.helper";
 import { StorageService } from "../../services/storage.service";
@@ -33,6 +33,11 @@ export class Form<Data = any> {
     },
   };
 
+  autoSaveState = {
+    key: signal(''),
+    value: signal<any>(null),
+  };
+
   request = new Request({ type: 'form', injector: this._options.injector });
   dataRequest = new Request<Data>({ injector: this._options.injector });
   combosRequest = new Request({ injector: this._options.injector });
@@ -47,18 +52,19 @@ export class Form<Data = any> {
   constructor(
     public group: FormGroup = new FormGroup({}),
     private _options: {
-      init?: (form: Form) => any,
+      init?: (form: Form, state: any) => any,
       subscriptions?: (form: Form) => any,
       arrays?: {
         [key: string]: {
           group: FormGroup,
-          onAdd?: (group: FormGroup, form: Form) => any,
+          onAdd?: (group: FormGroup, form: Form, state: any) => any,
           onMove?: (eachControl: FormControl, newIndex: number) => any,
         },
       },
       request?: Request['_options'],
       dataRequest?: Request['_options'],
       combos?: string | { [key: string]: any[] },
+      comboMap?: (combos: any) => any,
       reset?: boolean,
       persist?: boolean,
       autoSave?: boolean,
@@ -69,21 +75,28 @@ export class Form<Data = any> {
 
     this._options = {
       ...this._options,
+      autoSave: this._options.dataRequest ? false : this._options.autoSave,
     };
 
-    this._createRequests();
-
     this.state.set(!environment.production ? this._options?.mock : null);
-    this.reset(true);
+    this.reset(true, { emitEvent: false });
+
+    this._restoreAutoSave();
 
     this._init();
     this._subscriptions();
-
     this.state.set(this.group.getRawValue());
+
+    if (this._options.autoSave) {
+      this._init(true);
+    }
+
     this.group.markAsPristine();
     this.group.markAsUntouched();
 
-    this._initAutoSave();
+    this._startAutoSave();
+
+    this._createRequests();
   }
 
   private _inject<T = any>(token: ProviderToken<T>) {
@@ -97,6 +110,16 @@ export class Form<Data = any> {
       this.request = new Request({
         ...this._options.request,
         when: () => {
+          let customWhen = undefined;
+
+          if (this._options.request!.when) {
+            customWhen = this._options.request!.when();
+          }
+
+          if (typeof customWhen !== 'undefined') {
+            return customWhen;
+          }
+
           this.validate();
           logger(`Form valid status: ${this.group.valid}`);
 
@@ -132,6 +155,8 @@ export class Form<Data = any> {
         ...this._options.dataRequest,
         injector: this._options.injector,
       });
+
+      this.dataRequest.run();
     }
 
     if (this._options.combos) {
@@ -140,9 +165,13 @@ export class Form<Data = any> {
           send: () => this._combosHttpS.get(this._options.combos as string),
           success: (res) => {
             this.combos.update(value => {
+              const combos = this._options.comboMap
+                ? this._options.comboMap(res.body.combos)
+                : res.body.combos;
+
               return {
                 ...value,
-                ...res.body.combos,
+                ...combos,
               }
             });
           },
@@ -158,42 +187,49 @@ export class Form<Data = any> {
 
   /* -------------------- */
 
-  private _initAutoSave() {
-    const formKey = `form.${md5(this.state.init())}`;
+  private _restoreAutoSave() {
+    if (!this._options.autoSave) return;
 
-    if (this._options.autoSave) {
-      const autoSaveValueStored = this._storageS.get(formKey, { base64: true });
+    this.autoSaveState.key.set(`form.${md5(this.state.init())}`);
+    this.autoSaveState.value.set(this._storageS.get(this.autoSaveState.key(), { base64: true }));
+  }
 
-      if (autoSaveValueStored) {
-        this.group.setValue(autoSaveValueStored, { emitEvent: false });
+  private _startAutoSave() {
+    if (!this._options.autoSave) {
+      this._storageS.clear(this.autoSaveState.key());
+      return;
+    };
 
-        if (`form.${md5(autoSaveValueStored)}` !== formKey) {
-          this.group.markAsDirty();
-          this.group.markAsTouched();
-        }
+    if (this.autoSaveState.value()) {
+      this.group.setValue(this.autoSaveState.value());
+
+      if (md5(this.autoSaveState.value()) !== md5(this.state.init())) {
+        this.group.markAsDirty();
+        this.group.markAsTouched();
       }
-
-      this.group.valueChanges.pipe(
-        debounceTime(300),
-      ).subscribe(() => {
-        this._storageS.set(formKey, this.group.getRawValue(), { base64: true });
-      });
-    } else {
-      this._storageS.clear(formKey);
     }
+
+    this.group.valueChanges.pipe(
+      debounceTime(300),
+    ).subscribe(() => {
+      this.autoSaveState.value.set(this.group.getRawValue());
+      this._storageS.set(this.autoSaveState.key(), this.autoSaveState.value(), { base64: true });
+    });
   }
 
   /* -------------------- */
 
-  private _init() {
+  private _init(withAutoSave?: boolean) {
     if (this._options.init) {
-      this._options.init(this);
+      this._options.init(this, withAutoSave && this.autoSaveState.value()
+        ? this.autoSaveState.value()
+        : this.state.get());
     }
   }
 
   private _subscriptions() {
     this.group.valueChanges.pipe(
-      takeUntilDestroyed(),
+      takeUntilDestroyed(this._inject(DestroyRef)),
       debounceTime(301),
     ).subscribe(() => {
       this.isSettingData.set(false);
@@ -204,11 +240,16 @@ export class Form<Data = any> {
     }
   }
 
-  changes(key: string, skips: number = 0) {
-    return this.group.get(key)!.valueChanges.pipe(
-      takeUntilDestroyed(),
-      // debounceTime(0),
-      distinctUntilChanged(),
+  changes(control: FormControl | string, skips: number = 0) {
+    if (typeof control === 'string') {
+      control = this.group.get(control)! as FormControl;
+    }
+
+    return control!.valueChanges.pipe(
+      takeUntilDestroyed(this._inject(DestroyRef)),
+      // distinctUntilChanged(),
+      distinctUntilChanged((previous, current) => md5(previous) === md5(current)),
+      startWith(control.value),
       skip(skips),
     );
   }
@@ -228,7 +269,7 @@ export class Form<Data = any> {
     this.restore();
   }
 
-  set(value: any) {
+  set(value: any = {}) {
     this.isSettingData.set(true);
 
     this.state.set({
@@ -256,6 +297,11 @@ export class Form<Data = any> {
     this.group.reset(withInit ? this.state.init() : this.state.get(), options);
   }
 
+  resetOnly(groupKey: string, withInit?: boolean, options?: any): void {
+    const stateValue = (withInit ? this.state.init() : this.state.get())[groupKey];
+    this.getGroup(groupKey).reset(stateValue, options);
+  }
+
   /* -------------------- */
 
   getCombo(key: string): any[] {
@@ -279,7 +325,7 @@ export class Form<Data = any> {
     }
 
     control.valueChanges.pipe(
-      takeUntilDestroyed(),
+      takeUntilDestroyed(this._inject(DestroyRef)),
     ).subscribe(value => {
       const controlValue = value.map((tag: any) => {
         tag = typeof tag === 'string' ? { value: tag, name: tag } : tag;
@@ -308,6 +354,12 @@ export class Form<Data = any> {
       this.combosRequest,
       this.actionRequest,
     ];
+  }
+
+  cancelRequests() {
+    for (const request of this.getRequests()) {
+      request.cancel();
+    }
   }
 
   /* -------------------- */
@@ -346,8 +398,16 @@ export class Form<Data = any> {
     return this.asFA(this.group.get(key));
   }
 
-  getControls(): { name: string, control: FormControl }[] {
-    return entries(this.group.controls).map(item => { return { name: item[0], control: this.asFC(item[1]) } });
+  getControlsOf(control?: FormGroup | FormArray | string): { name: string, control: FormControl }[] {
+    if (typeof control === 'string') {
+      control = this.group.get(control) as FormGroup | FormArray;
+    }
+
+    if (!control) {
+      control = this.group;
+    }
+
+    return entries(control.controls).map(item => { return { name: item[0], control: this.asFC(item[1]) } });
   }
 
   /* -------------------- */
@@ -382,35 +442,37 @@ export class Form<Data = any> {
 
   /* -------------------- */
 
-  addArray(control: FormArray | string, groupArrayKey: string = ''): void {
+  addArray(control: FormArray | string, groupArrayName: string = ''): void {
     if (!this._options.arrays) {
       return;
     }
 
     if (typeof control === 'string') {
-      groupArrayKey = control;
-      control = this.group.get(groupArrayKey) as FormArray;
+      groupArrayName = control;
+      control = this.group.get(groupArrayName) as FormArray;
     }
 
-    const group = cloneDeep(this._options.arrays[groupArrayKey].group);
+    const group = cloneDeep(this._options.arrays[groupArrayName].group);
+
+    if (this._options.arrays[groupArrayName].onAdd) {
+      (this._options.arrays[groupArrayName].onAdd as Function)(group, this, this._options.autoSave && this.autoSaveState.value()
+        ? this.autoSaveState.value()
+        : this.state.get());
+    }
 
     control.push(group);
     control.markAsDirty();
-
-    if (this._options.arrays[groupArrayKey].onAdd) {
-      (this._options.arrays[groupArrayKey].onAdd as Function)(group, this);
-    }
   }
 
-  addArrays(control: FormArray | string, times: number, groupArrayKey: string = ''): void {
+  addArrays(control: FormArray | string, groupArrayName: string = '', times: number): void {
     for (let index = 0; index < times; index++) {
-      this.addArray(control, groupArrayKey);
+      this.addArray(control, groupArrayName);
     }
   }
 
-  setArrays(control: FormArray | string, times: number, groupArrayKey: string = ''): void {
+  setArrays(control: FormArray | string, groupArrayName: string = '', times: number): void {
     this.removeArray(control);
-    this.addArrays(control, times, groupArrayKey);
+    this.addArrays(control, groupArrayName, times);
   }
 
   removeArray(control: FormArray | string, index?: number): void {
@@ -429,14 +491,14 @@ export class Form<Data = any> {
     control.markAsDirty();
   }
 
-  moveArray(control: FormArray | string, index: number, value: 'left' | 'right' | number, groupArrayKey: string = ''): void {
+  moveArray(control: FormArray | string, index: number, value: 'left' | 'right' | number, groupArrayName: string = ''): void {
     if (!this._options.arrays) {
       return;
     }
 
     if (typeof control === 'string') {
-      groupArrayKey = control;
-      control = this.group.get(groupArrayKey) as FormArray;
+      groupArrayName = control;
+      control = this.group.get(groupArrayName) as FormArray;
     }
 
     let indexesToMove: number;
@@ -453,9 +515,9 @@ export class Form<Data = any> {
     control.markAsDirty();
     control.updateValueAndValidity();
 
-    if (this._options.arrays[groupArrayKey].onMove) {
+    if (this._options.arrays[groupArrayName].onMove) {
       for (let [index, value] of control.controls.entries()) {
-        (this._options.arrays[groupArrayKey].onMove as Function)(value, index);
+        (this._options.arrays[groupArrayName].onMove as Function)(value, index);
       }
     }
   }

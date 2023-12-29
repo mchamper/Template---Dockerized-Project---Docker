@@ -35,25 +35,29 @@ export class SystemUserCreatePageComponent {
 
   constructor() {
     this.form = new Form(this._fb.group({
-      first_name: ['', [Validators.required]],
-      last_name: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
+      first_name: [null, [Validators.required]],
+      last_name: [null, [Validators.required]],
+      email: [null, [Validators.required, Validators.email]],
       password_input_type: ['random', Validators.required],
-      password: ['', [Validators.required]],
-      password_confirmation: ['', [Validators.required]],
+      password: [null, [Validators.required]],
+      password_confirmation: [null, [Validators.required]],
+      require_email_verification: [false, [Validators.required]],
     }), {
       mock: systemUserCreateFormMock(),
       subscriptions: (form) => {
         form.changes('password_input_type').subscribe(value => {
           if (value === 'random') {
-            form.group.get('password')?.setValue('');
-            form.group.get('password')?.disable();
-            form.group.get('password_confirmation')?.setValue('');
-            form.group.get('password_confirmation')?.disable();
+            form.getControl('password')?.setValue('');
+            form.getControl('password')?.disable();
+            form.getControl('password_confirmation')?.setValue('');
+            form.getControl('password_confirmation')?.disable();
           } else {
-            form.group.get('password')?.enable();
-            form.group.get('password_confirmation')?.enable();
+            form.getControl('password')?.enable();
+            form.getControl('password_confirmation')?.enable();
           }
+
+          form.getControl('password').updateValueAndValidity();
+          form.getControl('password_confirmation').updateValueAndValidity();
         });
       },
       request: {
@@ -65,12 +69,21 @@ export class SystemUserCreatePageComponent {
               ? `
                 <p class="mb-2">El usuario se ha creado con éxito.</p>
                 <p class="mb-2">Se ha generado una contraseña aleatoria que se mostrará a continuación por única vez:<br><code>${escape(res.body.system_user_password)}</code></p>
-                <p class="mb-0">También se le ha enviado un email de verificación a la dirección de correo ingresada.</p>
+                ${
+                  this.form.getValue('require_email_verification')
+                    ? '<p class="mb-0">También se le ha enviado un email de verificación a la dirección de correo ingresada.</p>'
+                    : ''
+                }
               `
               : `
                 <p class="mb-2">El usuario se ha creado con éxito.</p>
-                <p class="mb-0">Se le ha enviado un email de verificación a la dirección de correo ingresada.</p>
-              `,
+                ${
+                  this.form.getValue('require_email_verification')
+                    ? '<p class="mb-0">Se le ha enviado un email de verificación a la dirección de correo ingresada.</p>'
+                    : ''
+                }
+              `
+              ,
             {
               nzDuration: 5000,
             }

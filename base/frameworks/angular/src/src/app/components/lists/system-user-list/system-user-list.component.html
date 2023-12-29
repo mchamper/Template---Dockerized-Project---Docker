@@ -1,0 +1,41 @@
+<app-list [list]="list" [columns]="[
+  { width: '70px', name: '#', key: 'id', sort: true, rowTpl: rowIdTpl },
+  { width: 'auto', name: 'Nombre', key: 'first_name', sort: true, rowTpl: rowNameTpl },
+  { width: '300px', name: 'Email', key: 'email', sort: true, rowTpl: rowEmailTpl },
+  { width: '180px', name: 'Estado', key: 'status', sort: true, rowTpl: rowStatusTpl },
+  { width: rowActionsWidth || '150px', name: '', align: 'center', right: '0', rowTpl: customRowActionsTpl || rowActionsTpl },
+]">
+  <ng-template #rowIdTpl let-item>
+    {{ item.data.id }}
+  </ng-template>
+
+  <ng-template #rowNameTpl let-item>
+    {{ item.data.fullName }}
+  </ng-template>
+
+  <ng-template #rowEmailTpl let-item>
+    <span class="text-muted" nz-typography nzCopyable [nzCopyText]="item.data.email">
+      {{ item.data.email }}
+    </span>
+
+    @if (item.data.emailVerifiedAt) {
+      <span class="ms-2 app-fs-16 text-success" nz-icon nzType="check-circle" nzTheme="outline"
+        nz-tooltip nzTooltipTitle="Dirección de correo verificada"
+      ></span>
+    } @else {
+      <span class="ms-2 app-fs-16 text-danger" nz-icon nzType="close-circle" nzTheme="outline"
+        nz-tooltip nzTooltipTitle="Dirección de correo NO verificada"
+      ></span>
+    }
+  </ng-template>
+
+  <ng-template #rowStatusTpl let-item>
+    <nz-tag [nzColor]="item.data.statusEnum.color">
+      {{ item.data.statusEnum.label }}
+    </nz-tag>
+  </ng-template>
+
+  <ng-template #rowActionsTpl let-item>
+    <app-system-user-action-group layout="icon" except="create" [systemUser]="item" [request]="list.actionRequest" (onSuccess$)="list.refresh()" />
+  </ng-template>
+</app-list>

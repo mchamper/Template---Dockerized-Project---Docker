@@ -1,0 +1,19 @@
+:host {
+  [cdkDragHandle] {
+    cursor: grab;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+}
+
+::ng-deep {
+  .cdk-drag-preview {
+    display: none !important;
+  }
+
+  .cdk-drag-placeholder {
+    opacity: 0.5;
+  }
+}

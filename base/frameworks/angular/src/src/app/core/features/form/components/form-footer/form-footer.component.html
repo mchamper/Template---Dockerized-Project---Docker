@@ -3,10 +3,10 @@
 } as vm">
   <div [class.sticky]="sticky">
     @if (withDivider || sticky) {
-      <nz-divider class="mb-0" />
+      <nz-divider class="mb-2" />
     }
 
-    <div class="row g-2 align-items-center mt-1">
+    <div class="row g-2 align-items-center">
       @if (withInfo) {
         <div class="col" [class.col-60]="submitPlacement === 'center'">
           @if (alertTpl) {
