@@ -2,6 +2,7 @@
 
 namespace App\Core\Response;
 
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,6 +27,10 @@ class Error
 
         if (!is_numeric($status) || $status < 200 || $status > 599) {
             $status = 500;
+        }
+
+        if (!app()->environment('local') && $e instanceof QueryException) {
+            $message = 'Database error.';
         }
 
         $error = [

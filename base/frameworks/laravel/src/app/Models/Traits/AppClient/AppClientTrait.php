@@ -2,8 +2,9 @@
 
 namespace App\Models\Traits\AppClient;
 
-use App\Commons\Response\ErrorEnum;
+
 use App\Enums\AppClientStatusEnum;
+use App\Enums\ErrorEnum;
 use Illuminate\Support\Str;
 
 trait AppClientTrait

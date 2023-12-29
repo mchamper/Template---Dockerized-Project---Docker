@@ -10,6 +10,7 @@ Route::middleware(['auth:app_client'])->group(function () {
 
 Route::middleware(['auth:app_client,system_user'])->group(function () {
     Route::get('/combos', 'CombosController@get');
+    Route::get('/search', 'SearchController@search');
     Route::get('/validate', 'ValidateController@validate');
 });
 

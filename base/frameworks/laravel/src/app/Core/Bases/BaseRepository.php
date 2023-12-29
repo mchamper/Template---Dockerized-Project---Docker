@@ -142,26 +142,45 @@ abstract class BaseRepository
                 $key = $config;
                 $repo = null;
                 $repoModel = null;
+                $mustDelete = false;
             } else {
                 $repo = $config[0];
                 $repoModel = $config[1];
+                $mustDelete = $config[2] ?? false;
             }
 
             if (!array_key_exists($key, $input)) {
                 continue;
             }
 
+            $idsForAttachAndDelete = [];
             $idsForAttach = [];
 
             foreach ($input[$key] as $value) {
                 if ($repo && $repoModel) {
-                    $idsForAttach[$repo::save($value, $repoModel::find($value['id'] ?? null))->id] = $value['pivot'] ?? [];
+                    $id = $repo::save($value, $repoModel::find($value['id'] ?? null))->id;
+                    $idsForAttach[$id] = $value['pivot'] ?? [];
+                    $idsForAttachAndDelete[] = $id;
                 } else {
-                    $idsForAttach[] = $value['id'];
+                    $id = $value['id'];
+                    $idsForAttach[] = $id;
+                    $idsForAttachAndDelete[] = $id;
                 }
             }
 
+            if ($mustDelete) {
+                $ids = $model->$key()->get()->pluck('id')->toArray();
+                $idsForDelete = array_diff($ids, $idsForAttachAndDelete);
+            }
+
             $model->$key()->sync($idsForAttach);
+            $model->load($key);
+
+            if ($mustDelete) {
+                foreach ($idsForDelete as $id) {
+                    $repoModel::findOrFail($id)->delete();
+                }
+            }
         }
     }
 
