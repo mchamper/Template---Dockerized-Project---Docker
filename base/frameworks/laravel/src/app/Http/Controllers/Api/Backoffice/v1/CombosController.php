@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Backoffice\v1;
 
 use App\Core\Response\Response;
+use App\Enums\ErrorEnum;
 use App\Enums\SystemUserStatusEnum;
 use App\Http\Controllers\Controller;
 use Exception;
@@ -37,7 +38,7 @@ class CombosController extends Controller
                     break;
                 }
 
-                default: throw new Exception('Invalid request concept.');
+                default: ErrorEnum::INVALID_REQUEST_CONCEPT->throw();
             }
         }
 

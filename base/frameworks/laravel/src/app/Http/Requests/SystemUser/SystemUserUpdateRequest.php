@@ -3,6 +3,7 @@
 namespace App\Http\Requests\SystemUser;
 
 use App\Core\Bases\BaseRequest;
+use Illuminate\Validation\Rules\Password;
 
 class SystemUserUpdateRequest extends BaseRequest
 {
@@ -16,7 +17,8 @@ class SystemUserUpdateRequest extends BaseRequest
         return [
             'first_name' => ['bail', 'required', 'string'],
             'last_name' => ['bail', 'required', 'string'],
-            'picture' => ['bail', 'nullable'],
+            'password' => ['bail', 'nullable', 'string', 'confirmed', Password::min(6)],
+            'password_current' => ['bail', 'nullable', 'current_password'],
         ];
     }
 }

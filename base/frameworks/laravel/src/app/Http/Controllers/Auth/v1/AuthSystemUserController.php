@@ -8,6 +8,7 @@ use App\Enums\SocialDriverEnum;
 use App\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SystemUser\AuthSystemUserUpdateRequest;
+use App\Http\Requests\SystemUser\SystemUserLoginAsRequest;
 use App\Http\Requests\SystemUser\SystemUserLoginGoogleRequest;
 use App\Http\Requests\SystemUser\SystemUserLoginRequest;
 use App\Http\Requests\SystemUser\SystemUserRegisterRequest;
@@ -105,7 +106,7 @@ class AuthSystemUserController extends Controller
         $socialUserRaw = $socialUser->getRaw();
 
         $input = [];
-        $systemUser = SystemUser::whereEmail($socialUser->getEmail())->whereSocialDriver(SocialDriverEnum::Google->value())->first();
+        $systemUser = SystemUser::whereEmail($socialUser->getEmail())->whereSocialDriver(SocialDriverEnum::Google->data())->first();
 
         if (!$systemUser) {
             $input['email'] = $socialUser->getEmail();
@@ -133,6 +134,33 @@ class AuthSystemUserController extends Controller
         $token = $systemUser->createToken(
             name: 'app_client|' . Auth::appClient()->id,
             expiresAt: $expiresAt,
+        );
+
+        DB::commit();
+
+        return Response::json([
+            'data' => $systemUser,
+            'token' => $token->plainTextToken,
+            'token_expires_at' => $expiresAt,
+        ]);
+    }
+
+    public function loginAs()
+    {
+        $input = request()->post();
+        $validated = Validator::make($input, SystemUserLoginAsRequest::rules())->validate();
+
+        $systemUser = SystemUser::findOrFail($validated['system_user_id']);
+
+        Auth::verifySystemUser($systemUser);
+
+        $expiresAt = Carbon::now()->addMinutes(30);
+
+        DB::beginTransaction();
+
+        $token = $systemUser->createToken(
+            name: Auth::systemUser()->currentAccessToken()->name,
+            expiresAt: Auth::systemUser()->currentAccessToken()->expires_at,
         );
 
         DB::commit();

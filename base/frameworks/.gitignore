@@ -50,12 +50,16 @@ laravel/src/**
 !laravel/src/app/Mail/**
 !laravel/src/app/Models/
 !laravel/src/app/Models/**
+!laravel/src/app/Policies/
+!laravel/src/app/Policies/**
 !laravel/src/app/Providers/
 !laravel/src/app/Providers/AppServiceProvider.php
 !laravel/src/app/Providers/RouteServiceProvider.php
 !laravel/src/app/Providers/TelescopeServiceProvider.php
 !laravel/src/app/Repositories/
 !laravel/src/app/Repositories/**
+!laravel/src/app/Services/
+!laravel/src/app/Services/**
 !laravel/src/config/
 !laravel/src/config/app.php
 !laravel/src/config/auth.php
