@@ -40,7 +40,7 @@ trait HasMedias
             foreach ($model->medias as $key => $type) {
                 match ($type) {
                     'single' => $model->appendAttributes[$key] = fn () => $model->getFirstMedia($key),
-                    'multi' => $model->appendAttributes[$key] = fn () => $model->getMedia($key),
+                    'multi' => $model->appendAttributes[$key] = fn () => $model->getMedia($key)->all(),
                 };
             }
         }
