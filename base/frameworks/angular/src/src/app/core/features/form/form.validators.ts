@@ -1,4 +1,4 @@
-import { FormControl } from "@angular/forms";
+import { AbstractControl, ValidationErrors } from "@angular/forms";
 
 export const formValidatorMessages: { [key: string]: string | ((...params: any) => string) } = {
   required: 'Este campo es obligatorio.',
@@ -17,19 +17,30 @@ export const formValidatorMessages: { [key: string]: string | ((...params: any) 
   },
   /* -------------------- */
   _email: 'Este campo debe ser un email válido.',
+  _arrayRequired: 'Este campo es obligatorio.',
 }
 
 /* -------------------- */
 
 export class FormValidators {
 
-  static email(control: FormControl<string>): { [key: string]: boolean } {
+  static email(control: AbstractControl): ValidationErrors | null {
     const regex = /(.+)@(.+)\.(.{2,})/;
 
     if (!!control.value && !regex.test(control.value)) {
       return { _email: true };
     }
 
-    return {};
+    return null;
+  }
+
+  /* -------------------- */
+
+  static arrayRequired(control: AbstractControl): ValidationErrors | null {
+    if (!control.value?.length) {
+      return { _arrayRequired: true };
+    }
+
+    return null;
   }
 };

@@ -110,20 +110,18 @@ export class Form<Data = any> {
       this.request = new Request({
         ...this._options.request,
         when: () => {
-          let customWhen = undefined;
+          const defaultWhen = () => {
+            this.validate();
+            logger(`Form valid status: ${this.group.valid}`);
+
+            return this.group.valid;
+          };
 
           if (this._options.request!.when) {
-            customWhen = this._options.request!.when();
+            return this._options.request!.when() && defaultWhen();
           }
 
-          if (typeof customWhen !== 'undefined') {
-            return customWhen;
-          }
-
-          this.validate();
-          logger(`Form valid status: ${this.group.valid}`);
-
-          return this.group.valid;
+          return defaultWhen();
         },
         success: (httpRes) => {
           this.cleanErrors();
@@ -294,7 +292,8 @@ export class Form<Data = any> {
   }
 
   reset(withInit?: boolean, options?: any): void {
-    this.group.reset(withInit ? this.state.init() : this.state.get(), options);
+    this.group.patchValue(withInit ? this.state.init() : this.state.get(), { emitEvent: false });
+    this.group.reset(this.group.getRawValue(), options);
   }
 
   resetOnly(groupKey: string, withInit?: boolean, options?: any): void {
