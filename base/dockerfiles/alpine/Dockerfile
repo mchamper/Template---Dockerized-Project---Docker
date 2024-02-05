@@ -4,6 +4,8 @@ FROM alpine:${ALPINE_VERSION}
 WORKDIR /docker
 RUN addgroup docker && adduser -D docker -u 1000 -G root -G www-data
 RUN chown -R docker:docker /docker
+ENV VIRTUAL_ENV=/opt/venv
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 ENV PATH="/home/docker/.local/bin:${PATH}"
 
 ##############################
@@ -11,6 +13,7 @@ ENV PATH="/home/docker/.local/bin:${PATH}"
 
 # Install common dependencies
 RUN apk add --update --no-cache \
+  bash \
   git \
   zip \
   unzip \
@@ -29,15 +32,16 @@ RUN apk add --update --no-cache \
   py3-pip \
   py3-pynacl \
   python3-dev libffi-dev openssl-dev musl-dev gcc make \
-  && pip3 install --upgrade pip --break-system-packages \
+  && python3 -m venv $VIRTUAL_ENV \
+  && pip install --upgrade pip \
   && rm -rf /var/cache/apk/* && rm -rf /tmp/*
 
 ##############################
 ##############################
 
-USER docker
-
 # Install aws cli
-RUN pip3 install PyYAML==5.3.1 --break-system-packages
-RUN pip3 install awscli --upgrade --user --break-system-packages
-RUN pip3 install awsebcli --upgrade --user --break-system-packages
+RUN pip install --upgrade awscli
+RUN pip install --upgrade awsebcli
+RUN pip install --upgrate botocore
+
+USER docker

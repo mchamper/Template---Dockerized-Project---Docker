@@ -9,6 +9,7 @@ ENV PATH="/root/.local/bin:${PATH}"
 
 # Install Alpine common dependencies
 RUN apk add --update --no-cache \
+  bash \
   git \
   zip \
   unzip \
