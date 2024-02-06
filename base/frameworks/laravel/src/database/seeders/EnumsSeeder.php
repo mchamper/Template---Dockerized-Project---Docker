@@ -8,6 +8,7 @@ use App\Models\InstitutionType;
 use App\Models\ProtectedRight;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class EnumsSeeder extends Seeder
 {
@@ -22,14 +23,16 @@ class EnumsSeeder extends Seeder
         ];
 
         foreach ($configs as $enum => $model) {
-            $model::whereNotIn('name', $enum::names())->delete();
+            $namesForDelete = $model::getDbBuilder()->whereNotIn('name', $enum::names())->pluck('name');
 
             collect($enum::names())->map(function ($item, $key) {
                 return [
                     'id' => $key + 1,
                     'name' => $item,
                 ];
-            })->each(fn ($item) => $model::updateOrCreate($item));
+            })->each(fn ($item) => $model::updateOrCreate(['id' => $item['id']], $item));
+
+            $model::whereIn('name', $namesForDelete)->delete();
         }
     }
 }
