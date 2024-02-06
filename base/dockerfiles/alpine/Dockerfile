@@ -42,6 +42,6 @@ RUN apk add --update --no-cache \
 # Install aws cli
 RUN pip install --upgrade awscli
 RUN pip install --upgrade awsebcli
-RUN pip install --upgrate botocore
+RUN pip install --upgrade botocore
 
 USER docker

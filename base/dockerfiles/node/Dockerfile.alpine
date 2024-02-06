@@ -67,6 +67,6 @@ RUN npm i -g cordova-res --unsafe-perm; exit 0
 # Install aws cli
 RUN pip install --upgrade awscli
 RUN pip install --upgrade awsebcli
-RUN pip install --upgrate botocore
+RUN pip install --upgrade botocore
 
 USER node
