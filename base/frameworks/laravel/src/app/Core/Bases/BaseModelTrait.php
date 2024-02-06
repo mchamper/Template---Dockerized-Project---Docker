@@ -3,6 +3,7 @@
 namespace App\Core\Bases;
 
 use App\Core\Models\Traits\HasEnums;
+use Illuminate\Support\Facades\DB;
 
 trait BaseModelTrait
 {
@@ -24,5 +25,10 @@ trait BaseModelTrait
         }
 
         return array_merge(parent::toArray(), $attributes);
+    }
+
+    public static function getDbBuilder()
+    {
+        return DB::table((new self)->getTable());
     }
 }
