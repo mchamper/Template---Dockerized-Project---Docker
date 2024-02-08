@@ -1,0 +1,28 @@
+$item-value-selectors:
+  '[nz-input]:not(.input-in-group)',
+  'nz-input-group',
+  'nz-input-group input[nz-input]',
+  'nz-input-number input',
+  'nz-select:not(.ant-select-multiple) nz-select-item',
+  'nz-select:not(.ant-select-multiple) nz-select-search input',
+  'nz-date-picker input',
+  'nz-range-picker input',
+;
+
+$item-selectors:
+  '[nz-input]:not(.input-in-group)',
+  'nz-input-group',
+  'nz-input-number',
+  'nz-select nz-select-top-control',
+  'nz-date-picker',
+  'nz-range-picker',
+;
+
+$item-selectors-with-error:
+  '.ant-form-item-has-error [nz-input]:not(.input-in-group)',
+  '.ant-form-item-has-error nz-input-group',
+  '.ant-form-item-has-error nz-input-number',
+  '.ant-form-item-has-error nz-select nz-select-top-control',
+  '.ant-form-item-has-error nz-date-picker',
+  '.ant-form-item-has-error nz-range-picker',
+;
