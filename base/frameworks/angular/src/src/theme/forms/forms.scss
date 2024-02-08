@@ -1,14 +1,19 @@
+@import "vars.scss";
+
 form[nz-form], .form-items {
-  --default-input-height: var(--app-px-32);
+  --default-input-height: var(--app-px-48);
 
   --label-font-size: var(--app-px-14);
   --input-font-size: var(--app-px-14);
   --input-height: var(--default-input-height);
   --input-padding-top: 4px;
   --input-padding-bottom: 4px;
+  --input-padding-left: 11px;
+  --input-padding-right: 11px;
+  --input-padding-with-prefix: var(--input-padding-left);
+  --input-padding-with-suffix: var(--input-padding-right);
 
   &.floating-label {
-    --input-height: calc(var(--default-input-height) * 1.5);
     --input-padding-top: calc(var(--label-font-size) * 1.4);
   }
 
@@ -71,6 +76,7 @@ form[nz-form], .form-items {
     z-index: 100;
 
     .ant-form-item-explain-error {
+      @include app-ff-primary-r();
       display: inline-block;
       position: relative;
       background: white;
@@ -211,6 +217,40 @@ form[nz-form], .form-items {
   }
 
   /* -------------------- */
+
+  #{$item-selectors}
+  {
+    padding-left: var(--input-padding-with-prefix);
+    padding-right: var(--input-padding-with-suffix);
+  }
+
+  /* -------------------- */
+
+  .has-prefix {
+    --input-padding-with-prefix: calc(var(--input-padding-left) + 1.5rem + var(--input-padding-left));
+
+    .prefix {
+      position: absolute;
+      z-index: 10;
+      left: var(--input-padding-left);
+      bottom: calc(var(--input-height) / 2) !important;
+      transform: translate(var(--input-padding-left), 50%);
+    }
+  }
+
+  .has-suffix {
+    --input-padding-with-suffix: calc(var(--input-padding-right) + 1.5rem + var(--input-padding-right));
+
+    .suffix {
+      position: absolute;
+      z-index: 10;
+      right: var(--input-padding-right);
+      bottom: calc(var(--input-height) / 2) !important;
+      transform: translate(calc(var(--input-padding-right) * -1), 50%);
+    }
+  }
+
+  /* -------------------- */
   /* -------------------- */
   /* -------------------- */
 
@@ -219,8 +259,8 @@ form[nz-form], .form-items {
       nz-form-label {
         pointer-events: none;
         position: absolute;
-        top: 8px;
-        left: 11px;
+        top: 10px;
+        left: var(--input-padding-with-prefix);
         padding: 0 !important;
         line-height: 1;
         z-index: 10;
@@ -233,7 +273,7 @@ form[nz-form], .form-items {
         }
 
         &.floating {
-          top: calc(var(--input-height) / 2);
+          top: calc(var(--input-height) / 2) !important;
           transform: translateY(-50%);
         }
       }
