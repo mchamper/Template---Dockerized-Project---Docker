@@ -14,5 +14,6 @@
 
   <form [ngClass]="'form-' + type" [class.floating-label]="floatingLabel" nz-form nzLayout="vertical">
     <ng-content />
+    <button type="submit" (click)="form.submit()" style="display: none;"></button>
   </form>
 </app-request>
