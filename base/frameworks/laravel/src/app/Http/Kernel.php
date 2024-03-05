@@ -16,6 +16,7 @@ class Kernel extends HttpKernel
     protected $middleware = [
         \App\Core\Middleware\ReturnJson::class,
         \App\Core\Middleware\SetLocale::class,
+        \App\Core\Middleware\QueryParamApiToken::class,
         // \App\Http\Middleware\TrustHosts::class,
         \App\Http\Middleware\TrustProxies::class,
         \Illuminate\Http\Middleware\HandleCors::class,
