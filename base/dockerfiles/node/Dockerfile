@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y \
   rsync \
   groff \
   ffmpeg \
+  supervisor \
   && rm -rf /var/cache/apt/* && rm -rf /tmp/*
 
 # Install image libraries

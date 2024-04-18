@@ -1,5 +1,3 @@
-version: '3'
-
 services:
 
   website:
@@ -109,7 +107,7 @@ services:
       context: ./base/dockerfiles/php
       dockerfile: Dockerfile.alpine
       args:
-        PHP_VERSION: 8.2.8-fpm
+        PHP_VERSION: "8.2.8-fpm"
         COMPOSER_VERSION: --2
     volumes:
       - ./credentials/.ssh/:/home/docker/.ssh/
@@ -121,28 +119,35 @@ services:
       dockerfile: Dockerfile.alpine
       args:
         NGINX_VERSION: "1.23.2"
-        NGINX_CONF: php-with-websocket
+        NGINX_CONF: php
         NGINX_ROOT: /docker/src/public
     links:
       - backend:php
-      - backend-websocket-server:websocket
     ports:
       - ${PORT}0011:80
       - ${PORT}1011:443
     volumes:
       - ${SRC_BACKEND}:/docker/src
-    networks:
-      - default
-      # - dp-locust_default
   backend-cronjob-server:
     build:
       context: ./base/dockerfiles/php
       dockerfile: Dockerfile.alpine
       args:
-        PHP_VERSION: 8.2.8-fpm
+        PHP_VERSION: "8.2.8-fpm"
         COMPOSER_VERSION: --2
     user: root
-    command: /bin/sh -c "crond -f; tail -f /dev/null"
+    command: /bin/sh -c "crontab /etc/cron.d/crontab; crond -f; tail -f /dev/null"
+    volumes:
+      - ./base/dockerfiles/php/laravel-schedule.crontab:/etc/cron.d/crontab
+      - ${SRC_BACKEND}:/docker/src
+  backend-queue-server:
+    build:
+      context: ./base/dockerfiles/php
+      dockerfile: Dockerfile.alpine
+      args:
+        PHP_VERSION: "8.2.8-fpm"
+        COMPOSER_VERSION: --2
+    command: /bin/sh -c "php artisan queue:work --tries=3; tail -f /dev/null"
     volumes:
       - ${SRC_BACKEND}:/docker/src
   backend-websocket-server:
@@ -150,11 +155,11 @@ services:
       context: ./base/dockerfiles/php
       dockerfile: Dockerfile.alpine
       args:
-        PHP_VERSION: 8.1.8-fpm
+        PHP_VERSION: "8.2.8-fpm"
         COMPOSER_VERSION: --2
     command: /bin/sh -c "php artisan websockets:serve; tail -f /dev/null"
     volumes:
-      - ${SRC_BACKEND_LARAVEL}:/docker/src
+      - ${SRC_BACKEND}:/docker/src
 
   mail-server:
     build:
