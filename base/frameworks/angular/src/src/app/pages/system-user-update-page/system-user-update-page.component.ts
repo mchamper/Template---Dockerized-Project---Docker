@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Injector, inject } from '@angular/core';
 import { FormModule } from '../../core/features/form/form.module';
-import { PageTitleComponent } from '../../core/components/layouts/page-title/page-title.component';
+import { PageTitleComponent } from '../../components/layouts/page-title/page-title.component';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, Validators } from '@angular/forms';
 import { SystemUserHttpService } from '../../services/http/system-user-http.service';
 import { Form } from '../../core/features/form/form.class';
 import { List } from '../../core/features/list/list.class';
 import { ListModule } from '../../core/features/list/list.module';
+import { BoxSectionTitleComponent } from '../../components/layouts/box-section-title/box-section-title.component';
 
 @Component({
   selector: 'app-system-user-update-page',
@@ -17,6 +18,7 @@ import { ListModule } from '../../core/features/list/list.module';
     FormModule,
     ListModule,
     PageTitleComponent,
+    BoxSectionTitleComponent,
   ],
   templateUrl: './system-user-update-page.component.html',
   styleUrl: './system-user-update-page.component.scss',

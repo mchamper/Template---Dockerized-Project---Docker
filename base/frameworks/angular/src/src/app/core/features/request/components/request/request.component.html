@@ -5,7 +5,13 @@
 <!-- -------------------- -->
 
 <ng-template #multiRequestTpl let-childRequest>
-  <app-request [request]="childRequest" [type]="type" [layer]="layer" [spinnerSize]="spinnerSize" [minHeight]="minHeight">
+  <app-request
+    [request]="childRequest"
+    [type]="type"
+    [layer]="layer"
+    [spinnerSize]="spinnerSize"
+    [minHeight]="minHeight"
+  >
     @if (requests.length) {
       <ng-container *ngTemplateOutlet="multiRequestTpl; context: { $implicit: requests.shift() }" />
     } @else {
@@ -23,7 +29,7 @@
 <!-- -------------------- -->
 
 <ng-template #oneRequestTpl>
-  <div [style.minHeight]="minHeight">
+  <div [style.minHeight]="type === 'box' ? 0 : minHeight" [class.fullscreen]="type === 'fullscreen'">
     <ng-container *ngTemplateOutlet="projectedContentTpl" />
 
     @switch (type) {
@@ -31,6 +37,8 @@
       @case ('spinner') { <ng-container *ngTemplateOutlet="typeSpinnerTpl" /> }
       @case ('form') { <ng-container *ngTemplateOutlet="typeFormTpl" /> }
       @case ('input') { <ng-container *ngTemplateOutlet="typeInputTpl" /> }
+      @case ('fullscreen') { <ng-container *ngTemplateOutlet="typeFullscreenTpl" /> }
+      @case ('box') { <ng-container *ngTemplateOutlet="typeBoxTpl" /> }
     }
 
     <!-- -------------------- -->
@@ -64,7 +72,7 @@
 
     <ng-template #typeFormTpl>
       @if (request.isLoading()) {
-        <div class="interaction-disabled bg-white opacity-50"></div>
+        <div class="interaction-disabled"></div>
       }
     </ng-template>
 
@@ -78,12 +86,37 @@
       }
     </ng-template>
 
+    <ng-template #typeFullscreenTpl>
+      @if (request.isLoading()) {
+        <div @fadeInOutAnimation>
+          <div class="interaction-disabled show-layer">
+            <div>
+              <ng-container *ngIf="isLoading" [ngTemplateOutlet]="loadingTpl || defaultLoadingTpl" />
+            </div>
+          </div>
+        </div>
+      }
+    </ng-template>
+
+    <ng-template #typeBoxTpl>
+      @if (request.isLoading()) {
+        <!-- <div @fadeInOutAnimation> -->
+          <div class="text-center">
+            <ng-container *ngIf="isLoading" [ngTemplateOutlet]="loadingTpl || defaultLoadingTpl" />
+            <!-- <ng-container *ngIf="request.hasError()" [ngTemplateOutlet]="errorTpl || defaultErrorTpl" /> -->
+          </div>
+        <!-- </div> -->
+      }
+    </ng-template>
+
     <!-- -------------------- -->
 
     <ng-template #defaultErrorTpl>
-      <div class="text-center p-3">
+      <div class="text-center"
+        [class.p-3]="type !== 'box'"
+      >
         <p class="lead mb-0 text-danger"><strong>Ha ocurrido un error</strong></p>
-        <p class="mb-0 text-dark">No podemos mostrar esta información por el momento</p>
+        <p class="mb-0 text-black-50 app-fs-14">No podemos mostrar esta información por el momento</p>
       </div>
     </ng-template>
 

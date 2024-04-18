@@ -6,7 +6,7 @@ import { ApplicationConfig, LOCALE_ID, importProvidersFrom } from '@angular/core
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideClientHydration, withHttpTransferCacheOptions } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { HttpBackend, HttpClient, provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
 /* -------------------- */
@@ -20,13 +20,15 @@ import { nzConfig } from './configs/nz.config';
 /* -------------------- */
 import { NgxWebstorageModule } from 'ngx-webstorage';
 import { provideEnvironmentNgxMask } from 'ngx-mask';
+import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 /* -------------------- */
 import { GoogleLoginProvider, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     { provide: APP_BASE_HREF, useValue: '/' },
-    { provide: LOCALE_ID, useValue: 'es' },
+    { provide: LOCALE_ID, useFactory: (translate: TranslateService) => translate.currentLang ? translate.currentLang : 'es', deps: [TranslateService] },
     provideRouter(routes, withComponentInputBinding()),
     // provideClientHydration(
     //   withHttpTransferCacheOptions({
@@ -44,7 +46,21 @@ export const appConfig: ApplicationConfig = {
     ),
     provideNzI18n(es_ES),
     provideNzConfig(nzConfig),
-    importProvidersFrom(NgxWebstorageModule.forRoot({ prefix: 'app', separator: '.', caseSensitive: true })),
+    importProvidersFrom(
+      [
+        NgxWebstorageModule.forRoot({ prefix: 'app', separator: '.', caseSensitive: true }),
+        TranslateModule.forRoot({
+          loader: {
+            provide: TranslateLoader,
+            useFactory: (handler: HttpBackend) => {
+              return new TranslateHttpLoader(new HttpClient(handler), './assets/i18n/', '.json');
+            },
+            deps: [HttpBackend]
+          },
+          defaultLanguage: 'es',
+        }),
+      ]
+    ),
     provideEnvironmentNgxMask({ validation: true, thousandSeparator: '.' }),
     {
       provide: 'SocialAuthServiceConfig',

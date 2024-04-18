@@ -1,4 +1,5 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 @Pipe({
   name: 'dateAgo',
@@ -6,22 +7,24 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class DateAgoPipe implements PipeTransform {
 
+  private _translateS = inject(TranslateService);
+
   transform(value: string): string {
     if (value) {
       const seconds = Math.floor((+new Date() - +new Date(value)) / 1000);
 
       if (seconds < 29) {
-        return 'Hace unos segundos';
+        return this._translateS.instant('core.pipes.date_ago.seconds_ago');
       }
 
       const intervals: any = {
-        'año': 31536000,
-        'mes': 2592000,
-        'semana': 604800,
-        'día': 86400,
-        'hora': 3600,
-        'minuto': 60,
-        'segundo': 1
+        'year': 31536000,
+        'month': 2592000,
+        'week': 604800,
+        'day': 86400,
+        'hour': 3600,
+        'minute': 60,
+        'second': 1
       };
 
       let counter;
@@ -30,11 +33,15 @@ export class DateAgoPipe implements PipeTransform {
         counter = Math.floor(seconds / intervals[i]);
 
         if (counter > 0) {
+          let iTranslated = '';
+
           if (counter === 1) {
-            return `Hace ${counter} ${i}`;
+            iTranslated = this._translateS.instant(`core.pipes.date_ago.intervals.${i}.singular`);
+          } else {
+            iTranslated = this._translateS.instant(`core.pipes.date_ago.intervals.${i}.plural`);
           }
 
-          return `Hace ${counter} ${i}${i.endsWith('s') ? 'es' : 's'}`;
+          return this._translateS.instant('core.pipes.date_ago.ago', { counter: counter, interval: iTranslated });
         }
       }
     }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, Input, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, Input, OnInit, booleanAttribute, inject } from '@angular/core';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { fixElem } from '../../../utils/helpers/dom.helper';
 import { FixedDirective } from '../../../directives/fixed.directive';
@@ -17,8 +17,9 @@ export class FixedComponent implements OnInit {
   private _dom = inject(DOCUMENT);
 
   @Input() height: number | 'auto' = 'auto';
+  @Input({ transform: booleanAttribute }) onBottom = false;
 
   ngOnInit(): void {
-    fixElem(this._dom, this._host.nativeElement.querySelector('.fixed-container > *')!, this.height);
+    fixElem(this._dom, this._host.nativeElement.querySelector('.fixed-container > *')!, this.height, this.onBottom);
   }
 }

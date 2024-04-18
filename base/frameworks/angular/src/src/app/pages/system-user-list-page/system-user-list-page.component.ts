@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PageTitleComponent } from '../../core/components/layouts/page-title/page-title.component';
+import { PageTitleComponent } from '../../components/layouts/page-title/page-title.component';
 import { ListModule } from '../../core/features/list/list.module';
 import { List } from '../../core/features/list/list.class';
 import { SystemUser } from '../../models/system-user.model';

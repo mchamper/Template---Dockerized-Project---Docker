@@ -1,11 +1,12 @@
 import { HttpEvent, HttpHandlerFn, HttpRequest, HttpResponse } from "@angular/common/http";
 import { THttpResponse } from "../types/http-response.type";
-import { MAP, ON_SUCCESS } from "./contexts";
+import { MAP, MAP_MESSAGE, ON_SUCCESS } from "./contexts";
 import { map, Observable } from "rxjs";
 import { cloneDeep, get } from "lodash";
 
 export function successInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
   const mapContext = req.context.get(MAP);
+  const mapMessageContext = req.context.get(MAP_MESSAGE);
   const onSuccessContext = req.context.get(ON_SUCCESS);
 
   return next(req).pipe(
@@ -13,7 +14,7 @@ export function successInterceptor(req: HttpRequest<unknown>, next: HttpHandlerF
       if (event instanceof HttpResponse) {
         const res: THttpResponse = {
           status: get(event, 'body.status', event.status),
-          message: get(event, 'body.message', event.statusText),
+          message: get(event, 'body.APICodeTextSP', event.statusText),
           body: get(event, 'body.body', event.body),
         }
 
@@ -24,6 +25,10 @@ export function successInterceptor(req: HttpRequest<unknown>, next: HttpHandlerF
             ...mapContext(res),
             _raw: originalBody,
           };
+        }
+
+        if (mapMessageContext) {
+          res.message = mapMessageContext(res) || res.message;
         }
 
         if (onSuccessContext) {

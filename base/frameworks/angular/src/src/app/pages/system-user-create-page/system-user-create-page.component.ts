@@ -8,8 +8,9 @@ import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { FormBuilder, Validators } from '@angular/forms';
 import { systemUserCreateFormMock } from '../../mocks/system-user-create-form.mock';
 import { Router } from '@angular/router';
-import { PageTitleComponent } from '../../core/components/layouts/page-title/page-title.component';
+import { PageTitleComponent } from '../../components/layouts/page-title/page-title.component';
 import { escape } from 'lodash';
+import { BoxSectionTitleComponent } from '../../components/layouts/box-section-title/box-section-title.component';
 
 @Component({
   selector: 'app-system-user-create-page',
@@ -18,6 +19,7 @@ import { escape } from 'lodash';
     CommonModule,
     FormModule,
     PageTitleComponent,
+    BoxSectionTitleComponent,
   ],
   templateUrl: './system-user-create-page.component.html',
   styleUrl: './system-user-create-page.component.scss',

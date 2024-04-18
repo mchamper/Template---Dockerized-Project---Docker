@@ -1,4 +1,5 @@
 export type TRouteData = {
-  name: string,
+  name?: string,
+  tpl?: string,
   permissions?: string[],
 };

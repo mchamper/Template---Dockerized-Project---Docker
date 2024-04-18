@@ -1,14 +1,18 @@
-import { EventEmitter, Injector, ProviderToken, computed, inject, signal } from "@angular/core";
+import { DestroyRef, EventEmitter, Injector, ProviderToken, computed, inject, signal } from "@angular/core";
 import { THttpResponse } from "../../types/http-response.type";
 import { THttpErrorResponse } from "../../types/http-error-response.type";
 import { NzNotificationService } from "ng-zorro-antd/notification";
+import { NzMessageService } from "ng-zorro-antd/message";
 import { Observable, of, takeUntil, tap } from "rxjs";
 import { get, isArray } from "lodash";
 import { logger } from "../../utils/helpers/logger.helper";
 import { RequestComponent } from "./components/request/request.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+
 export class Request<Body = any> {
 
   private _nzNotificationS = this._inject(NzNotificationService);
+  private _nzMessageS = this._inject(NzMessageService);
 
   private _cancel$ = new EventEmitter();
 
@@ -27,9 +31,10 @@ export class Request<Body = any> {
 
   constructor(
     private _options: {
-      send?: (...params: any) => Observable<THttpResponse>,
+      send?: (...params: any) => Observable<THttpResponse<Body>>,
       when?: () => boolean,
       before?: () => void,
+      after?: () => void,
       success?: (res: THttpResponse) => void,
       error?: (err: THttpErrorResponse) => void,
       watch?: string,
@@ -89,13 +94,27 @@ export class Request<Body = any> {
     }
   };
 
-  complete = () => {
+  complete = (value?: Body) => {
+    if (typeof value !== 'undefined') {
+      this.setBody(value);
+    }
+
     this.isLoading.set(false);
 
     if (this._options.bind) {
       this._options.bind.complete();
     }
   };
+
+  /* -------------------- */
+
+  setBody = (value: Body) => {
+    this.res.set({
+      status: 1,
+      message: '',
+      body: value,
+    });
+  }
 
   /* -------------------- */
 
@@ -121,13 +140,14 @@ export class Request<Body = any> {
 
     this.start();
 
-    return this._options.send!(params).pipe(
+    return this._options.send!(...params).pipe(
       takeUntil(this._cancel$),
+      // takeUntilDestroyed(this._inject(DestroyRef)),
       tap({
         next: (httpRes: THttpResponse) => {
           this.res.set(httpRes);
 
-          this._notify('success');
+          this.notify('success');
 
           if (this._options.success) {
             this._options.success(httpRes);
@@ -136,7 +156,7 @@ export class Request<Body = any> {
         error: (httpError: THttpErrorResponse) => {
           this.error.set(httpError);
 
-          this._notify('error');
+          this.notify('error');
 
           if (this._options.error) {
             this._options.error(httpError);
@@ -144,6 +164,10 @@ export class Request<Body = any> {
         },
         finalize: () => {
           this.complete();
+
+          if (this._options.after) {
+            this._options.after();
+          }
         }
       }),
     );
@@ -155,16 +179,16 @@ export class Request<Body = any> {
 
   /* -------------------- */
 
-  private _notify(type: 'success' | 'error') {
-    let optionKey: 'notifySucces' | 'notifyError';
+  notify(type: 'success' | 'error', service: 'notification' | 'message' = 'notification') {
+    let optionKey: 'notifySuccess' | 'notifyError';
     let title: string;
     let content: string;
 
     switch (type) {
       case 'success': {
-        optionKey = 'notifySucces';
+        optionKey = 'notifySuccess';
         title = '¡Perfecto!';
-        content = this.res()!.message || 'La solicitud ha sido enviada con éxito.';
+        content = this.res()?.message || 'La solicitud ha sido enviada con éxito.';
 
         break;
       }
@@ -172,7 +196,7 @@ export class Request<Body = any> {
       case 'error': {
         optionKey = 'notifyError';
         title = 'Mmm...';
-        content = this.error()!.message || 'Ha ocurrido un error.';
+        content = this.error()?.message || 'Ha ocurrido un error.';
 
         break;
       }
@@ -186,10 +210,18 @@ export class Request<Body = any> {
         if (notifyOption[1]) content = notifyOption[1];
       }
 
-      this._nzNotificationS[type](
-        `<strong>${title}</strong>`,
-        `${content}`,
-      );
+      if (service === 'notification') {
+        this._nzNotificationS[type](
+          `<strong>${title}</strong>`,
+          `${content}`,
+        );
+      }
+
+      if (service === 'message') {
+        this._nzMessageS[type](
+          `${content}`,
+        );
+      }
     }
   }
 }

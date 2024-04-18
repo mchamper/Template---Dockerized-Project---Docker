@@ -1,12 +1,13 @@
 import { Location } from '@angular/common';
-import { Injectable, inject } from '@angular/core';
+import { Injectable, NgZone, inject } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppService {
 
-  private _location = inject(Location);
+  protected _ngZone = inject(NgZone);
+  protected _location = inject(Location);
 
   /* -------------------- */
 

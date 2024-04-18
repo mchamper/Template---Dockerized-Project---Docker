@@ -17,7 +17,6 @@ import { RequestComponent } from '../request/components/request/request.componen
 import { FormFooterComponent } from './components/form-footer/form-footer.component';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { FormFiltersComponent } from './components/form-filters/form-filters.component';
-import { BoxSectionTitleComponent } from '../../components/layouts/box-section-title/box-section-title.component';
 
 const modules = [
   FormsModule,
@@ -27,7 +26,6 @@ const modules = [
   FormFiltersComponent,
   FormFooterComponent,
   FormUploadComponent,
-  BoxSectionTitleComponent,
   NzFormModule,
   NzInputModule,
   NzInputNumberModule,

@@ -303,7 +303,7 @@ export class Form<Data = any> {
 
   /* -------------------- */
 
-  getCombo(key: string): any[] {
+  getCombo<T = any>(key: string): T[] {
     return this.combos()
       ? this.combos()[key] || []
       : [];
@@ -555,18 +555,18 @@ export class Form<Data = any> {
         this.validate(abstractControl);
       } else {
         if (!abstractControl.getError('apiError')) {
-          const isPreviouslyDisabled = abstractControl.disabled;
+          // const isPreviouslyDisabled = abstractControl.disabled;
 
-          if (isPreviouslyDisabled) {
-            abstractControl.enable({ onlySelf: true, emitEvent: false });
-          }
+          // if (isPreviouslyDisabled) {
+          //   abstractControl.enable({ onlySelf: true, emitEvent: false });
+          // }
 
           abstractControl.markAsTouched();
           abstractControl.updateValueAndValidity({ onlySelf: true });
 
-          if (isPreviouslyDisabled) {
-            abstractControl.disable({ onlySelf: true, emitEvent: false });
-          }
+          // if (isPreviouslyDisabled) {
+          //   abstractControl.disable({ onlySelf: true, emitEvent: false });
+          // }
         }
       }
     });

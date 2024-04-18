@@ -26,6 +26,7 @@ export class FormComponent {
   @Input({ required: true }) form!: Form;
   @Input({ transform: booleanAttribute }) debug = false;
   @Input({ transform: booleanAttribute }) floatingLabel = false;
+  @Input({ transform: booleanAttribute }) forceSubmitOnEnter = false;
   @Input() type: 'default' | 'oneline' = 'default';
 
   get showDebug(): boolean {

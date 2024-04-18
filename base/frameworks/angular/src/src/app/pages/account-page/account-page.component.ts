@@ -4,11 +4,12 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { FormModule } from '../../core/features/form/form.module';
-import { PageTitleComponent } from '../../core/components/layouts/page-title/page-title.component';
+import { PageTitleComponent } from '../../components/layouts/page-title/page-title.component';
 import { Form } from '../../core/features/form/form.class';
 import { AuthService } from '../../services/auth.service';
 import { AuthSystemUserHttpService } from '../../services/http/auth-system-user-http.service';
 import { ChAccountVerificationComponent } from './ch-account-verification/ch-account-verification.component';
+import { BoxSectionTitleComponent } from '../../components/layouts/box-section-title/box-section-title.component';
 
 @Component({
   selector: 'app-account-page',
@@ -19,6 +20,7 @@ import { ChAccountVerificationComponent } from './ch-account-verification/ch-acc
     NzDividerModule,
     NzIconModule,
     PageTitleComponent,
+    BoxSectionTitleComponent,
     ChAccountVerificationComponent,
   ],
   templateUrl: './account-page.component.html',

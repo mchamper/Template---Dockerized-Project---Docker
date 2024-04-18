@@ -12,6 +12,7 @@ import { NzUploadComponent } from 'ng-zorro-antd/upload';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { NzRadioComponent } from 'ng-zorro-antd/radio';
 import { NzCheckboxComponent } from 'ng-zorro-antd/checkbox';
+import { TranslateService } from '@ngx-translate/core';
 
 @Directive({
   selector: '[formControl],[formControlName],[ngModel],nz-upload,[nz-radio],[nz-checkbox]',
@@ -21,6 +22,7 @@ export class FormControlDirective {
 
   private _injector = inject(Injector);
   private _destroyRef = inject(DestroyRef);
+  private _translateS = inject(TranslateService);
 
   @Input() uploadControl!: FormControl;
   @Input() errorMessages!: { [key: string]: string };
@@ -264,20 +266,20 @@ export class FormControlDirective {
 
         if (key === 'mask') {
           const mask = this.control.errors[key].requiredMask;
-          return message(mask);
+          return this._translateS.instant(message(mask));
         }
 
         if (key === 'maxlength') {
           const maxLength = this.control.errors[key].requiredLength;
-          return message(maxLength);
+          return this._translateS.instant(message(maxLength), { length: maxLength });
         }
 
         if (key === 'max') {
           const max = this.control.errors[key].max;
-          return message(max);
+          return this._translateS.instant(message(max), { length: max });
         }
 
-        return message;
+        return this._translateS.instant(message);
       }
     }
 

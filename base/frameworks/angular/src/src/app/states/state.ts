@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { AbstractState } from '../core/states/abstract.state';
 import { simpleStateFactory } from '../core/utils/factories/state.factory';
 
@@ -8,4 +8,6 @@ import { simpleStateFactory } from '../core/utils/factories/state.factory';
 export class State extends AbstractState {
 
   app = simpleStateFactory();
+
+  lang = signal('es');
 }
