@@ -5,6 +5,7 @@ namespace App\Core\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class SetLocale
@@ -16,7 +17,9 @@ class SetLocale
      */
     public function handle(Request $request, Closure $next): Response
     {
-        Lang::setLocale($request->headers->get('Accept-Language') ?: config('app.locale'));
+        $acceptLanguage = Str::substr(Str::lower($request->headers->get('Accept-Language')), 0, 2);
+
+        Lang::setLocale($acceptLanguage ?: config('app.locale'));
         return $next($request);
     }
 }
