@@ -20,7 +20,8 @@ trait AppClientTrait
     {
         if (!app()->environment('local')) {
             if ($this->hosts !== '*') {
-                $origin = request()->header('origin');
+                $origin = request()->header('origin') ?: request()->header('referer');
+                $origin = Str::replaceEnd('/', '', Str::finish($origin, '/'));
                 $can = false;
 
                 foreach ($this->hosts as $host) {
