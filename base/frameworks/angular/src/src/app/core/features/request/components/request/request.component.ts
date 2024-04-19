@@ -1,20 +1,26 @@
-import { ChangeDetectionStrategy, Component, ContentChild, Input, TemplateRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ContentChild, Input, TemplateRef, booleanAttribute } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Request } from '../../request.class';
+import { fadeInOutAnimation } from '../../../../utils/animations/fade.animation';
 
 @Component({
   selector: 'app-request',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule
+  ],
   templateUrl: './request.component.html',
   styleUrl: './request.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    fadeInOutAnimation(),
+  ]
 })
 export class RequestComponent {
 
   @Input() request!: Request;
   @Input() requests: Request[] = [];
-  @Input() type!: 'default' | 'form' | 'spinner' | 'input';
+  @Input() type!: 'default' | 'box' | 'form' | 'spinner' | 'input' | 'fullscreen';
   @Input() layer: boolean = true;
   @Input() spinnerSize: number = 1.5;
   @Input() minHeight!: string;

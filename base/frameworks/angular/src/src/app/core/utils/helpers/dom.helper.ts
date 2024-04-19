@@ -1,4 +1,4 @@
-export const fixElem = (dom: Document, elem: HTMLElement, height: number | 'auto') => {
+export const fixElem = (dom: Document, elem: HTMLElement, height: number | 'auto', onBottom = false) => {
   if (
     !elem.parentElement
     || !elem.parentNode
@@ -30,6 +30,11 @@ export const fixElem = (dom: Document, elem: HTMLElement, height: number | 'auto
   elem.style.position = 'fixed';
   elem.style.width = '100%';
   elem.style.height = height + 'px';
+  elem.style.left = '0';
+
+  if (onBottom) {
+    elem.style.bottom = '0';
+  }
 }
 
 export const loadScript = (dom: Document, url: string): Promise<void> => {

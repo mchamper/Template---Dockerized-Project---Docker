@@ -23,6 +23,7 @@ RUN apk add --update --no-cache \
   rsync \
   groff \
   ffmpeg \
+  supervisor \
   && rm -rf /var/cache/apk/* && rm -rf /tmp/*
 
 # Install image libraries
@@ -91,12 +92,6 @@ RUN composer self-update ${COMPOSER_VERSION}
 
 # PHP ini options
 COPY php.ini /usr/local/etc/php/conf.d/local.ini
-
-# Config cronjobs
-RUN mkdir -p /etc/cron.d
-RUN touch /etc/cron.d/crontab
-RUN echo "* * * * * php /docker/src/artisan schedule:run >> /dev/null 2>&1" >> /etc/cron.d/crontab
-RUN crontab /etc/cron.d/crontab
 
 # Install aws cli
 RUN pip install --upgrade awscli

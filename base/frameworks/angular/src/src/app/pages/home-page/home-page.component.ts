@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PageTitleComponent } from '../../core/components/layouts/page-title/page-title.component';
+import { PageTitleComponent } from '../../components/layouts/page-title/page-title.component';
 
 @Component({
   selector: 'app-home-page',

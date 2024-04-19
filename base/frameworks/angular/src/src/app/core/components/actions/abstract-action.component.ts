@@ -1,16 +1,15 @@
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild, signal } from '@angular/core';
-import { THttpResponse } from '../../types/http-response.type';
 
 @Component({
   template: '',
 })
-export abstract class AbstractActionComponent<Layout = 'modal' | 'popover'> {
+export abstract class AbstractActionComponent<Layout = 'page' | 'modal' | 'popover', Data = any> {
 
   @ViewChild('popoverTpl') popoverTpl!: TemplateRef<void>;
   @ViewChild('modalTpl') modalTpl!: TemplateRef<void>;
 
   @Input({ required: true }) layout!: Layout;
-  @Output() onSuccess$: EventEmitter<THttpResponse> = new EventEmitter();
+  @Output() onSuccess$: EventEmitter<Data> = new EventEmitter();
 
   popover = {
     isVisible: signal(false),
@@ -27,6 +26,18 @@ export abstract class AbstractActionComponent<Layout = 'modal' | 'popover'> {
 
   abstract onInit(): void;
   abstract onClose(): void;
+
+  ngOnInit() {
+    if (this.layout === 'page') {
+      this.onInit();
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.layout === 'page') {
+      this.onClose();
+    }
+  }
 
   /* -------------------- */
 

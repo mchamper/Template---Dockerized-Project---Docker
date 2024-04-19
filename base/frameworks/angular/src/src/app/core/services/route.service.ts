@@ -5,6 +5,7 @@ import { injectParams } from 'ngxtension/inject-params';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { TRouteData } from '../types/route-data.type';
+import { cloneDeep } from 'lodash';
 
 @Injectable({
   providedIn: 'root'
@@ -55,12 +56,19 @@ export class RouteService {
 
   private _getSnapshot(snapshot?: ActivatedRouteSnapshot): ActivatedRouteSnapshot {
     if (!snapshot) {
-      snapshot = this._route.snapshot.root;
+      snapshot = this._route.snapshot;
     }
+
+    snapshot = snapshot.root;
+
+    let data = {};
 
     while (!!snapshot.firstChild) {
       snapshot = snapshot.firstChild;
+      data = { ...data, ...snapshot.data };
     }
+
+    snapshot.data = data;
 
     return snapshot;
   }

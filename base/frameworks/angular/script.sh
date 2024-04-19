@@ -23,6 +23,8 @@ bash base/bin/docker/run.sh ${SERVICE} "
     animate.css \
     simplebar \
     ngxtension \
+    @ngx-translate/core \
+    @ngx-translate/http-loader \
     swiper;
 
   ${MANAGER} install --save-dev \

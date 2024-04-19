@@ -23,6 +23,7 @@ RUN apk add --update --no-cache \
   rsync \
   groff \
   ffmpeg \
+  supervisor \
   && rm -rf /var/cache/apk/* && rm -rf /tmp/*
 
 # Install python

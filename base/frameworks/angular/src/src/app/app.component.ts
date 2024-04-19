@@ -11,6 +11,7 @@ import { firstValueFrom } from 'rxjs';
 import { AuthAppClientHttpService } from './services/http/auth-app-client-http.service';
 import { environment } from '../environments/environment';
 import { AuthSystemUserHttpService } from './services/http/auth-system-user-http.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
@@ -26,8 +27,8 @@ import { AuthSystemUserHttpService } from './services/http/auth-system-user-http
 export class AppComponent {
 
   private _taxonomyS = inject(TaxonomyService);
+  private _translateS = inject(TranslateService);
   private _authS = inject(AuthService);
-
   private _authAppClientHttpS = inject(AuthAppClientHttpService);
   private _authSystemUserHttpS = inject(AuthSystemUserHttpService);
 
@@ -48,6 +49,10 @@ export class AppComponent {
       await this.checkAuthAppClient();
 
       await Promise.all([
+        this.resolveLang(),
+      ]);
+
+      await Promise.all([
         this.checkAuthSystemUser(),
       ]);
 
@@ -55,6 +60,19 @@ export class AppComponent {
     } catch (err) {
       this.state.app.setError(err as string);
     }
+  }
+
+  /* -------------------- */
+
+  async resolveLang(): Promise<void> {
+    try {
+      await firstValueFrom(this._translateS.use(this.state.lang()));
+    } catch (err) {
+      // return Promise.reject('No se ha podido establecer el idioma.');
+      // return Promise.reject('Ha ocurrido un error.');
+    }
+
+    return Promise.resolve();
   }
 
   /* -------------------- */

@@ -8,12 +8,14 @@ export type TAuthGuardName = keyof AbstractAuthService['_guards'];
 
 export type TAuthGuardRawSession<DataModel = any> = {
   token: string,
+  refreshToken?: string,
   tokenExpiresAt?: Moment,
   data?: {
     id?: number,
     name?: string,
     firstName?: string,
     lastName?: string,
+    phone?: string,
     email?: string,
     isVerified?: boolean,
     picture?: string,
@@ -85,6 +87,19 @@ export abstract class AbstractAuthService {
   }
   systemUser() {
     return this.guard<any>('systemUser');
+  }
+
+  appClientId() {
+    return this.appClient().activeSession()?.data?.id;
+  }
+  guestId() {
+    return this.guest().activeSession()?.data?.id;
+  }
+  userId() {
+    return this.user().activeSession()?.data?.id;
+  }
+  systemUserId() {
+    return this.systemUser().activeSession()?.data?.id;
   }
 
   /* -------------------- */
