@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Middleware;
+namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
@@ -17,7 +17,7 @@ class SetLocale
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $acceptLanguage = Str::substr(Str::lower($request->headers->get('Accept-Language')), 0, 2);
+        $acceptLanguage = Str::substr(Str::lower($request->headers->get('Accept-Language') ?: ''), 0, 2);
 
         Lang::setLocale($acceptLanguage ?: config('app.locale'));
         return $next($request);
