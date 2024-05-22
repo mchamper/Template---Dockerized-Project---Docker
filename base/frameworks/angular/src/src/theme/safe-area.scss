@@ -1,14 +1,19 @@
-.device-platform-android {
+:root {
   --safe-area-top: 0px;
   --safe-area-bottom: 0px;
-}
-.device-platform-ios {
-  --safe-area-top: 40px;
-  --safe-area-bottom: 24px;
-}
-.device-platform-web {
-  --safe-area-top: 0px;
-  --safe-area-bottom: 0px;
+
+  .device-platform-android {
+    --safe-area-top: 0px;
+    --safe-area-bottom: 0px;
+  }
+  .device-platform-ios {
+    --safe-area-top: 40px;
+    --safe-area-bottom: 24px;
+  }
+  .device-platform-web {
+    --safe-area-top: 0px;
+    --safe-area-bottom: 0px;
+  }
 }
 
 // .device-platform-android,
