@@ -2,7 +2,7 @@
 @mixin app-ff-secondary-r  { font-family: "Open Sans", sans-serif !important; font-weight: 400 !important; }
 @mixin app-ff-secondary-sb { font-family: "Open Sans", sans-serif !important; font-weight: 500 !important; }
 @mixin app-ff-secondary-b  { font-family: "Open Sans", sans-serif !important; font-weight: 700 !important; }
-@mixin app-ff-secondary-eb { font-family: "Open Sans", sans-serif !important; font-weight: 900 !important; }
+@mixin app-ff-secondary-eb { font-family: "Open Sans", sans-serif !important; font-weight: 800 !important; }
 
 .app-ff-secondary-l  { @include app-ff-secondary-l(); }
 .app-ff-secondary-r  { @include app-ff-secondary-r(); }

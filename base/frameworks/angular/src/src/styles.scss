@@ -1,15 +1,19 @@
 /* You can add global styles to this file, and also import other style files */
+
 // @import "../node_modules/ng-zorro-antd/ng-zorro-antd.min.css";
 @import "../node_modules/ng-zorro-antd/ng-zorro-antd.variable.min.css";
 @import "animate.css";
 /* -------------------- */
-@import "theme/root.scss";
+@import "theme/vars.scss";
 @import "theme/fonts/fonts.scss";
-@import "theme/bootstrap.scss";
 /* -------------------- */
-@import "theme/ant.scss";
+@import "theme/@bootstrap.scss";
+@import "theme/@ngzorro.scss";
+/* -------------------- */
 @import "theme/buttons.scss";
 @import "theme/layouts.scss";
+@import "theme/modals.scss";
+@import "theme/safe-area.scss";
 @import "theme/tables.scss";
 @import "theme/texts.scss";
 /* -------------------- */
@@ -20,6 +24,6 @@ body {
   overflow-x: hidden;
 }
 
-.cdk-overlay-container {
-  z-index: 2000;
+.no-events {
+  pointer-events: none !important;
 }

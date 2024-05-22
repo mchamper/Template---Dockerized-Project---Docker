@@ -1,0 +1,78 @@
+{
+  "components": {
+    "actions": {},
+    "layouts": {},
+    "features": {}
+  },
+  "core": {
+    "form": {
+      "validators": {
+        "required": "This field is required.",
+        "email": "This field must be a valid email.",
+        "pattern": "This field must have a valid format.",
+        "mask": "This field must have a valid format.",
+        "max_length": "This field can have a maximum of {{length}} characters.",
+        "max": "The maximum valid number for this field is {{max}}.",
+        "_luhn": "This field does not have a valid number.",
+        "_credit_card_expiration_date": "This field must be a valid date."
+      }
+    },
+    "pipes": {
+      "date_ago": {
+        "seconds_ago": "A few seconds ago",
+        "ago": "{{counter}} {{interval}} ago",
+        "intervals": {
+          "year": {
+            "singular": "year",
+            "plural": "years"
+          },
+          "month": {
+            "singular": "month",
+            "plural": "months"
+          },
+          "week": {
+            "singular": "week",
+            "plural": "weeks"
+          },
+          "day": {
+            "singular": "day",
+            "plural": "days"
+          },
+          "hour": {
+            "singular": "hour",
+            "plural": "hours"
+          },
+          "minute": {
+            "singular": "minute",
+            "plural": "minutes"
+          },
+          "second": {
+            "singular": "second",
+            "plural": "seconds"
+          }
+        }
+      },
+      "date_today": {
+        "today": "Today",
+        "yesterday": "Yesterday"
+      }
+    }
+  },
+  "pages": {
+    "forbidden_page": {
+      "title": "Access denied",
+      "subtitle": "Sorry, you do not have permission to access this page.",
+      "button": "Back"
+    },
+    "not_found_page": {
+      "title": "Page not found",
+      "subtitle": "Sorry, the page you are trying to access does not exist.",
+      "button": "Back"
+    }
+  },
+  "http": {
+    "errors": {
+      "XXXX_code_error": "Error message for code XXXX."
+    }
+  }
+}

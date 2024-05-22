@@ -3,6 +3,8 @@
 @import "app-icons.scss";
 
 [class^="app-icon-"], [class*=" app-icon-"] {
+  line-height: 1 !important;
+
   &.icon-fw {
     width: 2rem;
     display: inline-block;
