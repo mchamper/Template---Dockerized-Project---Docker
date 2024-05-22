@@ -23,13 +23,15 @@ export const fixElem = (dom: Document, elem: HTMLElement, height: number | 'auto
     }
   }
 
+  const calcHeight = `calc(${height}px + var(--safe-area-${onBottom ? 'bottom' : 'top'}))`;
+
   wrapperElem.style.position = 'relative';
   wrapperElem.style.width = '100%';
-  wrapperElem.style.height = height + 'px';
+  wrapperElem.style.height = calcHeight;
 
   elem.style.position = 'fixed';
   elem.style.width = '100%';
-  elem.style.height = height + 'px';
+  elem.style.height = calcHeight;
   elem.style.left = '0';
 
   if (onBottom) {

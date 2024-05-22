@@ -1,14 +1,14 @@
 import { Injectable, Signal, WritableSignal, computed, effect, inject, signal } from '@angular/core';
 import { AppService } from './app.service';
-import { StorageService } from './storage.service';
 import { AbstractModel } from '../models/abstract.model';
 import moment, { Moment } from 'moment';
+import { StorageService } from '../../services/storage.service';
 
 export type TAuthGuardName = keyof AbstractAuthService['_guards'];
 
 export type TAuthGuardRawSession<DataModel = any> = {
   token: string,
-  refreshToken?: string,
+  refreshToken: string,
   tokenExpiresAt?: Moment,
   data?: {
     id?: number,
@@ -43,6 +43,7 @@ type TAuthGuard<DataModel = any> = {
   removeSessionAt: (index: number, mustReload?: boolean) => void,
   removeAllSessions: (mustReload?: boolean) => void,
   selectSession: (index: number, mustReload?: boolean) => void,
+  initEffect: () => void,
 };
 
 @Injectable({
@@ -62,11 +63,23 @@ export abstract class AbstractAuthService {
 
   /* -------------------- */
 
-  protected _init(guardsConfig: TAuthGuardName[] | { guard: TAuthGuardName, modelClass?: any }[]): void {
+  protected async _init(guardsConfig: TAuthGuardName[] | { guard: TAuthGuardName, modelClass?: any }[]): Promise<void> {
     for (const config of guardsConfig) {
       typeof config === 'string'
-        ? this._guards[config] = this._createGuard(config)
-        : this._guards[config.guard] = this._createGuard(config.guard, config.modelClass);
+        ? this._guards[config] = await this._createGuard(config)
+        : this._guards[config.guard] = await this._createGuard(config.guard, config.modelClass);
+    }
+  }
+
+  /* -------------------- */
+
+  initEffects() {
+    for (const key of Object.keys(this._guards)) {
+      const guard = this.guard(key as TAuthGuardName);
+
+      if (guard) {
+        guard.initEffect();
+      }
     }
   }
 
@@ -90,22 +103,22 @@ export abstract class AbstractAuthService {
   }
 
   appClientId() {
-    return this.appClient().activeSession()?.data?.id;
+    return this.appClient()?.activeSession()?.data?.id;
   }
   guestId() {
-    return this.guest().activeSession()?.data?.id;
+    return this.guest()?.activeSession()?.data?.id;
   }
   userId() {
-    return this.user().activeSession()?.data?.id;
+    return this.user()?.activeSession()?.data?.id;
   }
   systemUserId() {
-    return this.systemUser().activeSession()?.data?.id;
+    return this.systemUser()?.activeSession()?.data?.id;
   }
 
   /* -------------------- */
 
-  private _createGuard(guardName: TAuthGuardName, modelClass?: any): TAuthGuard {
-    const storedSessions: TAuthGuardSession[] = (this._storageS.get(`auth.${guardName}.sessions`) || [])
+  private async _createGuard(guardName: TAuthGuardName, modelClass?: any): Promise<TAuthGuard> {
+    const storedSessions: TAuthGuardSession[] = ((await this._storageS.get(`auth.${guardName}.sessions`)) || [])
       .map((rawSession: TAuthGuardRawSession) => {
         const session = this._createSession(rawSession);
 
@@ -187,21 +200,23 @@ export abstract class AbstractAuthService {
       if (mustReload) this._appS.reload();
     };
 
-    effect(() => {
-      this._storageS.set(`auth.${guardName}.sessions`, sessions().map(session => {
-        if (session.data?.model instanceof AbstractModel) {
-          return {
-            ...session,
-            data: {
-              ...session.data,
-              model: session.data.model.r()
-            }
-          };
-        }
+    const initEffect = () => {
+      effect(() => {
+        this._storageS.set(`auth.${guardName}.sessions`, sessions().map(session => {
+          if (session.data?.model instanceof AbstractModel) {
+            return {
+              ...session,
+              data: {
+                ...session.data,
+                model: session.data.model.r()
+              }
+            };
+          }
 
-        return session;
-      }));
-    });
+          return session;
+        }));
+      });
+    }
 
     return {
       sessions,
@@ -213,6 +228,7 @@ export abstract class AbstractAuthService {
       removeSessionAt,
       removeAllSessions,
       selectSession,
+      initEffect,
     };
   };
 

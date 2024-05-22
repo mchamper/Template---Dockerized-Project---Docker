@@ -14,7 +14,9 @@ import { AccountPageComponent } from './pages/account-page/account-page.componen
 import { SystemUserCreatePageComponent } from './pages/system-user-create-page/system-user-create-page.component';
 import { SystemUserUpdatePageComponent } from './pages/system-user-update-page/system-user-update-page.component';
 
-export const routes: (Route & { data?: TRouteData })[] = [
+export const routes: (Route & { data?: TRouteData & {
+  //
+}})[] = [
   {
     path: '',
     component: MainTplComponent,

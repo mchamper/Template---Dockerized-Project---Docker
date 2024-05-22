@@ -7,7 +7,7 @@ import { environment } from "../../../../environments/environment";
 import { debounceTime, distinctUntilChanged, skip, startWith } from "rxjs";
 import { cloneDeep, entries, isArray } from "lodash";
 import { logger } from "../../utils/helpers/logger.helper";
-import { StorageService } from "../../services/storage.service";
+import { StorageService } from "../../../services/storage.service";
 import { md5 } from "../../utils/helpers/hash.helper";
 
 export class Form<Data = any> {
@@ -192,9 +192,9 @@ export class Form<Data = any> {
     this.autoSaveState.value.set(this._storageS.get(this.autoSaveState.key(), { base64: true }));
   }
 
-  private _startAutoSave() {
+  private async _startAutoSave() {
     if (!this._options.autoSave) {
-      this._storageS.clear(this.autoSaveState.key());
+      await this._storageS.remove(this.autoSaveState.key());
       return;
     };
 
@@ -209,9 +209,9 @@ export class Form<Data = any> {
 
     this.group.valueChanges.pipe(
       debounceTime(300),
-    ).subscribe(() => {
+    ).subscribe(async () => {
       this.autoSaveState.value.set(this.group.getRawValue());
-      this._storageS.set(this.autoSaveState.key(), this.autoSaveState.value(), { base64: true });
+      await this._storageS.set(this.autoSaveState.key(), this.autoSaveState.value(), { base64: true });
     });
   }
 
@@ -414,6 +414,11 @@ export class Form<Data = any> {
   getError(key: string, group?: FormGroup): string {
     group = group || this.group;
     return group.get(key)?.getError('localError') || group.get(key)?.getError('apiError');
+  }
+
+  mustShowError(key: string, group?: FormGroup): boolean {
+    group = group || this.group;
+    return !!group.get(key)?.dirty && !!this.getError(key, group);
   }
 
   setApiErrors(errors: any = null): void {
