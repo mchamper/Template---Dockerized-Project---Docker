@@ -35,6 +35,7 @@ export class AuthSystemUserHttpService {
           this._authS.systemUser().addSession({
             token,
             tokenExpiresAt,
+            refreshToken: '',
             data: systemUser.getAuthData(),
           });
         })
@@ -53,6 +54,7 @@ export class AuthSystemUserHttpService {
           this._authS.systemUser().addSession({
             token,
             tokenExpiresAt,
+            refreshToken: '',
             data: systemUser.getAuthData(),
           });
         })
@@ -71,6 +73,7 @@ export class AuthSystemUserHttpService {
           this._authS.systemUser().addSession({
             token,
             tokenExpiresAt,
+            refreshToken: '',
             data: systemUser.getAuthData(),
           });
         })

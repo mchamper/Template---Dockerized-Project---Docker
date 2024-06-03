@@ -10,6 +10,8 @@ DIR=$(dirname ${0})
 SOURCE="${DIR}/${FRAMEWORK}/src"
 TARGET=$(bash base/bin/sources/get.sh ${SERVICE})
 
+if [[ ${TARGET} = "" ]]; then exit 1; fi;
+
 bash ${DIR}/${FRAMEWORK}/script.sh ${SERVICE}
 
 for FILE in $(find ${SOURCE} -type f); do

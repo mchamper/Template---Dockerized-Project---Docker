@@ -4,7 +4,7 @@ import { AuthService } from "../../services/auth.service";
 import { THttpErrorResponse } from "../types/http-error-response.type";
 import { ERR_AS_200, FALLBACK_GUARD, GUARD, MAP_MESSAGE, ON_ERROR } from "./contexts";
 import { catchError, Observable, of, throwError } from "rxjs";
-import { cloneDeep, get } from "lodash";
+import { get } from "lodash";
 
 export function errorInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
   const authS = inject(AuthService);
@@ -19,16 +19,16 @@ export function errorInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn)
       if (event instanceof HttpErrorResponse) {
         const error: THttpErrorResponse = {
           status: get(event, 'error.status', event.status),
-          message: get(event, 'error.APICodeTextSP', event.statusText),
+          message: get(event, 'error.message', event.statusText),
           body: get(event, 'error.body', event.error),
           name: get(event, 'error.name', null),
           exception: get(event, 'error.exception', null),
-          code: get(event, 'error.APICode', -1),
+          code: get(event, 'error.code', -1),
           validation: get(event, 'error.validation', null),
         }
 
         if (guardContext) {
-          if (error.status === 401 && [151, 152].includes(error.code)) {
+          if (error.status === 401 && error.name === 'INVALID_SESSION_ERROR') {
             authS.guard(guardContext).removeSession();
           }
         }

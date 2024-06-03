@@ -1,6 +1,7 @@
 :root {
   --app-px-8: 0.5rem;
   --app-px-10: 0.625rem;
+  --app-px-11: 0.688rem;
   --app-px-12: 0.75rem;
   --app-px-13: 0.813rem;
   --app-px-14: 0.875rem;
@@ -17,6 +18,7 @@
   --app-px-32: 2rem;
   --app-px-34: 2.125rem;
   --app-px-36: 2.25rem;
+  --app-px-38: 2.375rem;
   --app-px-40: 2.5rem;
   --app-px-42: 2.625rem;
   --app-px-44: 2.75rem;
@@ -37,6 +39,7 @@
 
 .app-fs-8 { font-size: var(--app-px-8) !important; }
 .app-fs-10 { font-size: var(--app-px-10) !important; }
+.app-fs-11 { font-size: var(--app-px-11) !important; }
 .app-fs-12 { font-size: var(--app-px-12) !important; }
 .app-fs-13 { font-size: var(--app-px-13) !important; }
 .app-fs-14 { font-size: var(--app-px-14) !important; }

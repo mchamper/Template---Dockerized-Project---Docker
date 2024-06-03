@@ -22,6 +22,6 @@ export function requestInterceptor(req: HttpRequest<unknown>, next: HttpHandlerF
   return next(req.clone({
     headers,
   })).pipe(
-    delay(300)
+    delay(0)
   );
 }

@@ -2,7 +2,7 @@ import { APP_BASE_HREF, registerLocaleData } from '@angular/common';
 import es from '@angular/common/locales/es';
 registerLocaleData(es);
 /* -------------------- */
-import { ApplicationConfig, LOCALE_ID, importProvidersFrom } from '@angular/core';
+import { APP_INITIALIZER, ApplicationConfig, LOCALE_ID, importProvidersFrom } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideClientHydration, withHttpTransferCacheOptions } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -20,16 +20,29 @@ import { nzConfig } from './configs/nz.config';
 /* -------------------- */
 import { NgxWebstorageModule } from 'ngx-webstorage';
 import { provideEnvironmentNgxMask } from 'ngx-mask';
+import { register as swiperRegisterCustomElements } from 'swiper/element/bundle';
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-/* -------------------- */
 import { GoogleLoginProvider, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
+/* -------------------- */
+import { InitService } from './services/init.service';
+
+/* -------------------- */
+
+swiperRegisterCustomElements();
+
+export function initializeApp(initS: InitService) {
+  return (): Promise<any> => initS.init();
+}
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    { provide: APP_BASE_HREF, useValue: '/' },
+    { provide: APP_INITIALIZER, useFactory: initializeApp, deps: [InitService], multi: true },
     { provide: LOCALE_ID, useFactory: (translate: TranslateService) => translate.currentLang ? translate.currentLang : 'es', deps: [TranslateService] },
-    provideRouter(routes, withComponentInputBinding()),
+    { provide: APP_BASE_HREF, useValue: '/' },
+    provideRouter(routes,
+      withComponentInputBinding()
+    ),
     // provideClientHydration(
     //   withHttpTransferCacheOptions({
     //     includePostRequests: false,

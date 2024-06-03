@@ -5,3 +5,18 @@
   padding: 0;
   margin: 0;
 }
+
+a.btn {
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+
+  &.btn-icon {
+    width: 3rem;
+    justify-content: center;
+  }
+}

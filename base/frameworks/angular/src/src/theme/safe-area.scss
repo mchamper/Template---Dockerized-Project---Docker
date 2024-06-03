@@ -1,0 +1,43 @@
+:root {
+  --safe-area-top: 0px;
+  --safe-area-bottom: 0px;
+
+  .device-platform-android {
+    --safe-area-top: 0px;
+    --safe-area-bottom: 0px;
+  }
+  .device-platform-ios {
+    --safe-area-top: 40px;
+    --safe-area-bottom: 24px;
+  }
+  .device-platform-web {
+    --safe-area-top: 0px;
+    --safe-area-bottom: 0px;
+  }
+}
+
+// .device-platform-android,
+// .device-platform-ios,
+// .device-platform-web {
+//   app-header-with-user-info > div,
+//   app-header-with-back > div,
+//   app-header-with-logo > div,
+//   app-page > div.no-header:not(.has-parent) {
+//     padding-top: var(--safe-area-top) !important;
+//   }
+
+//   /* -------------------- */
+
+//   app-page > div:not(.no-footer):not(.has-parent) {
+//     padding-bottom: var(--safe-area-bottom) !important;
+//   }
+
+//   app-tabs > div {
+//     &::after {
+//       content: '';
+//       display: block;
+//       width: 100%;
+//       height: var(--safe-area-bottom);
+//     }
+//   }
+// }

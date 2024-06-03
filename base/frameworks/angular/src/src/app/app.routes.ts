@@ -1,7 +1,6 @@
 import { Route } from '@angular/router';
 import { TRouteData } from './core/types/route-data.type';
 import { authIsLoggedInGuard } from './core/guards/auth-is-logged-in.guard';
-import { authIsNotLoggedInGuard } from './core/guards/auth-is-not-logged-in.guard';
 import { authIsVerifiedGuard } from './core/guards/auth-is-verified.guard';
 import { authCanGuard } from './core/guards/auth-can.guard';
 import { MainTplComponent } from './components/templates/main-tpl/main-tpl.component';
@@ -15,7 +14,9 @@ import { AccountPageComponent } from './pages/account-page/account-page.componen
 import { SystemUserCreatePageComponent } from './pages/system-user-create-page/system-user-create-page.component';
 import { SystemUserUpdatePageComponent } from './pages/system-user-update-page/system-user-update-page.component';
 
-export const routes: (Route & { data?: TRouteData })[] = [
+export const routes: (Route & { data?: TRouteData & {
+  //
+}})[] = [
   {
     path: '',
     component: MainTplComponent,
@@ -66,7 +67,8 @@ export const routes: (Route & { data?: TRouteData })[] = [
         loadComponent: () => NotFoundPageComponent,
         data: { name: 'ErrorNotFoundPage' }
       },
-    ]
+    ],
+    data: { tpl: 'MainTpl' },
   },
   /* -------------------- */
   {
@@ -80,6 +82,7 @@ export const routes: (Route & { data?: TRouteData })[] = [
         data: { name: 'AuthPage' }
       },
     ],
+    data: { tpl: 'AuthTpl' },
   },
   /* -------------------- */
   {

@@ -4,7 +4,7 @@ export const taxonomies: TTaxonomies = [
   {
     page: '__DEFAULT__',
     index: true,
-    title: 'App',
+    title: 'Angular App',
     description: '',
     keywords: '',
   },

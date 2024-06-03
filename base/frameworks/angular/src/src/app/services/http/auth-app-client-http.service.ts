@@ -25,6 +25,7 @@ export class AuthAppClientHttpService {
           this._authS.appClient().addSession({
             token,
             tokenExpiresAt,
+            refreshToken: '',
           });
         })
     });

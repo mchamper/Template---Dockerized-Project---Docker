@@ -14,7 +14,7 @@ export function successInterceptor(req: HttpRequest<unknown>, next: HttpHandlerF
       if (event instanceof HttpResponse) {
         const res: THttpResponse = {
           status: get(event, 'body.status', event.status),
-          message: get(event, 'body.APICodeTextSP', event.statusText),
+          message: get(event, 'body.message', event.statusText),
           body: get(event, 'body.body', event.body),
         }
 

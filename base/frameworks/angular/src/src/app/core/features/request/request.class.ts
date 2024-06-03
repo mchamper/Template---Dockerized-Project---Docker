@@ -4,10 +4,9 @@ import { THttpErrorResponse } from "../../types/http-error-response.type";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { NzMessageService } from "ng-zorro-antd/message";
 import { Observable, of, takeUntil, tap } from "rxjs";
-import { get, isArray } from "lodash";
+import { get, isArray, isNull, isUndefined, set } from "lodash";
 import { logger } from "../../utils/helpers/logger.helper";
 import { RequestComponent } from "./components/request/request.component";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 export class Request<Body = any> {
 
@@ -24,7 +23,7 @@ export class Request<Body = any> {
 
   body = computed(() => this._options.watch ? get(this.res()?.body, this._options.watch, null) : this.res()?.body || null);
 
-  hasValue = computed(() => !!this.body());
+  hasValue = computed(() => isArray(this.body()) ? (this.body() as Body[]).length : !isNull(this.body()) && !isUndefined(this.body()));
   hasError = computed(() => !!this.error());
 
   type = this._options.type || 'default';
@@ -108,12 +107,18 @@ export class Request<Body = any> {
 
   /* -------------------- */
 
-  setBody = (value: Body) => {
+  setBody = (value: Body, runSuccess = false) => {
     this.res.set({
       status: 1,
       message: '',
-      body: value,
+      body: this._options.watch
+        ? set({}, this._options.watch, value) as Body
+        : value,
     });
+
+    if (runSuccess && this._options.success) {
+      this._options.success(this.res()!);
+    }
   }
 
   /* -------------------- */
@@ -179,7 +184,7 @@ export class Request<Body = any> {
 
   /* -------------------- */
 
-  notify(type: 'success' | 'error', service: 'notification' | 'message' = 'notification') {
+  notify(type: 'success' | 'error', service: 'notification' | 'message' = 'message') {
     let optionKey: 'notifySuccess' | 'notifyError';
     let title: string;
     let content: string;
