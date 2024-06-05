@@ -12,6 +12,7 @@ ZIP_NAME="${FOLDER_NAME} (${COMPOSE_PROJECT_NAME}).zip"
 BACKUP_PATH="${BACKUP_PATH}/${FOLDER_NAME}"
 PASSWORD=$(bash base/bin/generate-password.sh 64)
 
+rm -rf "${BACKUP_PATH}"
 mkdir -p "${BACKUP_PATH}"
 mkdir -p "${BACKUP_PATH}/examples/credentials/.aws"
 mkdir -p "${BACKUP_PATH}/credentials"
@@ -23,7 +24,7 @@ cp -a examples/credentials/.aws/. "${BACKUP_PATH}/examples/credentials/.aws"
 cp -a credentials/. "${BACKUP_PATH}/credentials"
 cp -a database-exports/. "${BACKUP_PATH}/database-exports"
 cp -a environments/. "${BACKUP_PATH}/environments"
-cp -a environments/. "${BACKUP_PATH}/logs"
+cp -a logs/. "${BACKUP_PATH}/logs"
 
 cd "${BACKUP_PATH}/.."
 if [[ -f "${ZIP_NAME}" ]]; then rm "${ZIP_NAME}"; fi
