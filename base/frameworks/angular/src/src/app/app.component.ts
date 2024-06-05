@@ -14,6 +14,7 @@ import moment from 'moment';
 import { routeSlideUpAnimation } from './core/utils/animations/route.animation';
 import { fadeOutAnimation } from './core/utils/animations/fade.animation';
 import { RouteService } from './core/services/route.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
@@ -21,6 +22,7 @@ import { RouteService } from './core/services/route.service';
   imports: [
     CommonModule,
     RouterOutlet,
+    TranslateModule,
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
@@ -32,6 +34,7 @@ import { RouteService } from './core/services/route.service';
 })
 export class AppComponent {
 
+  private _translateS = inject(TranslateService);
   private _taxonomyS = inject(TaxonomyService);
   private _authS = inject(AuthService);
   private _authAppClientHttpS = inject(AuthAppClientHttpService);
@@ -53,7 +56,9 @@ export class AppComponent {
     try {
       const timeStart = moment();
 
-      await this.checkAuthAppClient();
+      await Promise.all([
+        this.checkAuthAppClient(),
+      ]);
 
       await Promise.all([
         this.checkAuthSystemUser(),
@@ -64,9 +69,12 @@ export class AppComponent {
 
       setTimeout(() => {
         this.state.app.setReady();
-      }, (timeElapsed >= 2000 ? 0 : 2000 - timeElapsed) + 300);
+      }, (timeElapsed >= 2000 ? 0 : 2000 - timeElapsed));
     } catch (err) {
-      this.state.app.setError(err as string);
+      let errorMessage = this._translateS.instant('init.errors.default');
+      errorMessage += typeof err === 'number' ? ` (${err})` : ` (??)`;
+
+      this.state.app.setError(errorMessage);
     }
   }
 
@@ -84,9 +92,10 @@ export class AppComponent {
         }));
       }
     } catch (err) {
-      return Promise.reject('No se ha podido verificar la identidad del cliente de aplicación.');
+      return Promise.reject(20);
     }
 
+    // return Promise.reject(20);
     return Promise.resolve();
   }
 
@@ -96,11 +105,10 @@ export class AppComponent {
         await firstValueFrom(this._authSystemUserHttpS.me());
       }
     } catch (err) {
-      // return Promise.reject('No se ha podido verificar la identidad del usuario de sistema.');
+      // return Promise.reject(21);
     }
 
-
-
+    // return Promise.reject(21);
     return Promise.resolve();
   }
 }
