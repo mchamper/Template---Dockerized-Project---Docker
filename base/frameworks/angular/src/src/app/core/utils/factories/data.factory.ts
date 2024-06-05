@@ -1,4 +1,4 @@
-import { signal } from "@angular/core";
+import { computed, signal } from "@angular/core";
 
 export const toggleDataFactory = (initValue: boolean = false) => {
   const value = signal(initValue);
@@ -12,11 +12,23 @@ export const toggleDataFactory = (initValue: boolean = false) => {
 
 export const arrayDataFactory = <T = any>() => {
   const items = signal<T[]>([]);
+  const count = computed(() => items().length);
 
   const add = (item: T) => items.update(value => {
     return [
       ...value,
       item
+    ];
+  });
+
+  const update = (index: number, item: Partial<T>) => items.update(value => {
+    value[index] = {
+      ...value[index],
+      ...item,
+    };
+
+    return [
+      ...value
     ];
   });
 
@@ -31,7 +43,9 @@ export const arrayDataFactory = <T = any>() => {
 
   return {
     items,
+    count,
     add,
+    update,
     remove,
     clear,
   };

@@ -3,7 +3,7 @@ import { THttpResponse } from "../../types/http-response.type";
 import { THttpErrorResponse } from "../../types/http-error-response.type";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { NzMessageService } from "ng-zorro-antd/message";
-import { Observable, of, takeUntil, tap } from "rxjs";
+import { Observable, firstValueFrom, of, takeUntil, tap } from "rxjs";
 import { get, isArray, isNull, isUndefined, set } from "lodash";
 import { logger } from "../../utils/helpers/logger.helper";
 import { RequestComponent } from "./components/request/request.component";
@@ -180,6 +180,10 @@ export class Request<Body = any> {
 
   run = (...params: any) => {
     return this.send(...params).subscribe();
+  }
+
+  promise = (...params: any) => {
+    return firstValueFrom(this.send(...params));
   }
 
   /* -------------------- */
