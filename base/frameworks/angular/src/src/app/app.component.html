@@ -1,35 +1,29 @@
-<!-- <div [ngClass]="[
-  'device-platform-' + state.device()!.platform,
-  'device-os-version-' + state.device()!.osVersion,
-  'device-model-' + state.device()!.model,
-].join(' ')"> -->
-  @if (state.app.ready()) {
-    <!-- <div [@routeSlideUpAnimation]="routeS.current.data().tpl">
-      <router-outlet />
-    </div> -->
-
+@if (state.app.ready()) {
+  <!-- <div [@routeSlideUpAnimation]="routeS.current.data().tpl">
     <router-outlet />
-  } @else if (state.app.error()) {
-    <div class="content container-fluid">
-      <div>
-        <p class="mb-0">{{ state.app.error() }}</p>
-        <p class="mb-0">Por favor, vuelva a intentarlo más tarde.</p>
-      </div>
-    </div>
-  } @else {
-    <!-- <div class="content container-fluid" @fadeOutAnimation> -->
-    <div class="content container-fluid">
-      <div>
-        <div class="mb-4">
-          <!-- <img class="d-block mb-2" src="assets/img/logos/logo.svg" style="width: 15rem;"> -->
-        </div>
+  </div> -->
 
-        <div class="spinner-grow text-primary" role="status" aria-hidden="true" style="width: 2rem; height: 2rem;"></div>
-
-        <!-- <video class="object-fit-contain w-100 h-100" poster="noposter" autoplay loop muted playsinline oncanplay="this.play()" onloadedmetadata="this.muted = true">
-          <source src="assets/videos/splash-v1.mp4" type="video/mp4">
-        </video> -->
-      </div>
+  <router-outlet />
+} @else if (state.app.error()) {
+  <div class="content container-fluid">
+    <div>
+      <p class="mb-0">{{ state.app.error() }}</p>
+      <p class="mb-0">{{ 'init.errors.try_again' | translate }}</p>
     </div>
-  }
-<!-- </div> -->
+  </div>
+} @else {
+  <!-- <div class="content container-fluid" @fadeOutAnimation> -->
+  <div class="content container-fluid">
+    <div>
+      <div class="mb-4">
+        <!-- <img class="d-block mb-2" src="assets/img/logos/logo.svg" style="width: 15rem;"> -->
+      </div>
+
+      <div class="spinner-grow text-primary" role="status" aria-hidden="true" style="width: 2rem; height: 2rem;"></div>
+
+      <!-- <video class="object-fit-contain w-100 h-100" poster="noposter" autoplay loop muted playsinline oncanplay="this.play()" onloadedmetadata="this.muted = true">
+        <source src="assets/videos/splash-v1.mp4" type="video/mp4">
+      </video> -->
+    </div>
+  </div>
+}

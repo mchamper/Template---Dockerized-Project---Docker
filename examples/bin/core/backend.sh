@@ -21,12 +21,12 @@ if [[ ${CMD} = "install" ]]; then
 fi
 
 if [[ ${CMD} = "status" ]]; then
-  bash base/bin/aws/eb-status.sh ${SERVICE}
+  bash base/bin/aws/eb-status.sh ${SERVICE}-aws
   exit
 fi
 
 if [[ ${CMD} = "deploy" ]]; then
-  bash base/bin/aws/eb-deploy.sh ${SERVICE}
+  bash base/bin/aws/eb-deploy.sh ${SERVICE}-aws
   exit
 fi
 
@@ -40,20 +40,20 @@ if [[ ${CMD} = "deploy-and-migrate" ]]; then
 fi
 
 if [[ ${CMD} = "get-envs" ]]; then
-  bash base/bin/aws/s3-getenvs.sh 0-utils "aws-projectname-environments/${SERVICE}-prod/.env" "environments/${SERVICE}-prod/.env[REMOTE]"
+  bash base/bin/aws/s3-getenvs.sh 0-utils "aws-projectname-environments/${SERVICE}-${ARG1:-prod}/.env" "environments/${SERVICE}-${ARG1:-prod}/.env[REMOTE]"
   exit
 fi
 
 if [[ ${CMD} = "set-envs" ]]; then
-  bash base/bin/aws/s3-setenvs.sh 0-utils "environments/${SERVICE}-prod/.env" "aws-projectname-environments/${SERVICE}-prod/.env"
+  bash base/bin/aws/s3-setenvs.sh 0-utils "environments/${SERVICE}-${ARG1:-prod}/.env" "aws-projectname-environments/${SERVICE}-${ARG1:-prod}/.env"
   exit
 fi
 
 if [[ ${CMD} = "logs" ]]; then
-  echo "$(bash ${THIS} eb-ssh "cat /var/log/eb-engine.log")" > "logs/${SERVICE}-prod--aws-eb-engine.log"
-  # echo "$(bash ${THIS} eb-ssh "cat /var/log/cfn-init.log")" > "logs/${SERVICE}-prod--aws-cfn-init.log"
-  # echo "$(bash ${THIS} eb-ssh "cat /var/log/cfn-init-cmd.log")" > "logs/${SERVICE}-prod--aws-cfn-init-cmd.log"
-  echo "$(bash ${THIS} eb-ssh "cat /var/app/current/storage/logs/laravel.log")" > "logs/${SERVICE}-prod--laravel.log"
+  echo "$(bash ${THIS} eb-ssh "cat /var/log/eb-engine.log")" > "logs/${SERVICE}-${ARG1:-prod}--aws-eb-engine.log"
+  # echo "$(bash ${THIS} eb-ssh "cat /var/log/cfn-init.log")" > "logs/${SERVICE}-${ARG1:-prod}--aws-cfn-init.log"
+  # echo "$(bash ${THIS} eb-ssh "cat /var/log/cfn-init-cmd.log")" > "logs/${SERVICE}-${ARG1:-prod}--aws-cfn-init-cmd.log"
+  echo "$(bash ${THIS} eb-ssh "cat /var/app/current/storage/logs/laravel.log")" > "logs/${SERVICE}-${ARG1:-prod}--laravel.log"
 
   exit
 fi

@@ -160,6 +160,15 @@ services:
     command: /bin/sh -c "php artisan websockets:serve; tail -f /dev/null"
     volumes:
       - ${SRC_BACKEND}:/docker/src
+  backend-aws:
+    build:
+      context: ./base/dockerfiles/aws
+      dockerfile: Dockerfile.alpine
+    command: /bin/sh -c "tail -f /dev/null"
+    volumes:
+      - ./credentials/.ssh/:/home/docker/.ssh/
+      - ./credentials/.aws/:/home/docker/.aws/
+      - ${SRC_BACKEND}:/docker/src
 
   mail-server:
     build:
