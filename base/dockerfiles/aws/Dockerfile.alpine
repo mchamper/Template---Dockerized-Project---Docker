@@ -1,0 +1,27 @@
+FROM python:3.10.14-alpine
+
+WORKDIR /docker/src
+RUN addgroup docker && adduser -D docker -u 1000 -G root -G www-data
+RUN chown -R docker:docker /docker
+
+##############################
+##############################
+
+# Install common dependencies
+RUN apk add --update --no-cache \
+  bash \
+  git \
+  zip \
+  unzip \
+  openssh \
+  openssl \
+  putty \
+  rsync \
+  groff \
+  ffmpeg \
+  && rm -rf /var/cache/apk/* && rm -rf /tmp/*
+
+RUN pip install awscli --upgrade
+RUN pip install awsebcli --upgrade
+
+USER docker
