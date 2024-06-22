@@ -12,7 +12,8 @@
         "pattern": "This field must have a valid format.",
         "mask": "This field must have a valid format.",
         "max_length": "This field can have a maximum of {{length}} characters.",
-        "max": "The maximum valid number for this field is {{max}}.",
+        "min": "The minimum value for this field is {{min}}.",
+        "max": "The maximum value for this field is {{max}}.",
         "_luhn": "This field does not have a valid number.",
         "_credit_card_expiration_date": "This field must be a valid date."
       }

@@ -6,13 +6,16 @@ export const formValidatorMessages: { [key: string]: string | ((...params: any) 
   email: 'core.form.validators.email',
   pattern: `core.form.validators.pattern`,
   mask: (mask: string) => {
-    return `core.form.validators.mask`
+    return `core.form.validators.mask`;
   },
   maxlength: (length: number) => {
-    return `core.form.validators.max_length`
+    return `core.form.validators.max_length`;
+  },
+  min: (min: number) => {
+    return `core.form.validators.min`;
   },
   max: (max: number) => {
-    return `core.form.validators.max`
+    return `core.form.validators.max`;
   },
   /* -------------------- */
   _email: 'core.form.validators.email',
