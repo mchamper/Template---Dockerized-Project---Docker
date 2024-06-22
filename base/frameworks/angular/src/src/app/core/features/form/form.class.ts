@@ -9,9 +9,11 @@ import { cloneDeep, entries, isArray } from "lodash";
 import { logger } from "../../utils/helpers/logger.helper";
 import { StorageService } from "../../../services/storage.service";
 import { md5 } from "../../utils/helpers/hash.helper";
+import { SsrService } from "../../services/ssr.service";
 
 export class Form<Data = any> {
 
+  private _ssrS = this._inject(SsrService);
   private _storageS = this._inject(StorageService);
   private _combosHttpS = this._inject(CombosHttpService);
 
@@ -193,6 +195,8 @@ export class Form<Data = any> {
   }
 
   private async _startAutoSave() {
+    if (this._ssrS.isServer()) return;
+
     if (!this._options.autoSave) {
       await this._storageS.remove(this.autoSaveState.key());
       return;
