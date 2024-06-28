@@ -3,3 +3,9 @@ export type THttpResponse<Body = any> = {
   message: string,
   body: Body,
 }
+
+export type THttpResponseKeys = {
+  status?: string,
+  message?: string,
+  body?: string,
+}

@@ -10,6 +10,8 @@
 // export class PreferencesStorageService extends AbstractStorageService {
 
 //   override async get(key: string, options?: TStoreOptions): Promise<any> {
+//     if (this._ssrS.isServer()) return;
+
 //     let value = (await Preferences.get({ key }))?.value;
 
 //     if (value) {
@@ -26,6 +28,8 @@
 //   }
 
 //   override async set(key: string, value: any, options?: TStoreOptions): Promise<void> {
+//     if (this._ssrS.isServer()) return;
+
 //     value = options?.base64
 //       ? base64Encode(value)
 //       : JSON.stringify(value);
@@ -34,10 +38,14 @@
 //   }
 
 //   override async remove(key: string): Promise<void> {
+//     if (this._ssrS.isServer()) return;
+
 //     await Preferences.remove({ key });
 //   }
 
 //   override async clear(): Promise<void> {
+//     if (this._ssrS.isServer()) return;
+
 //     await Preferences.clear();
 //   }
 // }

@@ -5,6 +5,8 @@ import { cloneDeep } from 'lodash';
 import { RouteService } from '../services/route.service';
 import { environment } from '../../../environments/environment';
 import { TTaxonomies, TTaxonomy } from '../types/taxonomy.type';
+// import { GoogleTagManagerService } from 'angular-google-tag-manager';
+import { SsrService } from './ssr.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +17,8 @@ export class TaxonomyService {
   private _title = inject(Title);
   private _meta = inject(Meta);
   private _routeS = inject(RouteService);
+  private _ssrS = inject(SsrService);
+  // private _googleTagManagerS = inject(GoogleTagManagerService)
 
   taxonomies: TTaxonomies = [];
 
@@ -24,13 +28,24 @@ export class TaxonomyService {
 
   /* -------------------- */
 
-  init(taxonomies: TTaxonomies): void {
+  init(taxonomies: TTaxonomies, options?: { initGoogleTagManager?: boolean }): void {
     this.taxonomies = [
       ...this.taxonomies,
       ...taxonomies,
     ];
 
-    this._routeS.onNavigationEnd$().subscribe(() => this._resolve());
+    this._routeS.onNavigationEnd$().subscribe((value) => {
+      this._resolve();
+
+      if (this._ssrS.isBrowser()) {
+        if (options?.initGoogleTagManager) {
+          // this._googleTagManagerS.pushTag({
+          //   event: 'page',
+          //   pageName: value.url
+          // });
+        }
+      }
+    });
   }
 
   /* -------------------- */

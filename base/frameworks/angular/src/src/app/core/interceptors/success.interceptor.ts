@@ -1,12 +1,12 @@
 import { HttpEvent, HttpHandlerFn, HttpRequest, HttpResponse } from "@angular/common/http";
 import { THttpResponse } from "../types/http-response.type";
-import { BODY_KEYS, MAP, MAP_MESSAGE, ON_SUCCESS } from "./contexts";
+import { MAP_BODY, MAP_MESSAGE, ON_SUCCESS, SUCCESS_KEYS } from "./contexts";
 import { map, Observable } from "rxjs";
 import { cloneDeep, get } from "lodash";
 
 export function successInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
-  const bodyKeys = req.context.get(BODY_KEYS);
-  const mapContext = req.context.get(MAP);
+  const resKeys = req.context.get(SUCCESS_KEYS);
+  const mapBodyContext = req.context.get(MAP_BODY);
   const mapMessageContext = req.context.get(MAP_MESSAGE);
   const onSuccessContext = req.context.get(ON_SUCCESS);
 
@@ -14,16 +14,16 @@ export function successInterceptor(req: HttpRequest<unknown>, next: HttpHandlerF
     map((event: HttpEvent<any>) => {
       if (event instanceof HttpResponse) {
         const res: THttpResponse = {
-          status: get(event, bodyKeys?.status || 'body.status', event.status),
-          message: get(event, bodyKeys?.message || 'body.message', event.statusText),
-          body: get(event, bodyKeys?.body || 'body.body', event.body),
+          status: get(event, resKeys?.status || 'body.status', event.status),
+          message: get(event, resKeys?.message || 'body.message', event.statusText),
+          body: get(event, resKeys?.body || 'body.body', event.body),
         }
 
-        if (mapContext) {
+        if (mapBodyContext) {
           const originalBody = cloneDeep(res.body);
 
           res.body = {
-            ...mapContext(res),
+            ...mapBodyContext(res),
             _raw: originalBody,
           };
         }

@@ -39,13 +39,17 @@ export class AppComponent {
   private _authS = inject(AuthService);
   private _authAppClientHttpS = inject(AuthAppClientHttpService);
   private _authSystemUserHttpS = inject(AuthSystemUserHttpService);
+
   routeS = inject(RouteService);
   state = inject(State);
   uiState = inject(UiState);
 
   constructor() {
     this._authS.initEffects();
-    this._taxonomyS.init(taxonomies);
+
+    this._taxonomyS.init(taxonomies, {
+      initGoogleTagManager: false,
+    });
   }
 
   async ngOnInit() {
@@ -67,9 +71,11 @@ export class AppComponent {
       const timeFinish = moment();
       const timeElapsed = timeFinish.diff(timeStart);
 
-      setTimeout(() => {
-        this.state.app.setReady();
-      }, (timeElapsed >= 2000 ? 0 : 2000 - timeElapsed));
+      this.state.app.setReady();
+
+      // setTimeout(() => {
+      //   this.state.app.setReady();
+      // }, (timeElapsed >= 2000 ? 0 : 2000 - timeElapsed));
     } catch (err) {
       let errorMessage = this._translateS.instant('init.errors.default');
       errorMessage += typeof err === 'number' ? ` (${err})` : ` (??)`;
@@ -82,15 +88,22 @@ export class AppComponent {
 
   async checkAuthAppClient(): Promise<void> {
     try {
-      if (this._authS.appClient().activeSession()) {
-        await firstValueFrom(this._authAppClientHttpS.me());
+      if (!this._authS.appClient().activeSession()) {
+        this._authS.appClient().addSession({
+          token: environment.backendAppClientToken,
+          refreshToken: '',
+        });
       }
-      else {
-        await firstValueFrom(this._authAppClientHttpS.login({
-          key: environment.backendAppClientKey,
-          secret: environment.backendAppClientSecret,
-        }));
-      }
+
+      // if (this._authS.appClient().activeSession()) {
+      //   await firstValueFrom(this._authAppClientHttpS.me());
+      // }
+      // else {
+      //   await firstValueFrom(this._authAppClientHttpS.login({
+      //     key: environment.backendAppClientKey,
+      //     secret: environment.backendAppClientSecret,
+      //   }));
+      // }
     } catch (err) {
       return Promise.reject(20);
     }
