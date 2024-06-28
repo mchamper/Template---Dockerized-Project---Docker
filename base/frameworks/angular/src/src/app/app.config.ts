@@ -6,7 +6,7 @@ import { APP_INITIALIZER, ApplicationConfig, LOCALE_ID, importProvidersFrom } fr
 import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import { provideClientHydration, withHttpTransferCacheOptions } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { HttpBackend, HttpClient, provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
 /* -------------------- */
@@ -18,7 +18,7 @@ import { es_ES, provideNzI18n } from 'ng-zorro-antd/i18n';
 import { provideNzConfig } from 'ng-zorro-antd/core/config';
 import { nzConfig } from './configs/nz.config';
 /* -------------------- */
-import { NgxWebstorageModule } from 'ngx-webstorage';
+import { provideNgxWebstorage, withLocalStorage, withNgxWebstorageConfig } from 'ngx-webstorage';
 import { provideEnvironmentNgxMask } from 'ngx-mask';
 import { register as swiperRegisterCustomElements } from 'swiper/element/bundle';
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -46,11 +46,11 @@ export const appConfig: ApplicationConfig = {
       }),
       withComponentInputBinding()
     ),
-    // provideClientHydration(
-    //   withHttpTransferCacheOptions({
-    //     includePostRequests: false,
-    //   })
-    // ),
+    provideClientHydration(
+      withHttpTransferCacheOptions({
+        includePostRequests: false,
+      })
+    ),
     provideAnimations(),
     provideHttpClient(
       withFetch(),
@@ -63,9 +63,12 @@ export const appConfig: ApplicationConfig = {
     provideNzI18n(es_ES),
     provideNzConfig(nzConfig),
     provideEnvironmentNgxMask({ validation: true, thousandSeparator: '.' }),
+    provideNgxWebstorage(
+      withNgxWebstorageConfig({ prefix: 'app', separator: '.', caseSensitive: true }),
+      withLocalStorage(),
+    ),
     importProvidersFrom(
       [
-        NgxWebstorageModule.forRoot({ prefix: 'app', separator: '.', caseSensitive: true }),
         TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,
