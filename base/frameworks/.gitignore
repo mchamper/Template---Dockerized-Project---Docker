@@ -1,3 +1,7 @@
+*/_backup/**
+
+# /* -------------------- */ #
+
 angular/src/**
 !angular/src/public/
 !angular/src/public/**
