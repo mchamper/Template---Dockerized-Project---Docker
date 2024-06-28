@@ -105,10 +105,10 @@ export class AppComponent {
       //   }));
       // }
     } catch (err) {
-      return Promise.reject(20);
+      return Promise.reject(10);
     }
 
-    // return Promise.reject(20);
+    // return Promise.reject(10);
     return Promise.resolve();
   }
 
@@ -118,10 +118,10 @@ export class AppComponent {
         await firstValueFrom(this._authSystemUserHttpS.me());
       }
     } catch (err) {
-      // return Promise.reject(21);
+      // return Promise.reject(11);
     }
 
-    // return Promise.reject(21);
+    // return Promise.reject(11);
     return Promise.resolve();
   }
 }
