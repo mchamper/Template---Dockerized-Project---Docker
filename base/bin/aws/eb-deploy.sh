@@ -11,7 +11,8 @@ LABEL="${COMPOSE_PROJECT_NAME}-${SERVICE}-${BRANCH//\//-}-${VERSION_FULL}"
 if [[ ${2} = "-v" ]]; then
   echo ${LABEL}
 else
-  bash base/bin/docker/run.sh ${SERVICE} "
+  bash base/bin/docker/run.sh 0-aws "
+    cd /docker/src/${SERVICE} || exit 1
     eb deploy -l \"${LABEL}\"
   "
 fi

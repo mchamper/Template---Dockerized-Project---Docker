@@ -5,9 +5,9 @@ services:
       context: ./base/dockerfiles/node
       dockerfile: Dockerfile.alpine
       args:
-        NODE_VERSION: "18"
+        NODE_VERSION: "20"
         NPM_VERSION: "10"
-        ANGULAR_VERSION: "17"
+        ANGULAR_VERSION: "18"
     command: /bin/sh -c "npm start -- --host 0.0.0.0; tail -f /dev/null"
     ports:
       - ${PORT}0001:4200
@@ -15,7 +15,7 @@ services:
       - ./credentials/.ssh/:/home/node/.ssh/
       - ./credentials/.aws/:/home/node/.aws/
       - ${SRC_WEBSITE}:/docker/src
-  website-server:
+  website-dist:
     build:
       context: ./base/dockerfiles/nginx
       dockerfile: Dockerfile.alpine
@@ -25,7 +25,7 @@ services:
         NGINX_ROOT: /docker/src/dist/app
     ports:
       - ${PORT}0101:80
-      - ${PORT}1101:443
+      - ${PORT}0201:443
     volumes:
       - ${SRC_WEBSITE}:/docker/src
 
@@ -34,9 +34,9 @@ services:
       context: ./base/dockerfiles/node
       dockerfile: Dockerfile.alpine
       args:
-        NODE_VERSION: "18"
-        NPM_VERSION: "9"
-        ANGULAR_VERSION: "17"
+        NODE_VERSION: "20"
+        NPM_VERSION: "10"
+        ANGULAR_VERSION: "18"
     command: /bin/sh -c "npm start -- --host 0.0.0.0; tail -f /dev/null"
     ports:
       - ${PORT}0002:4200
@@ -44,7 +44,7 @@ services:
       - ./credentials/.ssh/:/home/node/.ssh/
       - ./credentials/.aws/:/home/node/.aws/
       - ${SRC_WEBAPP}:/docker/src
-  webapp-server:
+  webapp-dist:
     build:
       context: ./base/dockerfiles/nginx
       dockerfile: Dockerfile.alpine
@@ -54,7 +54,7 @@ services:
         NGINX_ROOT: /docker/src/dist/app
     ports:
       - ${PORT}0102:80
-      - ${PORT}1102:443
+      - ${PORT}0202:443
     volumes:
       - ${SRC_WEBAPP}:/docker/src
 
@@ -63,10 +63,9 @@ services:
       context: ./base/dockerfiles/node
       dockerfile: Dockerfile.alpine
       args:
-        NODE_VERSION: "18"
+        NODE_VERSION: "20"
         NPM_VERSION: "10"
-        ANGULAR_VERSION: "17"
-        IONIC_VERSION: "7"
+        ANGULAR_VERSION: "18"
     command: /bin/sh -c "npm start -- --host 0.0.0.0; tail -f /dev/null;"
     ports:
       - ${PORT}0003:8100
@@ -78,9 +77,9 @@ services:
       context: ./base/dockerfiles/node
       dockerfile: Dockerfile.alpine
       args:
-        NODE_VERSION: "18"
+        NODE_VERSION: "20"
         NPM_VERSION: "10"
-        ANGULAR_VERSION: "17"
+        ANGULAR_VERSION: "18"
     command: /bin/sh -c "npm start -- --host 0.0.0.0; tail -f /dev/null"
     ports:
       - ${PORT}0004:4200
@@ -88,7 +87,7 @@ services:
       - ./credentials/.ssh/:/home/node/.ssh/
       - ./credentials/.aws/:/home/node/.aws/
       - ${SRC_BACKOFFICE}:/docker/src
-  backoffice-server:
+  backoffice-dist:
     build:
       context: ./base/dockerfiles/nginx
       dockerfile: Dockerfile.alpine
@@ -98,7 +97,7 @@ services:
         NGINX_ROOT: /docker/src/dist/app
     ports:
       - ${PORT}0104:80
-      - ${PORT}1104:443
+      - ${PORT}0204:443
     volumes:
       - ${SRC_BACKOFFICE}:/docker/src
 
@@ -125,7 +124,7 @@ services:
       - backend:php
     ports:
       - ${PORT}0011:80
-      - ${PORT}1011:443
+      - ${PORT}0111:443
     volumes:
       - ${SRC_BACKEND}:/docker/src
   backend-cronjob-server:
@@ -160,15 +159,6 @@ services:
     command: /bin/sh -c "php artisan websockets:serve; tail -f /dev/null"
     volumes:
       - ${SRC_BACKEND}:/docker/src
-  backend-aws:
-    build:
-      context: ./base/dockerfiles/aws
-      dockerfile: Dockerfile.alpine
-    command: /bin/sh -c "tail -f /dev/null"
-    volumes:
-      - ./credentials/.ssh/:/home/docker/.ssh/
-      - ./credentials/.aws/:/home/docker/.aws/
-      - ${SRC_BACKEND}:/docker/src
 
   mail-server:
     build:
@@ -180,7 +170,7 @@ services:
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
     ports:
       - ${PORT}0015:8025
-      - ${PORT}1015:1025
+      - ${PORT}0115:1025
 
   database:
     build:
@@ -224,6 +214,18 @@ services:
       - ./credentials/.ssh/:/home/docker/.ssh/
       - ./credentials/.aws/:/home/docker/.aws/
       - ./environments/:/docker/environments/
+
+  0-aws:
+    build:
+      context: ./base/dockerfiles/aws
+      dockerfile: Dockerfile.alpine
+    command: /bin/sh -c "tail -f /dev/null"
+    volumes:
+      - ./credentials/.ssh/:/home/docker/.ssh/
+      - ./credentials/.aws/:/home/docker/.aws/
+      - ./environments/:/docker/environments/
+      - ${SRC_BACKOFFICE}:/docker/src/backoffice
+      - ${SRC_BACKEND}:/docker/src/backend
 
 volumes:
   database:

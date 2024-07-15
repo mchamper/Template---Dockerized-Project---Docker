@@ -2,7 +2,7 @@ import { HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpRequest, HttpResponse 
 import { inject } from "@angular/core";
 import { AuthService } from "../../services/auth.service";
 import { THttpErrorResponse } from "../types/http-error-response.type";
-import { ERR_AS_200, FALLBACK_GUARD, GUARD, MAP_MESSAGE, ON_ERROR } from "./contexts";
+import { ERROR_KEYS, ERR_AS_SUCCESS, FALLBACK_GUARD, GUARD, MAP_MESSAGE, ON_ERROR } from "./contexts";
 import { catchError, Observable, of, throwError } from "rxjs";
 import { get } from "lodash";
 
@@ -10,21 +10,22 @@ export function errorInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn)
   const authS = inject(AuthService);
 
   const guardContext = req.context.get(GUARD) || req.context.get(FALLBACK_GUARD);
+  const resKeys = req.context.get(ERROR_KEYS);
   const mapMessageContext = req.context.get(MAP_MESSAGE);
-  const errAs200Context = req.context.get(ERR_AS_200);
+  const errAsSuccessContext = req.context.get(ERR_AS_SUCCESS);
   const onErrorContext = req.context.get(ON_ERROR);
 
   return next(req).pipe(
     catchError((event: HttpEvent<any>) => {
       if (event instanceof HttpErrorResponse) {
         const error: THttpErrorResponse = {
-          status: get(event, 'error.status', event.status),
-          message: get(event, 'error.message', event.statusText),
-          body: get(event, 'error.body', event.error),
-          name: get(event, 'error.name', null),
-          exception: get(event, 'error.exception', null),
-          code: get(event, 'error.code', -1),
-          validation: get(event, 'error.validation', null),
+          status: get(event, resKeys?.status || 'error.status', event.status),
+          message: get(event, resKeys?.message || 'error.message', event.statusText),
+          body: get(event, resKeys?.body || 'error.body', event.error),
+          name: get(event, resKeys?.name || 'error.name', ''),
+          exception: get(event, resKeys?.exception || 'error.exception', ''),
+          code: get(event, resKeys?.code ||  'error.code', -1),
+          validation: get(event, resKeys?.validation ||  'error.validation'),
         }
 
         if (guardContext) {
@@ -37,7 +38,7 @@ export function errorInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn)
           error.message = mapMessageContext(error) || error.message;
         }
 
-        if (errAs200Context && errAs200Context(error)) {
+        if (errAsSuccessContext && errAsSuccessContext(error)) {
           return of(new HttpResponse({
             status: 200,
             statusText: error.message,

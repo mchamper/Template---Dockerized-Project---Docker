@@ -7,8 +7,9 @@ import { Observable, firstValueFrom, of, takeUntil, tap } from "rxjs";
 import { get, isArray, isNull, isUndefined, set } from "lodash";
 import { logger } from "../../utils/helpers/logger.helper";
 import { RequestComponent } from "./components/request/request.component";
+import { coreConfig } from "../../../configs/core.config";
 
-export class Request<Body = any> {
+export class Request<Body = any, Params = any> {
 
   private _nzNotificationS = this._inject(NzNotificationService);
   private _nzMessageS = this._inject(NzMessageService);
@@ -45,6 +46,7 @@ export class Request<Body = any> {
       type?: RequestComponent['type'],
       injector?: Injector,
     } = {},
+    public params?: Params,
   ) {
 
     this._options = {
@@ -188,7 +190,7 @@ export class Request<Body = any> {
 
   /* -------------------- */
 
-  notify(type: 'success' | 'error', service: 'notification' | 'message' = 'message') {
+  notify(type: 'success' | 'error', service: 'notification' | 'message' = coreConfig.requestNotifyService) {
     let optionKey: 'notifySuccess' | 'notifyError';
     let title: string;
     let content: string;

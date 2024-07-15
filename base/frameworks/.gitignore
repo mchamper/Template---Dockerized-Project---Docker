@@ -1,9 +1,13 @@
+*/_backup/**
+
+# /* -------------------- */ #
+
 angular/src/**
+!angular/src/public/
+!angular/src/public/**
 !angular/src/src/
 !angular/src/src/app/
 !angular/src/src/app/**
-!angular/src/src/assets/
-!angular/src/src/assets/**
 !angular/src/src/environments/
 !angular/src/src/environments/environment.*.ts
 !angular/src/src/theme/

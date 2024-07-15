@@ -4,7 +4,7 @@ import { isArray, xorWith } from 'lodash';
 import { NzSelectComponent } from 'ng-zorro-antd/select';
 import { NzInputDirective, NzInputGroupComponent } from 'ng-zorro-antd/input';
 import { NzDatePickerComponent, NzRangePickerComponent } from 'ng-zorro-antd/date-picker';
-import { Observable, debounceTime, startWith } from 'rxjs';
+import { Observable, startWith } from 'rxjs';
 import { NzFormControlComponent } from 'ng-zorro-antd/form';
 import { formValidatorMessages } from '../form.validators';
 import { NzInputNumberComponent } from 'ng-zorro-antd/input-number';
@@ -13,16 +13,21 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { NzRadioComponent } from 'ng-zorro-antd/radio';
 import { NzCheckboxComponent } from 'ng-zorro-antd/checkbox';
 import { TranslateService } from '@ngx-translate/core';
+import { DecimalPipe } from '@angular/common';
 
 @Directive({
   selector: '[formControl],[formControlName],[ngModel],nz-upload,[nz-radio],[nz-checkbox]',
-  standalone: true
+  standalone: true,
+  providers: [
+    DecimalPipe,
+  ]
 })
 export class FormControlDirective {
 
   private _injector = inject(Injector);
   private _destroyRef = inject(DestroyRef);
   private _translateS = inject(TranslateService);
+  private _decimalPipe = inject(DecimalPipe);
 
   @Input() uploadControl!: FormControl;
   @Input() errorMessages!: { [key: string]: string };
@@ -264,22 +269,28 @@ export class FormControlDirective {
       if (formValidatorMessages[key]) {
         const message: any = formValidatorMessages[key];
 
-        if (key === 'mask') {
-          const mask = this.control.errors[key].requiredMask;
-          return this._translateS.instant(message(mask));
-        }
+        switch (key) {
+          case 'mask': {
+            const mask = this.control.errors[key].requiredMask;
+            return this._translateS.instant(message(mask));
+          }
+          case 'maxlength': {
+            const maxLength = this.control.errors[key].requiredLength;
+            return this._translateS.instant(message(maxLength), { length: this._decimalPipe.transform(maxLength) });
+          }
+          case 'min': {
+            const min = this.control.errors[key].min;
+            return this._translateS.instant(message(min), { min: this._decimalPipe.transform(min) });
+          }
+          case 'max': {
+            const max = this.control.errors[key].max;
+            return this._translateS.instant(message(max), { max: this._decimalPipe.transform(max) });
+          }
 
-        if (key === 'maxlength') {
-          const maxLength = this.control.errors[key].requiredLength;
-          return this._translateS.instant(message(maxLength), { length: maxLength });
+          default: {
+            return this._translateS.instant(message);
+          }
         }
-
-        if (key === 'max') {
-          const max = this.control.errors[key].max;
-          return this._translateS.instant(message(max), { length: max });
-        }
-
-        return this._translateS.instant(message);
       }
     }
 

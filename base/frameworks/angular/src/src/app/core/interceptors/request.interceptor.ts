@@ -4,6 +4,7 @@ import { AuthService } from "../../services/auth.service";
 import { FALLBACK_GUARD, GUARD } from "./contexts";
 import { delay, Observable } from "rxjs";
 import { State } from "../../states/state";
+import { coreConfig } from "../../configs/core.config";
 
 export function requestInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
   const authS = inject(AuthService);
@@ -22,6 +23,6 @@ export function requestInterceptor(req: HttpRequest<unknown>, next: HttpHandlerF
   return next(req.clone({
     headers,
   })).pipe(
-    delay(0)
+    delay(coreConfig.http?.delay || 0)
   );
 }

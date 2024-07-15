@@ -14,6 +14,8 @@ export class WebStorageService extends AbstractStorageService {
   /* -------------------- */
 
   override async get(key: string, options?: TStoreOptions): Promise<any> {
+    if (this._ssrS.isServer()) return;
+
     let value = this._localStorage.retrieve(key);
 
     if (value) {
@@ -30,6 +32,8 @@ export class WebStorageService extends AbstractStorageService {
   }
 
   override async set(key: string, value: any, options?: TStoreOptions): Promise<void> {
+    if (this._ssrS.isServer()) return;
+
     value = options?.base64
       ? base64Encode(value)
       : JSON.stringify(value);
@@ -40,11 +44,15 @@ export class WebStorageService extends AbstractStorageService {
   }
 
   override async remove(key: string): Promise<void> {
+    if (this._ssrS.isServer()) return;
+
     this._localStorage.clear(key);
     return Promise.resolve();
   }
 
   override async clear(): Promise<void> {
+    if (this._ssrS.isServer()) return;
+
     this._localStorage.clear();
     return Promise.resolve();
   }

@@ -1,0 +1,39 @@
+// swiper-container {
+//   &::part(wrapper) {
+//     padding-bottom: 25px;
+//   }
+
+//   &::part(bullet),
+//   &::part(bullet-active) {
+//     background: none;
+//     box-sizing: border-box;
+//     border: 2px solid var(--bs-secondary) !important;
+//     width: 14px;
+//     height: 14px;
+//     opacity: 1;
+//   }
+
+//   &::part(bullet-active) {
+//     background: var(--bs-secondary);
+//   }
+
+//   &::part(button-prev),
+//   &::part(button-next) {
+//     top: unset;
+//     bottom: -5px;
+//     height: 20px;
+//     transform: translateY(-50%);
+//     color: var(--bs-secondary);
+//   }
+
+//   &::part(button-prev) {
+//     left: calc(50% - (152px / 2) - 30px);
+//     right: unset;
+//   }
+
+//   &::part(button-next) {
+//     left: unset;
+//     right: calc(50% - (152px / 2) - 30px);
+//   }
+// }
+

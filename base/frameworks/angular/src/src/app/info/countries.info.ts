@@ -87,7 +87,7 @@ export const countriesInfo: TCountry[] = [
     iso: "CU",
     phoneRegex: "^([5-6][0-9]{7})$",
     phoneCode: 53,
-    maxDigits: 8
+    maxDigits: 8,
   },
   {
     name: "Czech Republic",
@@ -127,7 +127,7 @@ export const countriesInfo: TCountry[] = [
   {
     name: "France",
     iso: "FR",
-    phoneRegex: "^(6[0-9]{8})$",
+    phoneRegex: "^([6-7][0-9]{8})$",
     phoneCode: 33,
     maxDigits: 9,
   },
