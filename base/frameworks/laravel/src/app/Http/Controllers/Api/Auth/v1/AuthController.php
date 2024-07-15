@@ -69,10 +69,7 @@ class AuthController extends Controller
 
         DB::beginTransaction();
 
-        $token = $user->createToken(
-            name: request()->header('User-Agent'),
-            expiresAt: $expiresAt,
-        );
+        $token = $user->createDefaultToken(expiresAt: $expiresAt);
 
         DB::commit();
 
@@ -139,10 +136,7 @@ class AuthController extends Controller
         $user->email_verified_at = $socialUserRaw['email_verified'] ? now() : null;
         $user->saveOrFail();
 
-        $token = $user->createToken(
-            name: request()->header('User-Agent'),
-            expiresAt: $expiresAt,
-        );
+        $token = $user->createDefaultToken(expiresAt: $expiresAt);
 
         DB::commit();
 
@@ -165,10 +159,7 @@ class AuthController extends Controller
 
         DB::beginTransaction();
 
-        $token = $systemUser->createToken(
-            name: request()->header('User-Agent'),
-            expiresAt: $expiresAt,
-        );
+        $token = $systemUser->createDefaultToken(expiresAt: $expiresAt, max: 4);
 
         DB::commit();
 

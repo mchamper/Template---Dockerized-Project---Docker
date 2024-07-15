@@ -7,4 +7,5 @@ trait AuthTrait
     use AuthStatusTrait;
     use AuthVerificationTrait;
     use AuthPasswordResetTrait;
+    use AuthTokenTrait;
 }

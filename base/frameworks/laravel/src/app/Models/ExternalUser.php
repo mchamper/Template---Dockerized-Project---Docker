@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Auth\AuthTokenTrait;
 use App\Models\Traits\Auth\AuthVerificationTrait;
 use App\Models\Traits\Auth\AuthStatusTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,6 +17,7 @@ class ExternalUser extends Authenticatable
     use HasApiTokens;
     use AuthStatusTrait;
     use AuthVerificationTrait;
+    use AuthTokenTrait;
 
     /**
      * The attributes that should be hidden for serialization.

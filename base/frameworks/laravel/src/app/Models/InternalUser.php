@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Traits\Auth\AuthStatusTrait;
+use App\Models\Traits\Auth\AuthTokenTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -14,4 +15,5 @@ class InternalUser extends Authenticatable
     use Notifiable;
     use HasApiTokens;
     use AuthStatusTrait;
+    use AuthTokenTrait;
 }

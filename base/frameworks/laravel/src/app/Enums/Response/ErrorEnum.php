@@ -21,6 +21,7 @@ enum ErrorEnum
     case InvalidHashToken;
     case AlreadyVerifiedEmailAddress;
     case InvalidRequestConcept;
+    case MaxTokensAllowed;
 
     /* -------------------- */
 
@@ -118,6 +119,14 @@ enum ErrorEnum
                 'message' => match(Lang::getLocale()) {
                     'es' => 'Concepto de petición inválido.',
                     'en' => 'Invalid request concept.',
+                }
+            ],
+            self::MaxTokensAllowed => [
+                'code' => 12,
+                'status' => 403,
+                'message' => match(Lang::getLocale()) {
+                    'es' => 'Ha llegado al límite de sesiones permitidos. Debe cerrar al menos una sesión.',
+                    'en' => 'You have reached the limit of allowed sessions. You must log out from at least one session.',
                 }
             ],
         };
