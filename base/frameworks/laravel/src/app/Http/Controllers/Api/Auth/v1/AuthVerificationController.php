@@ -10,7 +10,7 @@ class AuthVerificationController extends Controller
 {
     public function request(string $userType)
     {
-        auth("api:{$userType}")->user()->requestVerificationEmail();
+        auth("api_{$userType}")->user()->requestVerificationEmail();
 
         return Response::json(null, 'El email de verificación ha sido enviado con éxito.');
     }
@@ -19,7 +19,7 @@ class AuthVerificationController extends Controller
     {
         DB::beginTransaction();
 
-        auth("api:{$userType}")->user()->verifyFromVerificationRequest(request()->query());
+        auth("api_{$userType}")->user()->verifyFromVerificationRequest(request()->query());
 
         DB::commit();
 

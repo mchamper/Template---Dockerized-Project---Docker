@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'api:system-user',
+        'guard' => 'api_system-user',
         'passwords' => 'system_users',
     ],
 
@@ -36,32 +36,32 @@ return [
     */
 
     'guards' => [
-        'web:user' => [
+        'web_user' => [
             'driver' => 'session',
             'provider' => 'users',
         ],
 
-        'web:system-user' => [
+        'web_system-user' => [
             'driver' => 'session',
             'provider' => 'system_users',
         ],
 
-        'api:user' => [
+        'api_user' => [
             'driver' => 'sanctum',
             'provider' => 'users',
         ],
 
-        'api:system-user' => [
+        'api_system-user' => [
             'driver' => 'sanctum',
             'provider' => 'system_users',
         ],
 
-        'api:internal-user' => [
+        'api_internal-user' => [
             'driver' => 'sanctum',
             'provider' => 'internal_users',
         ],
 
-        'api:external-user' => [
+        'api_external-user' => [
             'driver' => 'sanctum',
             'provider' => 'external_users',
         ],

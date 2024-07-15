@@ -16,7 +16,6 @@ bash base/bin/docker/run.sh ${SERVICE} "
     spatie/laravel-tags \
     spatie/laravel-data \
     orangehill/iseed \
-    jenssegers/agent \
     google/apiclient;
 
   composer require --dev \
