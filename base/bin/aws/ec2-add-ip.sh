@@ -13,7 +13,7 @@ if ! [[ ${IP} =~ ${REGEX} ]]; then
   IP="$(curl https://ipinfo.io/ip)"
 fi
 
-bash base/bin/docker/run.sh ${SERVICE} "
+bash base/bin/docker/run.sh 0-aws "
   aws ec2 authorize-security-group-ingress \
     --group-id ${SECURITY_GROUP_ID} \
     --ip-permissions IpProtocol=tcp,FromPort=${PORT},ToPort=${PORT},IpRanges=[{CidrIp=${IP}/32,Description=\"${DESCRIPTION}\"}]

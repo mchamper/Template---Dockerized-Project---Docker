@@ -63,7 +63,7 @@ fi
 ##############################
 
 if [[ ${CMD} = "eb-ssh" ]]; then
-  bash base/bin/aws/eb-ssh.sh ${SERVICE}-aws "${ARG1}"
+  bash base/bin/aws/eb-ssh.sh ${SERVICE} "${ARG1}"
   exit
 fi
 
