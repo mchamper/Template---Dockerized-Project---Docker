@@ -3,8 +3,8 @@
 namespace App\Enums;
 
 use App\Core\Bases\BaseEnum;
-use App\Facades\Auth;
-use Spatie\Permission\Models\Role;
+// use App\Facades\Auth;
+// use Spatie\Permission\Models\Role;
 
 enum RoleEnum
 {
@@ -20,8 +20,8 @@ enum RoleEnum
         return [];
     }
 
-    public function model(): Role
-    {
-        return Role::where('name', $this->name)->where('guard_name', Auth::getSystemUserGuardName())->first();
-    }
+    // public function model(): Role
+    // {
+    //     return Role::where('name', $this->name)->where('guard_name', Auth::getSystemUserGuardName())->first();
+    // }
 }

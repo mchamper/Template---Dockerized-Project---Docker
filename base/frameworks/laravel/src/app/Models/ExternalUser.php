@@ -2,19 +2,20 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\Traits\Auth\AuthTrait;
+use App\Models\Traits\Auth\AuthVerificationTrait;
+use App\Models\Traits\Auth\AuthStatusTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class SystemUser extends Authenticatable
+class ExternalUser extends Authenticatable
 {
     use HasFactory;
     use Notifiable;
     use HasApiTokens;
-    use AuthTrait;
+    use AuthStatusTrait;
+    use AuthVerificationTrait;
 
     /**
      * The attributes that should be hidden for serialization.
@@ -22,10 +23,7 @@ class SystemUser extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
-        'remember_token',
         'token_for_email_verification',
-        'token_for_password_reset',
     ];
 
     /**
@@ -37,7 +35,6 @@ class SystemUser extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
         ];
     }
 }

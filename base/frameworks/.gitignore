@@ -75,12 +75,7 @@ laravel/src/**
 !laravel/src/config/services.php
 !laravel/src/database/
 !laravel/src/database/migrations/
-!laravel/src/database/migrations/*_create_app_clients_table.php
-!laravel/src/database/migrations/*_create_system_users_table.php
-!laravel/src/database/migrations/*_create_media_tmps_table.php
-!laravel/src/database/migrations/*_create_countries_table.php
-!laravel/src/database/migrations/*_create_provinces_table.php
-!laravel/src/database/migrations/*_create_localities_table.php
+!laravel/src/database/migrations/0002_02_02_*
 !laravel/src/database/seeders/
 !laravel/src/database/seeders/**
 !laravel/src/lang/

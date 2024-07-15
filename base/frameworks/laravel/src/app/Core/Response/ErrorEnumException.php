@@ -2,7 +2,7 @@
 
 namespace App\Core\Response;
 
-use App\Enums\ErrorEnum;
+use App\Enums\Response\ErrorEnum;
 
 class ErrorEnumException extends ErrorException
 {
@@ -12,7 +12,6 @@ class ErrorEnumException extends ErrorException
         public ErrorEnum $error,
         public array $args = [],
     ) {
-
         $errorValue = $error->data($args);
         $this->innerCode = $errorValue['code'];
 
