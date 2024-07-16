@@ -19,8 +19,7 @@ if [[ ${CMD} = "install" ]]; then
 
   bash base/bin/docker/run.sh backend "
     php artisan migrate --force --seed
-    php artisan app-client:generate
-    php artisan system-user:generate-root
+    php artisan generate-root
   "
 
   exit
@@ -64,12 +63,10 @@ if [[ ${CMD} = "import" ]]; then
   " docker
 
   bash base/bin/docker/run.sh backend "
-    php artisan app-client:generate
-
     php artisan tinker --execute \"
       \DB::table('system_users')
         ->update([
-          'password' => bcrypt('master122333')
+          'password' => bcrypt('123123')
         ])
     \"
   "

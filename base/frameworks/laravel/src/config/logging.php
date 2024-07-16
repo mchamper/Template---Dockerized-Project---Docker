@@ -127,6 +127,18 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        /* -------------------- */
+
+        'discord' => [
+            'driver' => 'custom',
+            'via' => MarvinLabs\DiscordLogger\Logger::class,
+            'url' => env('LOG_DISCORD_BOT_URL'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'errors' => [
+                // 'EquifaxVerazApiDefaultError',
+            ],
+        ],
+
     ],
 
 ];
