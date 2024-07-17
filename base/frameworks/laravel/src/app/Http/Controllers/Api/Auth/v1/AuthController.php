@@ -43,7 +43,7 @@ class AuthController extends Controller
         DB::commit();
 
         return Response::json([
-            'data' => $user,
+            'user' => $user,
         ], 'Se le ha enviado un email de verificación a la dirección de correo ingresada.');
     }
 

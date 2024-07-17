@@ -28,6 +28,10 @@ class GenerateRoot extends Command
      */
     public function handle(): void
     {
+        if (SystemUser::whereEmail('root')->exists()) {
+            $this->fail('Ya existe un usuario root en el proyecto.');
+        }
+
         $systemUser = new SystemUser();
         $systemUser->status_id = 1;
         $systemUser->first_name = 'Root';

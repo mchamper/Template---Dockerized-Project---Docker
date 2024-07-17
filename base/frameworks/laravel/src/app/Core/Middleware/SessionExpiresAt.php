@@ -3,10 +3,11 @@
 namespace App\Core\Middleware;
 
 use Closure;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class VerifyAuth
+class SessionExpiresAt
 {
     /**
      * Handle an incoming request.
@@ -15,8 +16,11 @@ class VerifyAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->check()) {
-            auth()->user()->verifyStatus();
+        if ($expiresAt = request()->session()->get('expires_at')) {
+            if (now() > $expiresAt) {
+                request()->session()->invalidate();
+                throw new AuthenticationException();
+            }
         }
 
         return $next($request);

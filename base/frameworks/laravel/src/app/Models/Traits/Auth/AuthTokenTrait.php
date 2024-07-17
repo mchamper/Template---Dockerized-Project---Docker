@@ -8,12 +8,12 @@ trait AuthTokenTrait
 {
     public function createDefaultToken(?string $name = null, ?DateTimeInterface $expiresAt = null, $max = 3)
     {
-        if ($this->tokens()->count() >= $max) {
-            ErrorEnum::MaxTokensAllowed->throw();
-        }
+        // if ($this->tokens()->count() >= $max) {
+        //     ErrorEnum::MaxTokensAllowed->throw();
+        // }
 
         return $this->createToken(
-            name: $name ?: request()->header('User-Agent'),
+            name: $name ?: request()->header('X-Device-Name') ?: request()->header('User-Agent'),
             expiresAt: $expiresAt,
         );
     }

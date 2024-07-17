@@ -3,8 +3,7 @@
 namespace App\Enums;
 
 use App\Core\Bases\BaseEnum;
-// use App\Facades\Auth;
-// use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Permission;
 
 enum PermissionEnum
 {
@@ -25,8 +24,9 @@ enum PermissionEnum
         return [];
     }
 
-    // public function model(): Permission
-    // {
-    //     return Permission::where('name', $this->name)->where('guard_name', Auth::getSystemUserGuardName())->first();
-    // }
+    public function model(): Permission
+    {
+        // return Permission::where('name', $this->name)->where('guard_name', 'web')->first();
+        return Permission::where('name', $this->name)->first();
+    }
 }

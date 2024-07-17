@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\SystemUser;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Telescope\IncomingEntry;
 use Laravel\Telescope\Telescope;
@@ -14,19 +16,21 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
      */
     public function register(): void
     {
-        // Telescope::night();
+        Telescope::night();
 
         $this->hideSensitiveRequestDetails();
 
         $isLocal = $this->app->environment('local');
 
         Telescope::filter(function (IncomingEntry $entry) use ($isLocal) {
-            return $isLocal ||
-                   $entry->isReportableException() ||
-                   $entry->isFailedRequest() ||
-                   $entry->isFailedJob() ||
-                   $entry->isScheduledTask() ||
-                   $entry->hasMonitoredTag();
+            return true;
+
+            // return $isLocal ||
+            //        $entry->isReportableException() ||
+            //        $entry->isFailedRequest() ||
+            //        $entry->isFailedJob() ||
+            //        $entry->isScheduledTask() ||
+            //        $entry->hasMonitoredTag();
         });
     }
 
@@ -48,6 +52,15 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
         ]);
     }
 
+    protected function authorization()
+    {
+        request()->query('token')
+            ? auth()->setDefaultDriver('api_system-user')
+            : auth()->setDefaultDriver('web_system-user');
+
+        parent::authorization();
+    }
+
     /**
      * Register the Telescope gate.
      *
@@ -56,9 +69,20 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
     protected function gate(): void
     {
         Gate::define('viewTelescope', function ($user) {
-            return in_array($user->email, [
-                //
+            $canAccess = $user instanceof SystemUser && in_array($user->email, [
+                'root',
             ]);
+
+            if ($canAccess && request()->query('token')) {
+                request()->session()->invalidate();
+
+                auth('web_system-user')->loginUsingId($user->id);
+
+                request()->session()->put('expires_at', Carbon::now()->addMinutes(30));
+                request()->session()->regenerate();
+            }
+
+            return $canAccess;
         });
     }
 }

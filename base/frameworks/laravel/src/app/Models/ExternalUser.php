@@ -13,8 +13,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\MediaLibrary\HasMedia;
 
-class ExternalUser extends Authenticatable
+class ExternalUser extends Authenticatable implements HasMedia
 {
     use BaseModelTrait;
     use HasFactory;

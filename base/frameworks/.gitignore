@@ -58,7 +58,6 @@ laravel/src/**
 !laravel/src/app/Policies/**
 !laravel/src/app/Providers/
 !laravel/src/app/Providers/AppServiceProvider.php
-!laravel/src/app/Providers/RouteServiceProvider.php
 !laravel/src/app/Providers/TelescopeServiceProvider.php
 !laravel/src/app/Repositories/
 !laravel/src/app/Repositories/**
@@ -71,7 +70,6 @@ laravel/src/**
 !laravel/src/config/filesystems.php
 !laravel/src/config/logging.php
 !laravel/src/config/media-library.php
-!laravel/src/config/sanctum.php
 !laravel/src/config/services.php
 !laravel/src/database/
 !laravel/src/database/migrations/
