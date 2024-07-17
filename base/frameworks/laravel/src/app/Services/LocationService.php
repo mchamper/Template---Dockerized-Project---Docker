@@ -8,21 +8,21 @@ use App\Models\LocationLevelB;
 
 class LocationService
 {
-    public static function search(string $search)
+    public static function search(string $query)
     {
         return collect([
-            LocationCountry::where('name', 'like', "%$search%")
+            LocationCountry::where('name', 'like', "%$query%")
                 ->take(100)
                 ->get(),
 
-            LocationLevelA::where('name', 'like', "%$search%")
-                // ->orWhereRelation('parent', 'name', 'like', "%$search%")
+            LocationLevelA::where('name', 'like', "%$query%")
+                // ->orWhereRelation('parent', 'name', 'like', "%$query%")
                 ->take(100)
                 ->get(),
 
-            LocationLevelB::where('name', 'like', "%$search%")
-                // ->orWhereRelation('parent', 'name', 'like', "%$search%")
-                // ->orWhereRelation('parent.parent', 'name', 'like', "%$search%")
+            LocationLevelB::where('name', 'like', "%$query%")
+                // ->orWhereRelation('parent', 'name', 'like', "%$query%")
+                // ->orWhereRelation('parent.parent', 'name', 'like', "%$query%")
                 ->take(100)
                 ->get()
                 ,

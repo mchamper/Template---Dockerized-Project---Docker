@@ -10,6 +10,7 @@ class LocationLevelB extends Model
 {
     use HasFactory;
 
+    protected $table = 'location_level_b';
     public $timestamps = false;
 
     public function parent()

@@ -10,11 +10,12 @@ class LocationLevelA extends Model
 {
     use HasFactory;
 
+    protected $table = 'location_level_a';
     public $timestamps = false;
 
     public function parent()
     {
-        return $this->belongsTo(Country::class);
+        return $this->belongsTo(LocationCountry::class);
     }
 
     /**

@@ -12,12 +12,12 @@ class SearchController extends Controller
     public function search()
     {
         $concept = request()->query('concept');
-        $search = request()->query('search');
+        $query = request()->query('query');
         $results = [];
 
         switch ($concept) {
             case 'locations': {
-                $results = LocationService::search($search);
+                $results = LocationService::search($query);
                 break;
             }
 

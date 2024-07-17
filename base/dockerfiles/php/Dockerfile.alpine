@@ -67,6 +67,8 @@ RUN docker-php-ext-configure gd \
   --with-jpeg=/usr/include/ \
   && docker-php-ext-install gd \
   && docker-php-ext-enable gd \
+  && docker-php-ext-install pcntl \
+  && docker-php-ext-enable pcntl \
   && rm -rf /var/cache/apk/* && rm -rf /tmp/*
 
 # Install pgsql
