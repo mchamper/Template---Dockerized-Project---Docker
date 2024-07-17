@@ -213,7 +213,7 @@ abstract class BaseRepository
                         continue;
                     }
 
-                    $media = Media::findOrFail($value['id']);
+                    $media = Media::noTrash()->findOrFail($value['id']);
 
                     if ($media->model_type === 'App\Models\MediaTmp') {
                         $media->move($model, $collectionName);
@@ -235,7 +235,7 @@ abstract class BaseRepository
                     continue;
                 }
 
-                $media = Media::findOrFail($input[$key]['id']);
+                $media = Media::noTrash()->findOrFail($input[$key]['id']);
 
                 if ($media->model_type === 'App\Models\MediaTmp') {
                     $media->move($model, $collectionName);
