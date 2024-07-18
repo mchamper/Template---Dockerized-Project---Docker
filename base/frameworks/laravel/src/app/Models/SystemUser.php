@@ -36,7 +36,7 @@ class SystemUser extends Authenticatable implements HasMedia
         'token_for_password_reset',
     ];
 
-    protected $medias = [
+    public $medias = [
         'picture' => 'single',
         'photos' => 'multiple',
     ];

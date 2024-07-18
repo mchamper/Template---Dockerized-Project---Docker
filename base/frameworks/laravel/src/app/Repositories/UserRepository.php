@@ -28,11 +28,11 @@ class UserRepository extends BaseRepository
 
         static::_fillMedia([
             'picture',
-            'photos' => true,
+            'photos',
         ], $input, $user);
 
         if (array_key_exists('roles', $input)) {
-            // $user->syncRoles(RoleEnum::tryFromNames($input['roles']));
+            $user->syncRoles($input['roles']);
         }
 
         $user->refresh();

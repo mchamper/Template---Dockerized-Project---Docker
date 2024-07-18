@@ -43,13 +43,8 @@ laravel/src/**
 !laravel/src/app/Http/Controllers/
 !laravel/src/app/Http/Controllers/Api/
 !laravel/src/app/Http/Controllers/Api/**
-!laravel/src/app/Http/Controllers/Auth/
-!laravel/src/app/Http/Controllers/Auth/**
-!laravel/src/app/Http/Middleware/
-!laravel/src/app/Http/Middleware/VerifyAuth.php
 !laravel/src/app/Http/Requests/
 !laravel/src/app/Http/Requests/**
-!laravel/src/app/Http/Kernel.php
 !laravel/src/app/Mail/
 !laravel/src/app/Mail/**
 !laravel/src/app/Models/
@@ -63,10 +58,11 @@ laravel/src/**
 !laravel/src/app/Repositories/**
 !laravel/src/app/Services/
 !laravel/src/app/Services/**
+!laravel/src/bootstrap/
+!laravel/src/bootstrap/app.php
 !laravel/src/config/
 !laravel/src/config/app.php
 !laravel/src/config/auth.php
-!laravel/src/config/cors.php
 !laravel/src/config/filesystems.php
 !laravel/src/config/logging.php
 !laravel/src/config/media-library.php
@@ -85,8 +81,7 @@ laravel/src/**
 !laravel/src/resources/views/emails/
 !laravel/src/resources/views/emails/**
 !laravel/src/routes/
-!laravel/src/routes/api.backoffice.v1.php
-!laravel/src/routes/auth-session.v1.php
-!laravel/src/routes/auth.v1.php
+!laravel/src/routes/api/
+!laravel/src/routes/api/**
 !laravel/src/routes/frontend.php
 !laravel/src/.editorconfig
