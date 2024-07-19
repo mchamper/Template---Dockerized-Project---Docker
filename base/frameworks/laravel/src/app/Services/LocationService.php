@@ -1,45 +1,44 @@
 <?php
 
 namespace App\Services;
-use App\Models\Country;
-use App\Models\Locality;
-use App\Models\Province;
+
+use App\Models\LocationCountry;
+use App\Models\LocationLevelA;
+use App\Models\LocationLevelB;
 
 class LocationService
 {
-    public static function search(string $search)
+    public static function search(string $query)
     {
         return collect([
-                Country::where('name', 'like', "%$search%")
-                    ->take(100)
-                    ->get()
-                    ,
+            LocationCountry::where('name', 'like', "%$query%")
+                ->take(100)
+                ->get(),
 
-                Province::where('name', 'like', "%$search%")
-                    // ->orWhereRelation('country', 'name', 'like', "%$search%")
-                    ->take(100)
-                    ->get()
-                    ,
+            LocationLevelA::where('name', 'like', "%$query%")
+                // ->orWhereRelation('parent', 'name', 'like', "%$query%")
+                ->take(100)
+                ->get(),
 
-                Locality::where('name', 'like', "%$search%")
-                    // ->orWhereRelation('province', 'name', 'like', "%$search%")
-                    // ->orWhereRelation('province.country', 'name', 'like', "%$search%")
-                    ->take(100)
-                    ->get()
-                    ,
-            ])
-            ->flatten(1)
-            ->map(function ($item) {
-                $item['location_type'] = $item::class;
-                $item['location_id'] = $item->id;
-                $item['location_ref'] = "{$item['location_type']}:{$item['location_id']}";
+            LocationLevelB::where('name', 'like', "%$query%")
+                // ->orWhereRelation('parent', 'name', 'like', "%$query%")
+                // ->orWhereRelation('parent.parent', 'name', 'like', "%$query%")
+                ->take(100)
+                ->get()
+                ,
+        ])
+        ->flatten(1)
+        ->map(function ($item) {
+            $item['location_class'] = $item::class;
+            $item['location_id'] = $item->id;
+            $item['location_ref'] = "{$item['location_class']}:{$item['location_id']}";
 
-                $item->append('full_name');
+            $item->append('full_name');
 
-                return $item;
-            })
-            ->sortBy('full_name')
-            ->values()
-            ;
+            return $item;
+        })
+        ->sortBy('full_name')
+        ->values()
+        ;
     }
 }

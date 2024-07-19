@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Api\Backoffice\v1;
 
 use App\Core\Response\Response;
-use App\Enums\ErrorEnum;
+use App\Enums\Response\ErrorEnum;
+use App\Http\Requests\User\UserCreateRequest;
 use Illuminate\Support\Facades\Validator;
 
 class ValidateController
@@ -15,9 +16,9 @@ class ValidateController
         $rules = [];
 
         switch ($concept) {
-            // case 'example_entity_create': $rules = (new ExampleEntityCreateRequest())->rulesFrom($input); break;
+            case 'system_user_create': $rules = UserCreateRequest::rulesFrom($input, ['userTable' => 'system_users']); break;
 
-            default: ErrorEnum::INVALID_REQUEST_CONCEPT->throw();
+            default: ErrorEnum::InvalidRequestConcept->throw();
         }
 
         $validated = Validator::make($input, $rules)->validate();

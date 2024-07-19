@@ -3,7 +3,6 @@
 namespace App\Enums;
 
 use App\Core\Bases\BaseEnum;
-use App\Facades\Auth;
 use Spatie\Permission\Models\Role;
 
 enum RoleEnum
@@ -22,6 +21,7 @@ enum RoleEnum
 
     public function model(): Role
     {
-        return Role::where('name', $this->name)->where('guard_name', Auth::getSystemUserGuardName())->first();
+        // return Role::where('name', $this->name)->where('guard_name', 'web')->first();
+        return Role::where('name', $this->name)->first();
     }
 }

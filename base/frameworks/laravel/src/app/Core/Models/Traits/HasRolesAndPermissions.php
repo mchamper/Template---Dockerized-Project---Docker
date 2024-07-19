@@ -8,6 +8,8 @@ trait HasRolesAndPermissions
 {
     use HasRoles;
 
+    protected $guard_name = '*';
+
     public function initializeHasRolesAndPermissions()
     {
         static::_hasRolesAndPermissionsAddHiddens($this);

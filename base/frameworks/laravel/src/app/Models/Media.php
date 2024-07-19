@@ -29,4 +29,11 @@ class Media extends BaseMedia
             }
         });
     }
+
+    /**
+     * Scopes.
+     */
+    public function scopeNoTrash($query) {
+        return $query->where('collection_name', '!=', 'trash');
+    }
 }
