@@ -24,7 +24,6 @@ bash base/bin/docker/run.sh ${SERVICE} "
 
   php artisan vendor:publish --provider=\"MarvinLabs\DiscordLogger\ServiceProvider\"
   php artisan vendor:publish --provider=\"Spatie\MediaLibrary\MediaLibraryServiceProvider\" --tag=\"medialibrary-migrations\"
-  php artisan vendor:publish --provider=\"Spatie\MediaLibrary\MediaLibraryServiceProvider\" --tag=\"medialibrary-config\"
   php artisan vendor:publish --provider=\"Spatie\Permission\PermissionServiceProvider\"
   php artisan vendor:publish --provider=\"Spatie\Tags\TagsServiceProvider\" --tag="tags-migrations"
   php artisan vendor:publish --provider=\"Spatie\LaravelData\LaravelDataServiceProvider\" --tag=\"data-config\"
