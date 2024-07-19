@@ -17,7 +17,7 @@ class MediaTmp extends Model implements HasMedia
      */
     public function registerMediaCollections(): void
     {
-        $disk = config('media-library.disk_tmp_name');
+        $disk = config('media-library.disk_name') . '_tmp';
 
         $this->addMediaCollection('tmp_system_user_picture')
             ->acceptsMimeTypes(['image/jpeg', 'image/png'])

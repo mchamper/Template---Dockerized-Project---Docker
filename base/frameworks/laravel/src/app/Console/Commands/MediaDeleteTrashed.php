@@ -2,11 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\QuizEventTypeEnum;
 use App\Models\Media;
-use App\Models\Quiz;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 
 class MediaDeleteTrashed extends Command
 {

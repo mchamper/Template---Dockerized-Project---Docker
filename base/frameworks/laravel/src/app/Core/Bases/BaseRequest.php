@@ -3,13 +3,17 @@
 namespace App\Core\Bases;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
-abstract class BaseRequest extends FormRequest
+// abstract class BaseRequest extends FormRequest
+abstract class BaseRequest
 {
-    public function rulesFrom($input, ?array $params = [])
+    abstract public static function rules(?array $params = []);
+
+    public static function rulesFrom($input, ?array $params = [])
     {
-        $rules = collect($this->rules($params))->filter(function ($value, $key) use ($input, $params) {
+        $rules = collect(static::rules($params))->filter(function ($value, $key) use ($input, $params) {
             $arrayKeyExists = false;
 
             foreach ($input as $key2 => $value2) {
@@ -22,9 +26,14 @@ abstract class BaseRequest extends FormRequest
         })->toArray();
 
         if (empty($rules)) {
-            $rules = $this->rules($params);
+            $rules = static::rules($params);
         }
 
         return $rules;
+    }
+
+    public static function validate($input, ?array $params = [])
+    {
+        return Validator::make($input, static::rules($params))->validate();
     }
 }

@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Api\Backoffice\v1;
 
 use App\Core\Response\Response;
-use App\Enums\ErrorEnum;
-use App\Enums\SystemUserStatusEnum;
+use App\Enums\Response\ErrorEnum;
 use App\Http\Controllers\Controller;
-use Exception;
+use App\Models\AuthStatus;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -33,12 +32,12 @@ class CombosController extends Controller
                     break;
                 }
 
-                case 'system_user_statuses': {
-                    $combos[$concept] = SystemUserStatusEnum::all();
+                case 'auth_statuses': {
+                    $combos[$concept] = AuthStatus::all();
                     break;
                 }
 
-                default: ErrorEnum::INVALID_REQUEST_CONCEPT->throw();
+                default: ErrorEnum::InvalidRequestConcept->throw();
             }
         }
 

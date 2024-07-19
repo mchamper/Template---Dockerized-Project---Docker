@@ -19,3 +19,4 @@ class ReturnJson
         return $next($request);
     }
 }
+

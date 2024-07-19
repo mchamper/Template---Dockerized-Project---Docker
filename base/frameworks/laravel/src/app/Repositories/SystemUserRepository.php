@@ -3,8 +3,6 @@
 namespace App\Repositories;
 
 use App\Core\Bases\BaseRepository;
-use App\Enums\RoleEnum;
-use App\Enums\SystemUserStatusEnum;
 use App\Models\SystemUser;
 
 class SystemUserRepository extends BaseRepository
@@ -15,7 +13,7 @@ class SystemUserRepository extends BaseRepository
 
         if ($isNew) {
             $systemUser = new SystemUser();
-            $systemUser->status = SystemUserStatusEnum::Active;
+            $systemUser->status_id = 1;
         }
 
         static::_fill([
@@ -33,11 +31,11 @@ class SystemUserRepository extends BaseRepository
 
         static::_fillMedia([
             'picture',
-            'photos' => true,
+            'photos',
         ], $input, $systemUser);
 
         if (array_key_exists('roles', $input)) {
-            $systemUser->syncRoles(RoleEnum::tryFromNames($input['roles']));
+            $systemUser->syncRoles($input['roles']);
         }
 
         $systemUser->refresh();

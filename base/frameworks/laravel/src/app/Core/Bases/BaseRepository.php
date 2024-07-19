@@ -188,11 +188,13 @@ abstract class BaseRepository
     {
         $keys = (array) $keys;
 
-        foreach ($keys as $key => $isMulti) {
-            if (is_numeric($key)) {
-                $key = $isMulti;
-                $isMulti = false;
-            }
+        foreach ($keys as $key) {
+            // if (is_numeric($key)) {
+            //     $key = $isMulti;
+            //     $isMulti = false;
+            // }
+
+            $isMultiple = $model->medias[$key] === 'multiple';
 
             if (!array_key_exists($key, $input)) {
                 continue;
@@ -200,7 +202,7 @@ abstract class BaseRepository
 
             $collectionName = $key;
 
-            if ($isMulti) {
+            if ($isMultiple) {
                 $ids = $model->getMedia($collectionName)->pluck('id')->toArray();
                 $idsForDelete = array_diff($ids, collect($input[$key])->pluck('id')->toArray());
                 foreach ($idsForDelete as $id) Media::find($id)->delete();
@@ -213,7 +215,7 @@ abstract class BaseRepository
                         continue;
                     }
 
-                    $media = Media::findOrFail($value['id']);
+                    $media = Media::noTrash()->findOrFail($value['id']);
 
                     if ($media->model_type === 'App\Models\MediaTmp') {
                         $media->move($model, $collectionName);
@@ -235,7 +237,7 @@ abstract class BaseRepository
                     continue;
                 }
 
-                $media = Media::findOrFail($input[$key]['id']);
+                $media = Media::noTrash()->findOrFail($input[$key]['id']);
 
                 if ($media->model_type === 'App\Models\MediaTmp') {
                     $media->move($model, $collectionName);

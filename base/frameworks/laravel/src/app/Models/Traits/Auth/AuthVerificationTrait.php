@@ -2,8 +2,9 @@
 
 namespace App\Models\Traits\Auth;
 
-use App\Enums\ErrorEnum;
+use App\Enums\Response\ErrorEnum;
 use App\Mail\AuthVerificationEmail;
+use App\Models\ExternalUser;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
@@ -16,7 +17,7 @@ trait AuthVerificationTrait
     public function sendVerificationEmail(): void
     {
         if (!$this->email) {
-            ErrorEnum::NO_USER_EMAIL_ERROR->throw();
+            ErrorEnum::NoUserEmail->throw();
         }
 
         $token = $this->id . '|' . Str::random(40);
@@ -30,9 +31,16 @@ trait AuthVerificationTrait
             'exp' => Carbon::now()->addHours(1),
         ]);
 
-        $url = config('app.backoffice_url')
-            . '/cuenta?verificationHash='
-            . $hash;
+        if ($this instanceof ExternalUser) {
+            $url = config('app.url')
+                . '/api/auth/v1/external-user/verification/verify?hash='
+                . $hash;
+        } else {
+            $url = config('app.backoffice_url')
+                . '/cuenta?verificationHash='
+                . $hash;
+        }
+
 
         Mail::to($this->email)->send(new AuthVerificationEmail($url));
     }
@@ -40,7 +48,7 @@ trait AuthVerificationTrait
     public function requestVerificationEmail(): void
     {
         if ($this->email_verified_at) {
-            ErrorEnum::ALREADY_VERIFIED_EMAIL_ADDRESS_ERROR->throw();
+            ErrorEnum::AlreadyVerifiedEmailAddress->throw();
         }
 
         $this->sendVerificationEmail();
@@ -55,15 +63,15 @@ trait AuthVerificationTrait
         $hashData = Crypt::decrypt($validated['hash']);
 
         if (Carbon::now() > $hashData['exp']) {
-            ErrorEnum::EXPIRED_HASH_ERROR->throw();
+            ErrorEnum::ExpiredHash->throw();
         }
 
         if (!$this->token_for_email_verification || !Hash::check($hashData['tkn'], $this->token_for_email_verification)) {
-            ErrorEnum::INVALID_HASH_TOKEN_ERROR->throw();
+            ErrorEnum::InvalidHashToken->throw();
         }
 
         if ($this->email_verified_at) {
-            ErrorEnum::ALREADY_VERIFIED_EMAIL_ADDRESS_ERROR->throw();
+            ErrorEnum::AlreadyVerifiedEmailAddress->throw();
         }
 
         return [

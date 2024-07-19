@@ -3,7 +3,6 @@
 namespace App\Policies;
 
 use App\Enums\RoleEnum;
-use App\Enums\SystemUserTypeEnum;
 use App\Models\SystemUser;
 use Illuminate\Auth\Access\Response;
 

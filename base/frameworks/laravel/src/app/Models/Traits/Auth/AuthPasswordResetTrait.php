@@ -2,7 +2,7 @@
 
 namespace App\Models\Traits\Auth;
 
-use App\Enums\ErrorEnum;
+use App\Enums\Response\ErrorEnum;
 use App\Mail\AuthPasswordResetEmail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Crypt;
@@ -17,7 +17,7 @@ trait AuthPasswordResetTrait
     public function sendPasswordResetEmail()
     {
         if (!$this->email) {
-            ErrorEnum::NO_USER_EMAIL_ERROR->throw();
+            ErrorEnum::NoUserEmail->throw();
         }
 
         $token = $this->id . '|' . Str::random(40);
@@ -45,7 +45,7 @@ trait AuthPasswordResetTrait
         ])->validate();
 
         if (!$user = static::where('email', $validated['email'])->first()) {
-            ErrorEnum::NOT_USER_FOUND_WITH_EMAIL_ERROR->throw();
+            ErrorEnum::NotUserFoundWithEmail->throw();
         }
 
         $user->sendPasswordResetEmail();
@@ -60,15 +60,15 @@ trait AuthPasswordResetTrait
         $hashData = Crypt::decrypt($validated['hash']);
 
         if (Carbon::now() > $hashData['exp']) {
-            ErrorEnum::EXPIRED_HASH_ERROR->throw();
+            ErrorEnum::ExpiredHash->throw();
         }
 
         if (!$user = static::where('id', $hashData['sum'])->first()) {
-            ErrorEnum::NOT_USER_FOUND_IN_HASH->throw();
+            ErrorEnum::NotUserFoundInHash->throw();
         }
 
         if (!$user->token_for_password_reset || !Hash::check($hashData['tkn'], $user->token_for_password_reset)) {
-            ErrorEnum::INVALID_HASH_TOKEN_ERROR->throw();
+            ErrorEnum::InvalidHashToken->throw();
         }
 
         return [

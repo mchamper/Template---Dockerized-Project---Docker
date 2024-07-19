@@ -2,64 +2,61 @@
 
 namespace App\Models;
 
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Core\Bases\BaseModelTrait;
 use App\Core\Models\Traits\HasMedias;
 use App\Core\Models\Traits\HasRolesAndPermissions;
-use App\Enums\SocialDriverEnum;
-use App\Enums\SystemUserStatusEnum;
-use App\Facades\Auth;
 use App\Models\Traits\Auth\AuthTrait;
-use App\Models\Traits\SystemUser\SystemUserTrait;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
 
-class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
+class SystemUser extends Authenticatable implements HasMedia
 {
-    use HasApiTokens;
+    use BaseModelTrait;
     use HasFactory;
+    use Notifiable;
+    use HasApiTokens;
+    use AuthTrait;
     use HasRolesAndPermissions;
     use HasMedias;
-    use Notifiable;
-    use SoftDeletes;
-    use BaseModelTrait;
-    use SystemUserTrait;
-    use AuthTrait;
 
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
     protected $hidden = [
         'password',
+        'remember_token',
         'token_for_email_verification',
         'token_for_password_reset',
     ];
 
-    protected $dates = [
-        'email_verified_at'
-    ];
-
-    protected $casts = [
-        'password' => 'hashed',
-    ];
-
-    protected $enums = [
-        'social_driver' => SocialDriverEnum::class,
-        'status' => SystemUserStatusEnum::class,
-    ];
-
-    protected $medias = [
+    public $medias = [
         'picture' => 'single',
-        'photos' => 'multi',
+        'photos' => 'multiple',
     ];
 
     protected $appends = [
         'full_name',
     ];
 
-    protected function getDefaultGuardName(): string { return Auth::getSystemUserGuardName(); }
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
 
     /**
      * Accesors & Mutators.
@@ -79,6 +76,6 @@ class SystemUser extends Authenticatable implements MustVerifyEmail, HasMedia
     }
 
     public function scopeNoAuth($query) {
-        return $query->where('id', '!=', Auth::systemUser()->id);
+        return $query->where('id', '!=', auth('api_system-user')->id());
     }
 }

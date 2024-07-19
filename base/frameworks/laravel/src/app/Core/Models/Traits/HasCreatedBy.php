@@ -2,24 +2,25 @@
 
 namespace App\Core\Models\Traits;
 
-use App\Facades\Auth;
 use App\Models\SystemUser;
 
 trait HasCreatedBy
 {
 
+    protected $_createdByClass = SystemUser::class;
+
     public static function bootHasCreatedBy()
     {
         static::creating(function ($model) {
-            if (Auth::systemUser()) {
-                $model->created_by_id = Auth::systemUser()->id;
-                $model->updated_by_id = Auth::systemUser()->id;
+            if (auth()->check()) {
+                $model->created_by_id = auth()->id();
+                $model->updated_by_id = auth()->id();
             }
         });
 
         static::updating(function ($model) {
-            if (Auth::systemUser()) {
-                $model->updated_by_id = Auth::systemUser()->id;
+            if (auth()->check()) {
+                $model->updated_by_id = auth()->id();
             }
         });
     }
@@ -28,11 +29,11 @@ trait HasCreatedBy
 
     public function created_by()
     {
-        return $this->belongsTo(SystemUser::class);
+        return $this->belongsTo($this->_createdByClass);
     }
 
     public function updated_by()
     {
-        return $this->belongsTo(SystemUser::class);
+        return $this->belongsTo($this->_createdByClass);
     }
 }

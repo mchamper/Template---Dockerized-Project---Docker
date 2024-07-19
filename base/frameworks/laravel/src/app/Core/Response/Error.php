@@ -3,6 +3,7 @@
 namespace App\Core\Response;
 
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +21,7 @@ class Error
 
         $message = $e->getMessage();
         $body = $e->body ?? null;
-        $name = $e->errorName ?? 'LARAVEL_DEFAULT_ERROR';
+        $name = $e->errorName ?? 'SystemDefaultError';
         $exception = class_basename($e);
         $code = $e instanceof ErrorEnumException ? $e->innerCode : 0;
         $validation = $e instanceof ValidationException ? $e->errors() : null;
@@ -29,7 +30,7 @@ class Error
             $status = 500;
         }
 
-        if (!app()->environment('local') && $e instanceof QueryException) {
+        if (!config('app.debug') && $e instanceof QueryException) {
             $message = 'Database error.';
         }
 
@@ -51,5 +52,17 @@ class Error
         }
 
         return $error;
+    }
+
+    public static function respond(Throwable $e, ?Response $response = null)
+    {
+        DB::rollBack();
+
+        if (request()->wantsJson()) {
+            $error = self::parse($e, $response);
+            return response()->json($error, $error['status']);
+        }
+
+        return $response;
     }
 }
