@@ -21,12 +21,12 @@ if [[ ${CMD} = "install" ]]; then
 fi
 
 if [[ ${CMD} = "status" ]]; then
-  bash base/bin/aws/eb-status.sh ${SERVICE}-aws
+  bash base/bin/aws/eb-status.sh ${SERVICE}
   exit
 fi
 
 if [[ ${CMD} = "deploy" ]]; then
-  bash base/bin/aws/eb-deploy.sh ${SERVICE}-aws
+  bash base/bin/aws/eb-deploy.sh ${SERVICE}
   exit
 fi
 
@@ -36,6 +36,11 @@ if [[ ${CMD} = "deploy-and-migrate" ]]; then
     php artisan migrate --force
   "
 
+  exit
+fi
+
+if [[ ${CMD} = "restart" ]]; then
+  bash base/bin/aws/eb-restart.sh ${SERVICE}
   exit
 fi
 
