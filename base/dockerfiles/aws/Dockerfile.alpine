@@ -1,6 +1,6 @@
 FROM python:3.10.14-alpine
 
-WORKDIR /docker/src
+WORKDIR /docker
 RUN addgroup docker && adduser -D docker -u 1000 -G root -G www-data
 RUN chown -R docker:docker /docker
 
@@ -23,5 +23,6 @@ RUN apk add --update --no-cache \
 
 RUN pip install awscli --upgrade
 RUN pip install awsebcli --upgrade
+RUN pip install botocore --upgrade
 
 USER docker

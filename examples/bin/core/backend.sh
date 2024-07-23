@@ -40,12 +40,12 @@ if [[ ${CMD} = "deploy-and-migrate" ]]; then
 fi
 
 if [[ ${CMD} = "get-envs" ]]; then
-  bash base/bin/aws/s3-getenvs.sh 0-utils "aws-projectname-environments/${SERVICE}-${ARG1:-prod}/.env" "environments/${SERVICE}-${ARG1:-prod}/.env[REMOTE]"
+  bash base/bin/aws/s3-getenvs.sh 0-aws "aws-projectname-environments/${SERVICE}-${ARG1:-prod}/.env" "environments/${SERVICE}-${ARG1:-prod}/.env[REMOTE]"
   exit
 fi
 
 if [[ ${CMD} = "set-envs" ]]; then
-  bash base/bin/aws/s3-setenvs.sh 0-utils "environments/${SERVICE}-${ARG1:-prod}/.env" "aws-projectname-environments/${SERVICE}-${ARG1:-prod}/.env"
+  bash base/bin/aws/s3-setenvs.sh 0-aws "environments/${SERVICE}-${ARG1:-prod}/.env" "aws-projectname-environments/${SERVICE}-${ARG1:-prod}/.env"
   exit
 fi
 
