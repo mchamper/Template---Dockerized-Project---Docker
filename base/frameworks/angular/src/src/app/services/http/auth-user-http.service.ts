@@ -92,7 +92,7 @@ export class AuthUserHttpService {
   }
 
   me = (userType: TAuthGuardName, ) => {
-    return this._httpClient.post<THttpResponse>(`${environment.backendUrl}/api/auth/v1/${kebabCase(userType)}/me`, null, {
+    return this._httpClient.get<THttpResponse>(`${environment.backendUrl}/api/auth/v1/${kebabCase(userType)}/me`, {
       context: new HttpContext()
         .set(GUARD, 'systemUser')
         .set(ON_SUCCESS, res => this._updateSession(userType, res))

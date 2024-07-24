@@ -8,5 +8,5 @@ import { WebStorageService } from '../core/services/storage/web-storage.service'
 export class StorageService extends WebStorageService {
 // export class StorageService extends PreferencesStorageService {
 
-  //
+  protected override _version = 1;
 }

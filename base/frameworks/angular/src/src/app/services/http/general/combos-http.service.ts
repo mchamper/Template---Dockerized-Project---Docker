@@ -16,6 +16,7 @@ export class CombosHttpService {
   get = (concepts: string) => {
     return this._httpClient.get<THttpResponse>(`${environment.backendUrl}/api/backoffice/v1/combos?concepts=${concepts}`, {
       context: new HttpContext()
+        .set(GUARD, 'systemUser')
     });
   }
 }

@@ -58,7 +58,7 @@
               {
                 "glob": "**/*",
                 "input": "./node_modules/@ant-design/icons-angular/src/inline-svg/",
-                "output": "/public/ants-icons/"
+                "output": "/assets/"
               }
             ],
             "styles": [

@@ -9,11 +9,13 @@
 a.btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
 }
 
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   min-height: var(--app-px-40);
 
   &.btn-icon {
