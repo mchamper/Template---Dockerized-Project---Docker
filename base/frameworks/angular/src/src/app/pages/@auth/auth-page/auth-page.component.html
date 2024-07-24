@@ -41,23 +41,23 @@
       </div>
     </div>
   } @else {
-    <nz-tabset>
+    <nz-tabset [nzAnimated]="false">
       @if (passwordResetHash) {
         <nz-tab nzTitle="Cambiar contraseña">
-          <app-auth-page-password-reset-update />
+          <app-password-reset-update />
         </nz-tab>
       }
 
       <nz-tab nzTitle="Login">
-        <app-auth-page-login />
+        <app-login />
       </nz-tab>
 
       <nz-tab nzTitle="Registro">
-        <app-auth-page-register />
+        <app-register />
       </nz-tab>
 
       <nz-tab nzTitle="¿Olvidaste tu contraseña?">
-        <app-auth-page-password-reset-request />
+        <app-password-reset-request />
       </nz-tab>
     </nz-tabset>
   }

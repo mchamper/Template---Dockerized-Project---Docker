@@ -8,21 +8,20 @@ import { AuthSystemUserHttpService } from '../../../../services/http/auth-system
 import { authRegisterFormMock } from '../../../../mocks/auth-register-form.mock';
 
 @Component({
-  selector: 'app-auth-page-register',
+  selector: 'app-register',
   standalone: true,
   imports: [
     CommonModule,
     FormModule,
     NzAlertModule,
   ],
-  templateUrl: './auth-page-register.component.html',
-  styleUrls: ['./auth-page-register.component.scss'],
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AuthPageRegisterComponent {
+export class RegisterComponent {
 
   private _fb = inject(FormBuilder);
-
   private _authSystemUserHttpS = inject(AuthSystemUserHttpService);
 
   form: Form;

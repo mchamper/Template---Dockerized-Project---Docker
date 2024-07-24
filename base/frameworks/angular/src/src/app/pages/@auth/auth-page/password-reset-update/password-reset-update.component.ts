@@ -8,23 +8,22 @@ import { AuthSystemUserPasswordResetHttpService } from '../../../../services/htt
 import { AuthPageComponent } from '../auth-page.component';
 
 @Component({
-  selector: 'app-auth-page-password-reset-update',
+  selector: 'app-password-reset-update',
   standalone: true,
   imports: [
     CommonModule,
     FormModule,
     NzAlertModule,
   ],
-  templateUrl: './auth-page-password-reset-update.component.html',
-  styleUrls: ['./auth-page-password-reset-update.component.scss'],
+  templateUrl: './password-reset-update.component.html',
+  styleUrls: ['./password-reset-update.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AuthPagePasswordResetUpdateComponent {
+export class PasswordResetUpdateComponent {
 
-  private _parent = inject(AuthPageComponent);
   private _fb = inject(FormBuilder);
-
   private _authSystemUserPasswordResetHttpS = inject(AuthSystemUserPasswordResetHttpService);
+  parent = inject(AuthPageComponent);
 
   form: Form;
 
@@ -34,7 +33,7 @@ export class AuthPagePasswordResetUpdateComponent {
       password_confirmation: ['', [Validators.required]],
     }), {
       request: {
-        send: () => this._authSystemUserPasswordResetHttpS.update(this._parent.passwordResetHash!, { ...this.form.group.value }),
+        send: () => this._authSystemUserPasswordResetHttpS.update(this.parent.passwordResetHash!, this.form.group.value),
       },
       reset: true,
     });

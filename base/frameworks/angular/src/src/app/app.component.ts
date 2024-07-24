@@ -65,11 +65,11 @@ export class AppComponent {
       const timeFinish = moment();
       const timeElapsed = timeFinish.diff(timeStart);
 
-      this.state.app.setReady();
+      // this.state.app.setReady();
 
-      // setTimeout(() => {
-      //   this.state.app.setReady();
-      // }, (timeElapsed >= 2000 ? 0 : 2000 - timeElapsed));
+      setTimeout(() => {
+        this.state.app.setReady();
+      }, (timeElapsed >= 1500 ? 0 : 1500 - timeElapsed));
     } catch (err) {
       let errorMessage = this._translateS.instant('init.errors.default');
       errorMessage += typeof err === 'number' ? ` (${err})` : ` (??)`;

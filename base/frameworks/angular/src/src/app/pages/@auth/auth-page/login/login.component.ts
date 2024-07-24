@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { AppModule } from '../../../../app.module';
 import { FormBuilder, Validators } from '@angular/forms';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { GoogleSigninButtonModule, SocialAuthService, SocialLoginModule } from '@abacritt/angularx-social-login';
@@ -12,20 +12,20 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, skip } from 'rxjs';
 
 @Component({
-  selector: 'app-auth-page-login',
+  selector: 'app-login',
   standalone: true,
   imports: [
-    CommonModule,
+    AppModule,
     FormModule,
     NzDividerModule,
     SocialLoginModule,
     GoogleSigninButtonModule,
   ],
-  templateUrl: './auth-page-login.component.html',
-  styleUrls: ['./auth-page-login.component.scss'],
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AuthPageLoginComponent {
+export class LoginComponent {
 
   private _fb = inject(FormBuilder);
   private _socialAuthS = inject(SocialAuthService);
@@ -62,8 +62,7 @@ export class AuthPageLoginComponent {
 
     this._socialAuthS.authState.pipe(
       takeUntilDestroyed(),
-      skip(1),
-      filter(socialUser => !!socialUser)
+      filter(i => !!i)
     ).subscribe(socialUser => {
       this.formLoginGoogle.group.get('token')?.setValue(socialUser.idToken);
       this.formLoginGoogle.submit();

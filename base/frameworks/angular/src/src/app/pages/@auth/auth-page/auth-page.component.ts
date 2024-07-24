@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { AuthPageLoginComponent } from './auth-page-login/auth-page-login.component';
-import { AuthPageRegisterComponent } from './auth-page-register/auth-page-register.component';
-import { AuthPagePasswordResetRequestComponent } from './auth-page-password-reset-request/auth-page-password-reset-request.component';
-import { AuthPagePasswordResetUpdateComponent } from './auth-page-password-reset-update/auth-page-password-reset-update.component';
+import { LoginComponent } from './login/login.component';
+import { RegisterComponent } from './register/register.component';
+import { PasswordResetRequestComponent } from './password-reset-request/password-reset-request.component';
+import { PasswordResetUpdateComponent } from './password-reset-update/password-reset-update.component';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { NzListModule } from 'ng-zorro-antd/list';
 import { AuthService } from '../../../services/auth.service';
@@ -19,10 +19,10 @@ import { RequestComponent } from '../../../core/features/request/components/requ
   imports: [
     CommonModule,
     RouterModule,
-    AuthPageLoginComponent,
-    AuthPageRegisterComponent,
-    AuthPagePasswordResetRequestComponent,
-    AuthPagePasswordResetUpdateComponent,
+    LoginComponent,
+    RegisterComponent,
+    PasswordResetRequestComponent,
+    PasswordResetUpdateComponent,
     RequestComponent,
     NzTabsModule,
     NzListModule,

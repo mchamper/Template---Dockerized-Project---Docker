@@ -8,21 +8,20 @@ import { AuthSystemUserPasswordResetHttpService } from '../../../../services/htt
 import { authPasswordResetRequestFormMock } from '../../../../mocks/auth-password-reset-request-form.mock';
 
 @Component({
-  selector: 'app-auth-page-password-reset-request',
+  selector: 'app-password-reset-request',
   standalone: true,
   imports: [
     CommonModule,
     FormModule,
     NzAlertModule,
   ],
-  templateUrl: './auth-page-password-reset-request.component.html',
-  styleUrls: ['./auth-page-password-reset-request.component.scss'],
+  templateUrl: './password-reset-request.component.html',
+  styleUrls: ['./password-reset-request.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AuthPagePasswordResetRequestComponent {
+export class PasswordResetRequestComponent {
 
   private _fb = inject(FormBuilder);
-
   private _authSystemUserPasswordResetHttpS = inject(AuthSystemUserPasswordResetHttpService);
 
   form: Form;
