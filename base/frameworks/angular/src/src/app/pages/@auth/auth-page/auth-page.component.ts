@@ -17,6 +17,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { injectQueryParams } from 'ngxtension/inject-query-params';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { GoogleSigninButtonModule, SocialLoginModule } from '@abacritt/angularx-social-login';
+import { coreConfig } from '../../../configs/core.config';
 
 @Component({
   selector: 'app-auth-page',
@@ -42,6 +43,8 @@ import { GoogleSigninButtonModule, SocialLoginModule } from '@abacritt/angularx-
 
 })
 export class AuthPageComponent {
+
+  coreConfig = coreConfig;
 
   private _fb = inject(FormBuilder);
   private _router = inject(Router);

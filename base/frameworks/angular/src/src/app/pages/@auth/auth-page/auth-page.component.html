@@ -60,17 +60,19 @@
         </div>
       </nz-tab>
 
-      <nz-tab nzTitle="Registro">
-        <app-register />
+      @if (coreConfig.registerAllowed) {
+        <nz-tab nzTitle="Registro">
+          <app-register />
 
-        <nz-divider nzText="O" nzPlain />
+          <nz-divider nzText="O" nzPlain />
 
-        <div class="mx-auto" style="width: 240px; height: 40px;">
-          <app-request [request]="formLoginWithGoogle.request" minHeight="40px" type="spinner">
-            <asl-google-signin-button type="standard" size="large" text="signup_with" [width]="240"></asl-google-signin-button>
-          </app-request>
-        </div>
-      </nz-tab>
+          <div class="mx-auto" style="width: 240px; height: 40px;">
+            <app-request [request]="formLoginWithGoogle.request" minHeight="40px" type="spinner">
+              <asl-google-signin-button type="standard" size="large" text="signup_with" [width]="240"></asl-google-signin-button>
+            </app-request>
+          </div>
+        </nz-tab>
+      }
 
       <nz-tab nzTitle="¿Olvidaste tu contraseña?">
         <app-password-reset-request />
