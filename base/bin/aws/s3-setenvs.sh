@@ -7,6 +7,5 @@ SOURCE_FILE=${2}
 BUCKET_FILE=${3}
 
 bash base/bin/docker/run.sh 0-aws "
-  cd /docker/src/${SERVICE} || exit 1
   aws s3 cp ${SOURCE_FILE} s3://${BUCKET_FILE};
 "

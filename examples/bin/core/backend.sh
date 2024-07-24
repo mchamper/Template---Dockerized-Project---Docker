@@ -21,12 +21,12 @@ if [[ ${CMD} = "install" ]]; then
 fi
 
 if [[ ${CMD} = "status" ]]; then
-  bash base/bin/aws/eb-status.sh ${SERVICE}-aws
+  bash base/bin/aws/eb-status.sh ${SERVICE}
   exit
 fi
 
 if [[ ${CMD} = "deploy" ]]; then
-  bash base/bin/aws/eb-deploy.sh ${SERVICE}-aws
+  bash base/bin/aws/eb-deploy.sh ${SERVICE}
   exit
 fi
 
@@ -39,13 +39,18 @@ if [[ ${CMD} = "deploy-and-migrate" ]]; then
   exit
 fi
 
+if [[ ${CMD} = "restart" ]]; then
+  bash base/bin/aws/eb-restart.sh ${SERVICE}
+  exit
+fi
+
 if [[ ${CMD} = "get-envs" ]]; then
-  bash base/bin/aws/s3-getenvs.sh 0-utils "aws-projectname-environments/${SERVICE}-${ARG1:-prod}/.env" "environments/${SERVICE}-${ARG1:-prod}/.env[REMOTE]"
+  bash base/bin/aws/s3-getenvs.sh 0-aws "aws-projectname-environments/${SERVICE}-${ARG1:-prod}/.env" "environments/${SERVICE}-${ARG1:-prod}/.env[REMOTE]"
   exit
 fi
 
 if [[ ${CMD} = "set-envs" ]]; then
-  bash base/bin/aws/s3-setenvs.sh 0-utils "environments/${SERVICE}-${ARG1:-prod}/.env" "aws-projectname-environments/${SERVICE}-${ARG1:-prod}/.env"
+  bash base/bin/aws/s3-setenvs.sh 0-aws "environments/${SERVICE}-${ARG1:-prod}/.env" "aws-projectname-environments/${SERVICE}-${ARG1:-prod}/.env"
   exit
 fi
 

@@ -19,7 +19,7 @@ if [[ ${CMD} = "install" ]]; then
 
   bash base/bin/docker/run.sh backend "
     php artisan migrate --force --seed
-    php artisan generate-root
+    php artisan app:generate-root
   "
 
   exit
