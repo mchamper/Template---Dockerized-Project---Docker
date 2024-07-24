@@ -87,8 +87,13 @@ class AuthController extends Controller
 
         Sleep::for(300)->milliseconds();
 
+        match ($userType) {
+            'user' => $googleClientId = config('services.google.clients.website.id'),
+            'system-user' => $googleClientId = config('services.google.clients.backoffice.id'),
+        };
+
         $googleClient = new Google\Client([
-            'client_id' => config('services.google.client_id'),
+            'client_id' => $googleClientId,
         ]);
 
         if (!$payload = $googleClient->verifyIdToken($validated['token'])) {

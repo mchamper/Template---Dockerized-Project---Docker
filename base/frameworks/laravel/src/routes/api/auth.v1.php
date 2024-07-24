@@ -13,7 +13,7 @@ Route::get('/', fn () => Response::jsonHello());
 
 Route::controller(AuthController::class)->group(function () {
     Route::whereIn('userType', ['user', 'system-user'])->group(function () {
-        Route::post('/{userType}/register', 'register')->middleware('throttle:registers');
+        Route::post('/{userType}/register', 'register')->middleware('throttle:register');
         Route::post('/{userType}/login', 'login')->middleware('throttle:login');
         Route::post('/{userType}/login/google', 'loginWithGoogle')->middleware('throttle:login');
 

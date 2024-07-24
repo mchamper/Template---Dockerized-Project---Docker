@@ -16,8 +16,10 @@ import { Form } from '../../../core/features/form/form.class';
 import { FormBuilder, Validators } from '@angular/forms';
 import { injectQueryParams } from 'ngxtension/inject-query-params';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
-import { GoogleSigninButtonModule, SocialLoginModule } from '@abacritt/angularx-social-login';
+import { GoogleSigninButtonModule, SocialAuthService, SocialLoginModule } from '@abacritt/angularx-social-login';
 import { coreConfig } from '../../../configs/core.config';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-auth-page',
@@ -49,6 +51,7 @@ export class AuthPageComponent {
   private _fb = inject(FormBuilder);
   private _router = inject(Router);
   private _authUserHttpS = inject(AuthUserHttpService);
+  private _socialAuthS = inject(SocialAuthService);
   authS = inject(AuthService);
 
   passwordResetHash = injectQueryParams('passwordResetHash');
@@ -66,6 +69,16 @@ export class AuthPageComponent {
   sessionRefreshRequest = new Request({
     send: () => this._authUserHttpS.me('systemUser'),
   });
+
+  constructor() {
+    this._socialAuthS.authState.pipe(
+      takeUntilDestroyed(),
+      filter(i => !!i)
+    ).subscribe(socialUser => {
+      this.formLoginWithGoogle.group.controls.token.setValue(socialUser.idToken);
+      this.formLoginWithGoogle.submit();
+    });
+  }
 
   /* -------------------- */
 

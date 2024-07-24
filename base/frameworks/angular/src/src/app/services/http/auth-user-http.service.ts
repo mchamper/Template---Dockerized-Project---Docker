@@ -77,7 +77,7 @@ export class AuthUserHttpService {
   loginAs = (userType: TAuthGuardName, input: any) => {
     return this._httpClient.post<THttpResponse>(`${environment.backendUrl}/api/auth/v1/${kebabCase(userType)}/login-as`, input, {
       context: new HttpContext()
-        .set(GUARD, 'systemUser')
+        .set(GUARD, userType)
         .set(ON_SUCCESS, res => this._addSession(userType, res))
     });
   }
@@ -87,14 +87,14 @@ export class AuthUserHttpService {
 
     return this._httpClient.post<THttpResponse>(`${environment.backendUrl}/api/auth/v1/${kebabCase(userType)}/logout`, null, {
       context: new HttpContext()
-        .set(GUARD, 'systemUser')
+        .set(GUARD, userType)
     });
   }
 
   me = (userType: TAuthGuardName, ) => {
     return this._httpClient.get<THttpResponse>(`${environment.backendUrl}/api/auth/v1/${kebabCase(userType)}/me`, {
       context: new HttpContext()
-        .set(GUARD, 'systemUser')
+        .set(GUARD, userType)
         .set(ON_SUCCESS, res => this._updateSession(userType, res))
         .set(ON_ERROR_401, err => this._authS.guard(userType).removeSession())
     });
@@ -105,7 +105,7 @@ export class AuthUserHttpService {
   update = (userType: TAuthGuardName, input: any) => {
     return this._httpClient.put<THttpResponse>(`${environment.backendUrl}/api/auth/v1/${kebabCase(userType)}/update`, input, {
       context: new HttpContext()
-        .set(GUARD, 'systemUser')
+        .set(GUARD, userType)
         .set(ON_SUCCESS, res => this._updateSession(userType, res))
     });
   }

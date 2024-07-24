@@ -21,7 +21,10 @@ class UserRepository extends BaseRepository
             'last_name',
             'email',
             'password',
-            'status',
+            'social_id',
+            'social_driver_id',
+            'social_avatar',
+            'status_id',
         ], $input, $user);
 
         $user->saveOrFail();
@@ -31,9 +34,9 @@ class UserRepository extends BaseRepository
             'photos',
         ], $input, $user);
 
-        if (array_key_exists('roles', $input)) {
-            $user->syncRoles($input['roles']);
-        }
+        // if (array_key_exists('roles', $input)) {
+        //     $user->syncRoles($input['roles']);
+        // }
 
         $user->refresh();
 

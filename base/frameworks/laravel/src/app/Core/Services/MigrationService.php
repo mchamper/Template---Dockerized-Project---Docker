@@ -23,7 +23,7 @@ class MigrationService
     {
         $table->string('first_name');
         $table->string('last_name');
-        $table->string('email');
+        $table->string('email')->unique();
         $table->timestamp('email_verified_at')->nullable();
 
         if ($withPassword) {
@@ -54,10 +54,7 @@ class MigrationService
         $table->softDeletes();
 
         if ($withSocialDriver) {
-            $table->unique(['email', 'social_driver_id']);
             $table->unique(['social_id', 'social_driver_id']);
-        } else {
-            $table->unique('email');
         }
     }
 }
