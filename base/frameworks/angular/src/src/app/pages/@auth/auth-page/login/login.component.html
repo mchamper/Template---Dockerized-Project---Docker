@@ -1,4 +1,4 @@
-<app-form [form]="formLogin" [formGroup]="formLogin.group">
+<app-form [form]="form" [formGroup]="form.group">
   <div class="row">
     <nz-form-item>
       <nz-form-control>
@@ -21,13 +21,5 @@
     </nz-form-item>
   </div>
 
-  <app-form-footer submitText="Ingresar" />
+  <app-form-footer submitText="Ingresar" submitPlacement="center" />
 </app-form>
-
-<nz-divider nzText="o" nzPlain />
-
-<div class="mx-auto mt-4" style="height: 40px; width: 238px;">
-  <app-request [request]="formLoginGoogle.request" type="spinner">
-    <asl-google-signin-button type="standard" size="large"></asl-google-signin-button>
-  </app-request>
-</div>

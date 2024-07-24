@@ -7,8 +7,7 @@ import { taxonomies } from './app.taxonomies';
 import { UiState } from './states/ui.state';
 import { AuthService } from './services/auth.service';
 import { firstValueFrom } from 'rxjs';
-import { environment } from '../environments/environment';
-import { AuthSystemUserHttpService } from './services/http/auth-system-user-http.service';
+import { AuthUserHttpService } from './services/http/auth-user-http.service';
 import moment from 'moment';
 import { routeSlideUpAnimation } from './core/utils/animations/route.animation';
 import { fadeOutAnimation } from './core/utils/animations/fade.animation';
@@ -36,7 +35,7 @@ export class AppComponent {
   private _translateS = inject(TranslateService);
   private _taxonomyS = inject(TaxonomyService);
   private _authS = inject(AuthService);
-  private _authSystemUserHttpS = inject(AuthSystemUserHttpService);
+  private _authUserHttpS = inject(AuthUserHttpService);
 
   routeS = inject(RouteService);
   state = inject(State);
@@ -83,7 +82,7 @@ export class AppComponent {
   async checkAuthSystemUser(): Promise<void> {
     try {
       if (this._authS.systemUser().activeSession()) {
-        await firstValueFrom(this._authSystemUserHttpS.me());
+        await firstValueFrom(this._authUserHttpS.me('systemUser'));
       }
     } catch (err) {
       // return Promise.reject(11);

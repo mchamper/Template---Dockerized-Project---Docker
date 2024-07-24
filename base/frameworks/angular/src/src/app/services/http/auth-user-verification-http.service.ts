@@ -4,35 +4,31 @@ import { THttpResponse } from '../../core/types/http-response.type';
 import { AuthService } from '../auth.service';
 import { GUARD, ON_SUCCESS } from '../../core/interceptors/contexts';
 import { environment } from '../../../environments/environment';
+import { kebabCase } from 'lodash';
+import { TAuthGuardName } from '../../core/services/abstract-auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthSystemUserVerificationHttpService {
+export class AuthUserVerificationHttpService {
 
   private _httpClient = inject(HttpClient);
   private _authS = inject(AuthService);
 
   /* -------------------- */
 
-  request = () => {
-    return this._httpClient.post<THttpResponse>(`${environment.backendUrl}/auth/v1/system-user/verification/request`, null, {
+  request = (userType: TAuthGuardName) => {
+    return this._httpClient.post<THttpResponse>(`${environment.backendUrl}/api/auth/v1/${kebabCase(userType)}/verification/request`, null, {
       context: new HttpContext()
         .set(GUARD, 'systemUser')
     });
   }
 
-  verify = (hash: string) => {
-    return this._httpClient.patch<THttpResponse>(`${environment.backendUrl}/auth/v1/system-user/verification/verify?hash=${hash}`, null, {
+  verify = (userType: TAuthGuardName, hash: string) => {
+    return this._httpClient.patch<THttpResponse>(`${environment.backendUrl}/api/auth/v1/${kebabCase(userType)}/verification/verify?hash=${hash}`, null, {
       context: new HttpContext()
         .set(GUARD, 'systemUser')
-        .set(ON_SUCCESS, res => {
-          this._authS.systemUser().updateSession({
-            data: {
-              isVerified: true,
-            }
-          });
-        })
+        .set(ON_SUCCESS, res => this._authS.guard(userType).updateSession({ data: { isVerified: true } }))
     });
   }
 }

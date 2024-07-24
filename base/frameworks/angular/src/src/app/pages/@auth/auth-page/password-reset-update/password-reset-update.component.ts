@@ -4,7 +4,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FormModule } from '../../../../core/features/form/form.module';
 import { Form } from '../../../../core/features/form/form.class';
-import { AuthSystemUserPasswordResetHttpService } from '../../../../services/http/auth-system-user-password-reset-http.service';
+import { AuthUserPasswordResetHttpService } from '../../../../services/http/auth-user-password-reset-http.service';
 import { AuthPageComponent } from '../auth-page.component';
 
 @Component({
@@ -22,20 +22,20 @@ import { AuthPageComponent } from '../auth-page.component';
 export class PasswordResetUpdateComponent {
 
   private _fb = inject(FormBuilder);
-  private _authSystemUserPasswordResetHttpS = inject(AuthSystemUserPasswordResetHttpService);
+  private _authUserPasswordResetHttpS = inject(AuthUserPasswordResetHttpService);
   parent = inject(AuthPageComponent);
 
-  form: Form;
+  form = new Form(this._fb.group({
+    password: this._fb.control('', { validators: [Validators.required] }),
+    password_confirmation: this._fb.control('', { validators: [Validators.required] }),
+  }), {
+    request: {
+      send: (): any => this._authUserPasswordResetHttpS.update('systemUser', this.parent.passwordResetHash()!, this.form.group.value),
+    },
+    reset: true,
+  });
 
   constructor() {
-    this.form = new Form(this._fb.group({
-      password: ['', [Validators.required]],
-      password_confirmation: ['', [Validators.required]],
-    }), {
-      request: {
-        send: () => this._authSystemUserPasswordResetHttpS.update(this.parent.passwordResetHash!, this.form.group.value),
-      },
-      reset: true,
-    });
+    //
   }
 }

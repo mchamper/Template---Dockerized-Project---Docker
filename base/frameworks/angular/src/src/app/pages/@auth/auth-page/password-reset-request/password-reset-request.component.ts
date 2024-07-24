@@ -4,7 +4,7 @@ import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { FormBuilder, Validators } from '@angular/forms';
 import { FormModule } from '../../../../core/features/form/form.module';
 import { Form } from '../../../../core/features/form/form.class';
-import { AuthSystemUserPasswordResetHttpService } from '../../../../services/http/auth-system-user-password-reset-http.service';
+import { AuthUserPasswordResetHttpService } from '../../../../services/http/auth-user-password-reset-http.service';
 import { authPasswordResetRequestFormMock } from '../../../../mocks/auth-password-reset-request-form.mock';
 
 @Component({
@@ -22,19 +22,19 @@ import { authPasswordResetRequestFormMock } from '../../../../mocks/auth-passwor
 export class PasswordResetRequestComponent {
 
   private _fb = inject(FormBuilder);
-  private _authSystemUserPasswordResetHttpS = inject(AuthSystemUserPasswordResetHttpService);
+  private _authUserPasswordResetHttpS = inject(AuthUserPasswordResetHttpService);
 
-  form: Form;
+  form = new Form(this._fb.group({
+    email: this._fb.control('', { validators: [Validators.required, Validators.email] }),
+  }), {
+    request: {
+      send: (): any => this._authUserPasswordResetHttpS.request('systemUser', this.form.group.value),
+    },
+    reset: true,
+    mock: authPasswordResetRequestFormMock(),
+  });;
 
   constructor() {
-    this.form = new Form(this._fb.group({
-      email: ['', [Validators.required, Validators.email]],
-    }), {
-      request: {
-        send: () => this._authSystemUserPasswordResetHttpS.request({ ...this.form.group.value }),
-      },
-      reset: true,
-      mock: authPasswordResetRequestFormMock(),
-    });
+    //
   }
 }

@@ -42,7 +42,7 @@
     </div>
   } @else {
     <nz-tabset [nzAnimated]="false">
-      @if (passwordResetHash) {
+      @if (passwordResetHash()) {
         <nz-tab nzTitle="Cambiar contraseña">
           <app-password-reset-update />
         </nz-tab>
@@ -50,6 +50,14 @@
 
       <nz-tab nzTitle="Login">
         <app-login />
+
+        <nz-divider nzText="O" nzPlain />
+
+        <div class="mx-auto mt-4" style="height: 40px; width: 238px;">
+          <app-request [request]="formLoginWithGoogle.request" type="spinner">
+            <asl-google-signin-button type="standard" size="large"></asl-google-signin-button>
+          </app-request>
+        </div>
       </nz-tab>
 
       <nz-tab nzTitle="Registro">

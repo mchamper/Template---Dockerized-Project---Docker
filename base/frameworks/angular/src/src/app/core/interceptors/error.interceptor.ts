@@ -2,7 +2,7 @@ import { HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpRequest, HttpResponse 
 import { inject } from "@angular/core";
 import { AuthService } from "../../services/auth.service";
 import { THttpErrorResponse } from "../types/http-error-response.type";
-import { ERROR_KEYS, ERR_AS_SUCCESS, FALLBACK_GUARD, GUARD, MAP_MESSAGE, ON_ERROR } from "./contexts";
+import { ERROR_KEYS, ERR_AS_SUCCESS, FALLBACK_GUARD, GUARD, MAP_MESSAGE, ON_ERROR, ON_ERROR_401 } from "./contexts";
 import { catchError, Observable, of, throwError } from "rxjs";
 import { get } from "lodash";
 
@@ -14,6 +14,7 @@ export function errorInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn)
   const mapMessageContext = req.context.get(MAP_MESSAGE);
   const errAsSuccessContext = req.context.get(ERR_AS_SUCCESS);
   const onErrorContext = req.context.get(ON_ERROR);
+  const onError401Context = req.context.get(ON_ERROR_401);
 
   return next(req).pipe(
     catchError((event: HttpEvent<any>) => {
@@ -48,6 +49,10 @@ export function errorInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn)
 
         if (onErrorContext) {
           onErrorContext(error);
+        }
+
+        if (onError401Context && error.status === 401) {
+          onError401Context(error);
         }
 
         return throwError(() => error);

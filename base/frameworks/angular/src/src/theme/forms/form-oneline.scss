@@ -5,8 +5,8 @@ form[nz-form].form-oneline, .form-items.form-oneline {
   // --input-font-size: var(--app-px-16);
 
   @mixin input-value {
-    @include app-ff-primary-eb();
-    color: var(--bs-primary) !important;
+    // @include app-ff-primary-eb();
+    // color: var(--bs-primary) !important;
   }
 
   @mixin input-styles {
@@ -21,12 +21,13 @@ form[nz-form].form-oneline, .form-items.form-oneline {
   /* -------------------- */
 
   nz-form-label {
-    left: 0 !important;
+    // left: 0 !important;
+    padding: 0;
   }
-  label {
-    @include app-ff-primary-eb();
-    color: var(--bs-secondary);
-  }
+  // label {
+  //   @include app-ff-primary-eb();
+  //   color: var(--bs-secondary);
+  // }
 
   /* -------------------- */
 

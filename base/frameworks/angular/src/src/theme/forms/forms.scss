@@ -1,7 +1,7 @@
 @import "vars.scss";
 
 form[nz-form], .form-items {
-  --default-input-height: var(--app-px-48);
+  --default-input-height: var(--app-px-40);
 
   --label-font-size: var(--app-px-14);
   --input-font-size: var(--app-px-14);
@@ -15,6 +15,7 @@ form[nz-form], .form-items {
 
   &.floating-label {
     --input-padding-top: calc(var(--label-font-size) * 1.4);
+    --default-input-height: var(--app-px-50);
   }
 
   @mixin input-height($offset: 0px) {
