@@ -24,6 +24,8 @@ import { register as swiperRegisterCustomElements } from 'swiper/element/bundle'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TranslateBrowserLoader } from './core/loaders/translate-browser.loader';
 import { GoogleLoginProvider, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
+// import { GoogleTagManagerModule } from 'angular-google-tag-manager';
+// import { PixelModule } from 'ngx-pixel-eventid';
 /* -------------------- */
 import { InitService } from './services/init.service';
 
@@ -37,9 +39,9 @@ export function initializeApp(initS: InitService) {
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    { provide: APP_BASE_HREF, useValue: '/' },
     { provide: APP_INITIALIZER, useFactory: initializeApp, deps: [InitService], multi: true },
     { provide: LOCALE_ID, useFactory: (translate: TranslateService) => translate.currentLang ? translate.currentLang : 'es', deps: [TranslateService] },
-    { provide: APP_BASE_HREF, useValue: '/' },
     provideRouter(routes,
       withInMemoryScrolling({
         scrollPositionRestoration: 'enabled'
@@ -76,6 +78,8 @@ export const appConfig: ApplicationConfig = {
           },
           defaultLanguage: 'es',
         }),
+        // GoogleTagManagerModule.forRoot({ id: environment.gtmId! }),
+        // PixelModule.forRoot({ enabled: true, pixelId: environment.fbPixelId! }),
       ]
     ),
     {

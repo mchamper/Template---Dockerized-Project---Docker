@@ -1,8 +1,8 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { GUARD } from '../../core/interceptors/contexts';
-import { environment } from '../../../environments/environment';
-import { THttpResponse } from '../../core/types/http-response.type';
+import { GUARD } from '../../../core/interceptors/contexts';
+import { environment } from '../../../../environments/environment';
+import { THttpResponse } from '../../../core/types/http-response.type';
 
 @Injectable({
   providedIn: 'root'

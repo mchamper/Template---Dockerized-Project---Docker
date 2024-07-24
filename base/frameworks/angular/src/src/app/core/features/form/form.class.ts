@@ -1,7 +1,7 @@
 import { DestroyRef, Injector, ProviderToken, inject, signal } from "@angular/core";
 import { AbstractControl, FormArray, FormControl, FormGroup } from "@angular/forms";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { CombosHttpService } from "../../../services/http/combos-http.service";
+import { CombosHttpService } from "../../../services/http/general/combos-http.service";
 import { Request } from "../request/request.class";
 import { environment } from "../../../../environments/environment";
 import { debounceTime, distinctUntilChanged, skip, startWith } from "rxjs";

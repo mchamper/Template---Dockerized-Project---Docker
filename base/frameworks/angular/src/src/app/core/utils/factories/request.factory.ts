@@ -1,5 +1,5 @@
 import { DestroyRef, Injector, inject, signal } from "@angular/core";
-import { SearchHttpService } from "../../../services/http/search-http.service";
+import { SearchHttpService } from "../../../services/http/general/search-http.service";
 import { Request } from "../../features/request/request.class";
 import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
 import { debounceTime, distinctUntilChanged, filter } from "rxjs";

@@ -27,9 +27,9 @@ class MigrationService
         $table->timestamp('email_verified_at')->nullable();
 
         if ($withPassword) {
-            $table->string('password')->nullable(!$withSocialDriver);
+            $table->string('password')->nullable($withSocialDriver);
         }
-        // $table->rememberToken();
+
         $table->string('token_for_email_verification')->unique()->nullable();
 
         if ($withPassword) {

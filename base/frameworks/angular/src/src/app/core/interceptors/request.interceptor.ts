@@ -17,12 +17,12 @@ export function requestInterceptor(req: HttpRequest<unknown>, next: HttpHandlerF
   headers = headers.set('Accept-Language', state.lang());
 
   if (guardContext && authS.guard(guardContext).activeSession()?.token) {
-    headers = headers.set('Authorization', `Bearer ${authS.guard(guardContext).activeSession()?.token}`);
+    headers = headers.set('Authorization', `Bearer ${authS.guard(guardContext).activeSession()!.token}`);
   }
 
   return next(req.clone({
     headers,
   })).pipe(
-    delay(coreConfig.http?.delay || 0)
+    delay(coreConfig.http.delay || 0)
   );
 }

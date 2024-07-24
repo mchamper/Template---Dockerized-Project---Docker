@@ -9,7 +9,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { isArray } from 'lodash';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { UploadHttpService } from '../../../../../services/http/upload-http.service';
+import { UploadHttpService } from '../../../../../services/http/general/upload-http.service';
 import { THttpErrorResponse } from '../../../../types/http-error-response.type';
 import { camelizeParser } from '../../../../utils/parsers/camelize.parser';
 
