@@ -96,13 +96,11 @@ form[nz-form], .form-items {
   input[nz-input]:not(.input-in-group) {
     @include input-height-with-padding();
     font-size: var(--input-font-size);
-    border-radius: 50rem;
   }
 
   nz-input-group {
     display: flex !important;
     align-items: center;
-    border-radius: 50rem;
 
     @include input-height-with-padding();
     font-size: var(--input-font-size);
@@ -116,7 +114,6 @@ form[nz-form], .form-items {
   textarea[nz-input] {
     @include input-min-height-with-padding();
     font-size: var(--input-font-size);
-    border-radius: 50rem;
   }
 
   nz-input-number {
@@ -139,7 +136,6 @@ form[nz-form], .form-items {
         @include input-height-with-padding();
         width: 100%;
         align-items: center;
-        border-radius: 50rem !important;
 
         nz-select-search {
           input {
@@ -159,7 +155,6 @@ form[nz-form], .form-items {
         min-height: var(--input-height);
         width: 100%;
         overflow: hidden;
-        border-radius: 50rem !important;
 
         &::after {
           display: none;
@@ -183,7 +178,6 @@ form[nz-form], .form-items {
   nz-date-picker {
     @include input-height-with-padding();
     width: 100%;
-    border-radius: 50rem !important;
 
     input {
       font-size: var(--input-font-size);
@@ -193,7 +187,6 @@ form[nz-form], .form-items {
   nz-range-picker {
     @include input-height-with-padding();
     width: 100%;
-    border-radius: 50rem !important;
 
     input {
       font-size: var(--input-font-size);
@@ -210,10 +203,6 @@ form[nz-form], .form-items {
     // }
 
     nz-upload {
-      .ant-upload-list-item {
-        border-radius: 20px;
-      }
-
       .ant-upload-list-picture-card .ant-upload-list-item-thumbnail {
         opacity: 1 !important;
       }

@@ -16,6 +16,7 @@ $item-selectors:
   'nz-select nz-select-top-control',
   'nz-date-picker',
   'nz-range-picker',
+  'nz-upload:not(.button) .ant-upload',
 ;
 
 $item-selectors-with-error:

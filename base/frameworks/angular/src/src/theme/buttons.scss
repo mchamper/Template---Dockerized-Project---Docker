@@ -6,18 +6,14 @@
   margin: 0;
 }
 
-a.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-height: var(--app-px-40);
-  border-radius: 50rem;
+  border-radius: 20px;
+  padding-left: 1rem;
+  padding-right: 1rem;
 
   &.btn-icon {
     width: 3rem;

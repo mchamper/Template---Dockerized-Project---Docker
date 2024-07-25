@@ -10,6 +10,7 @@ import { AuthService } from '../../services/auth.service';
 import { AuthUserHttpService } from '../../services/http/auth-user-http.service';
 import { VerificationComponent } from './verification/verification.component';
 import { BoxSectionTitleComponent } from '../../components/layouts/box-section-title/box-section-title.component';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
 
 @Component({
   selector: 'app-account-page',
@@ -22,6 +23,7 @@ import { BoxSectionTitleComponent } from '../../components/layouts/box-section-t
     PageTitleComponent,
     BoxSectionTitleComponent,
     VerificationComponent,
+    NzAlertModule,
   ],
   templateUrl: './account-page.component.html',
   styleUrls: ['./account-page.component.scss'],
@@ -44,10 +46,10 @@ export class AccountPageComponent {
   }), {
     request: {
       send: (): any => this._authUserHttpS.update('systemUser', this.form.group.value),
-      success: (res) => this.form.persist({ ...res.body.data, password_current: null, password: null, password_confirmation: null }),
+      success: (res) => this.form.persist({ ...res.body.user, password_current: null, password: null, password_confirmation: null }),
       notify: true,
     }
-  });;
+  });
 
   constructor() {
     effect(() => {
@@ -55,7 +57,7 @@ export class AccountPageComponent {
         this.form.group.disable();
       } else {
         this.form.group.enable();
-        this.form.getControl('email').disable();
+        this.form.group.controls.email.disable();
       }
     }, { allowSignalWrites: true });
   }

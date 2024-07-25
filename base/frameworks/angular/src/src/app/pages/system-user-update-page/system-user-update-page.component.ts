@@ -8,6 +8,8 @@ import { Form } from '../../core/features/form/form.class';
 import { ListModule } from '../../core/features/list/list.module';
 import { BoxSectionTitleComponent } from '../../components/layouts/box-section-title/box-section-title.component';
 import { injectParams } from 'ngxtension/inject-params';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
+import { SystemUser } from '../../models/system-user.model';
 
 @Component({
   selector: 'app-system-user-update-page',
@@ -18,6 +20,7 @@ import { injectParams } from 'ngxtension/inject-params';
     ListModule,
     PageTitleComponent,
     BoxSectionTitleComponent,
+    NzAlertModule,
   ],
   templateUrl: './system-user-update-page.component.html',
   styleUrl: './system-user-update-page.component.scss',
@@ -42,7 +45,7 @@ export class SystemUserUpdatePageComponent {
       form.group.controls.email.disable();
     },
     dataRequest: {
-      send: (): any => this._systemUserHttpS.getOne(Number(this.systemUserId()), { with: '' }),
+      send: (): any => this._systemUserHttpS.getOne(Number(this.systemUserId()), { with: 'social_driver' }),
       watch: 'system_user',
       success: (res) => this.form.set(res.body._raw.system_user),
     },
