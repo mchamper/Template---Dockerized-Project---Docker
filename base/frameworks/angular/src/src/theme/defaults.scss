@@ -13,3 +13,13 @@ nz-alert .ant-alert,
 {
   border-radius: var(--global-border-radius) var(--global-border-radius) 0 0 !important;
 }
+
+/* -------------------- */
+
+.fullscreen {
+  app-page-title + .container,
+  app-page-title .container
+  {
+    max-width: 100%;
+  }
+}
