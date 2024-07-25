@@ -1,13 +1,11 @@
 form[nz-form].form-default, .form-items.form-default {
   --default-input-height: var(--app-px-40);
-  --border-radius: var(--app-px-20);
 
   --label-font-size: var(--app-px-14);
   --input-font-size: var(--app-px-14);
 
   &.floating-label {
     --default-input-height: var(--app-px-50);
-    --border-radius: var(--app-px-25);
   }
 
   @mixin input-value {
@@ -15,7 +13,7 @@ form[nz-form].form-default, .form-items.form-default {
   }
 
   @mixin input-styles {
-    border-radius: var(--border-radius) !important;
+    border-radius: var(--input-border-radius) !important;
     padding-left: 1rem !important;
     padding-right: 1rem !important;
 

@@ -12,6 +12,7 @@ form[nz-form], .form-items {
   --input-padding-right: 11px;
   --input-padding-with-prefix: var(--input-padding-left);
   --input-padding-with-suffix: var(--input-padding-right);
+  --input-border-radius: var(--global-border-radius);
 
   &.floating-label {
     --input-padding-top: calc(var(--label-font-size) * 1.4);

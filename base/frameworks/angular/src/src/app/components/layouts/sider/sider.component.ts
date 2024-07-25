@@ -7,6 +7,8 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { RouteService } from '../../../core/services/route.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ViewportService } from '../../../core/services/viewport.service';
 
 @Component({
   selector: 'app-sider',
@@ -24,7 +26,18 @@ import { RouteService } from '../../../core/services/route.service';
 })
 export class SiderComponent {
 
+  private _viewportS = inject(ViewportService);
   authS = inject(AuthService);
   routeS = inject(RouteService);
   uiState = inject(UiState);
+
+  constructor() {
+    this.routeS.onNavigationStart$().pipe(
+      takeUntilDestroyed(),
+    ).subscribe(() => {
+      if (this._viewportS.down('sm')) {
+        this.uiState.sidebar.isVisible.value.set(false);
+      }
+    });
+  }
 }

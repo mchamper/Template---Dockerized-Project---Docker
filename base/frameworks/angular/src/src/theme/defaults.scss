@@ -1,0 +1,15 @@
+.box,
+nz-alert .ant-alert,
+.ant-popover .ant-popover-inner,
+.btn,
+.ant-modal-content,
+.ant-dropdown-menu,
+.ant-dropdown-menu-item
+{
+  border-radius: var(--global-border-radius) !important;
+}
+
+.ant-modal-content .ant-modal-header
+{
+  border-radius: var(--global-border-radius) var(--global-border-radius) 0 0 !important;
+}
