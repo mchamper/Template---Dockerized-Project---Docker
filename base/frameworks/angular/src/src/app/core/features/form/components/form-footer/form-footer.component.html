@@ -36,7 +36,7 @@
 </ng-container>
 
 <ng-template #buttonTpl>
-  <button type="submit" class="btn btn-primary text-center align-items-center justify-content-center" (click)="form.submit()"
+  <button type="submit" class="btn btn-primary" (click)="form.submit()"
     [class.w-100]="submitPlacement === 'block'"
     [loading]="form.request.isLoading()"
     [disabled]="disabled"

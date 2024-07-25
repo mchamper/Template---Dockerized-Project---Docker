@@ -15,7 +15,7 @@
   </nz-alert>
 } @else {
   <app-form [form]="form" [formGroup]="form.group">
-    <div class="row">
+    <div class="row mb-3">
       <nz-form-item>
         <nz-form-control>
           <nz-form-label>Nombre</nz-form-label>
@@ -50,8 +50,8 @@
           <input nz-input type="password" formControlName="password_confirmation">
         </nz-form-control>
       </nz-form-item>
-
-      <app-form-footer submitText="Registrarme" submitPlacement="block" />
     </div>
+
+    <app-form-footer submitText="Registrarme" submitPlacement="block" />
   </app-form>
 }

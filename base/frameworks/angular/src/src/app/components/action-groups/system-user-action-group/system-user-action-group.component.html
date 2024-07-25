@@ -10,14 +10,14 @@
 
     @case ('icon') {
       @if (canShow('activate')) {
-        <nz-switch class="mx-1"
+        <nz-switch class="mx-1 mb-1"
           nz-tooltip nzTooltipTitle="Activar"
           nzSize="small"
           [ngModel]="this.systemUser!.isActive()" (ngModelChange)="activateRequest.run()"
         ></nz-switch>
       }
       @if (canShow('deactivate')) {
-        <nz-switch class="mx-1"
+        <nz-switch class="mx-1 mb-1"
           nz-tooltip nzTooltipTitle="Desactivar"
           nzSize="small"
           [ngModel]="this.systemUser!.isActive()" (ngModelChange)="deactivateRequest.run()"
