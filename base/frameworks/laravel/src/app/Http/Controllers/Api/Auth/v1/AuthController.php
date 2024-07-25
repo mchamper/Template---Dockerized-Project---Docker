@@ -53,8 +53,8 @@ class AuthController extends Controller
         $validated = UserLoginRequest::validate($input);
 
         match ($userType) {
-            'user' => $user = User::whereEmail($validated['email'])->first(),
-            'system-user' => $user = SystemUser::whereEmail($validated['email'])->first(),
+            'user' => $user = User::withTrashed()->whereEmail($validated['email'])->first(),
+            'system-user' => $user = SystemUser::withTrashed()->whereEmail($validated['email'])->first(),
         };
 
         if (!$user || !Hash::check($validated['password'], $user->password)) {
@@ -70,6 +70,7 @@ class AuthController extends Controller
         DB::beginTransaction();
 
         $token = $user->createDefaultToken(expiresAt: $expiresAt);
+        $user->restore();
 
         DB::commit();
 
@@ -111,8 +112,8 @@ class AuthController extends Controller
         $socialUserRaw = $socialUser->getRaw();
 
         match ($userType) {
-            'user' => $user = User::whereEmail($socialUser->getEmail())->whereSocialDriverId(1)->first(),
-            'system-user' => $user = SystemUser::whereEmail($socialUser->getEmail())->whereSocialDriverId(1)->first(),
+            'user' => $user = User::withTrashed()->whereEmail($socialUser->getEmail())->whereSocialDriverId(1)->first(),
+            'system-user' => $user = SystemUser::withTrashed()->whereEmail($socialUser->getEmail())->whereSocialDriverId(1)->first(),
         };
 
         $input = [];
@@ -142,6 +143,7 @@ class AuthController extends Controller
         $user->saveOrFail();
 
         $token = $user->createDefaultToken(expiresAt: $expiresAt);
+        $user->restore();
 
         DB::commit();
 

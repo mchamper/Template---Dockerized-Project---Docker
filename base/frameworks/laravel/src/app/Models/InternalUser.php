@@ -8,6 +8,7 @@ use App\Models\Traits\Auth\AuthStatusTrait;
 use App\Models\Traits\Auth\AuthTokenTrait;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -18,6 +19,7 @@ class InternalUser extends Authenticatable
     use HasFactory;
     use Notifiable;
     use HasApiTokens;
+    use SoftDeletes;
     use AuthStatusTrait;
     use AuthTokenTrait;
     use HasRolesAndPermissions;

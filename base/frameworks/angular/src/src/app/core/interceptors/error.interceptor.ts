@@ -30,7 +30,7 @@ export function errorInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn)
         }
 
         if (guardContext) {
-          if (error.status === 401 && error.name === 'INVALID_SESSION_ERROR') {
+          if (error.status === 401 && error.name === 'InvalidSession') {
             authS.guard(guardContext).removeSession();
           }
         }

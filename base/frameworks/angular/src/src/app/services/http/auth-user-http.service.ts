@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpContext } from '@angular/common/http';
-import { GUARD, ON_ERROR_401, ON_SUCCESS } from '../../core/interceptors/contexts';
+import { GUARD, ON_ERROR, ON_ERROR_401, ON_SUCCESS } from '../../core/interceptors/contexts';
 import { AuthService } from '../auth.service';
 import { SystemUser } from '../../models/system-user.model';
 import { environment } from '../../../environments/environment';
@@ -96,7 +96,11 @@ export class AuthUserHttpService {
       context: new HttpContext()
         .set(GUARD, userType)
         .set(ON_SUCCESS, res => this._updateSession(userType, res))
-        .set(ON_ERROR_401, err => this._authS.guard(userType).removeSession())
+        .set(ON_ERROR, err => {
+          if (err.status === 401 || err.name === 'InactiveUser') {
+            this._authS.guard(userType).removeSession();
+          }
+        })
     });
   }
 

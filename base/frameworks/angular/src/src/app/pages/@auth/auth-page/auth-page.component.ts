@@ -19,7 +19,7 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { GoogleSigninButtonModule, SocialAuthService, SocialLoginModule } from '@abacritt/angularx-social-login';
 import { coreConfig } from '../../../configs/core.config';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { filter } from 'rxjs';
+import { filter, skip } from 'rxjs';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 
 @Component({
@@ -78,7 +78,8 @@ export class AuthPageComponent {
   constructor() {
     this._socialAuthS.authState.pipe(
       takeUntilDestroyed(),
-      filter(i => !!i)
+      skip(1),
+      filter(i => !!i),
     ).subscribe(socialUser => {
       this.formLoginWithGoogle.group.controls.token.setValue(socialUser.idToken);
       this.formLoginWithGoogle.submit();

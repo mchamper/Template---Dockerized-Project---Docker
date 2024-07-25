@@ -15,8 +15,10 @@ class VerifyAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->check()) {
-            auth()->user()->verifyStatus();
+        foreach (config('auth.guards') as $guard => $guardConfig) {
+            if (auth($guard)->check()) {
+                auth($guard)->user()->verifyStatus();
+            }
         }
 
         return $next($request);
