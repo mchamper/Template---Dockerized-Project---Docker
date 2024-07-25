@@ -380,7 +380,12 @@ export class List<Item = any> {
   /* -------------------- */
 
   refresh = (): void => {
+    const scrollTopOriginalValue = this._options.scrollToTop;
+    this._options.scrollToTop = false;
+
     this.unselectAll();
     this.submit();
+
+    this._options.scrollToTop = scrollTopOriginalValue;
   }
 }
