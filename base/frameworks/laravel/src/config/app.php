@@ -53,9 +53,9 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
-    'website_url' => env('WEBSITE_URL', 'http://localhost'),
-    'webapp_url' => env('WEBAPP_URL', 'http://localhost'),
-    'backoffice_url' => env('BACKOFFICE_URL', 'http://localhost'),
+    'website_url' => env('APP_WEBSITE_URL', 'http://localhost'),
+    'webapp_url' => env('APP_WEBAPP_URL', 'http://localhost'),
+    'backoffice_url' => env('APP_BACKOFFICE_URL', 'http://localhost'),
 
     /*
     |--------------------------------------------------------------------------

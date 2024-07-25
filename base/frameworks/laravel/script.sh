@@ -33,6 +33,8 @@ bash base/bin/docker/run.sh ${SERVICE} "
   echo \"
 ########################################
 
+APP_BACKOFFICE_URL=http://localhost:10004
+
 TELESCOPE_ENABLED=true
 
 GOOGLE_CLIENT_WEBSITE_ID=

@@ -54,12 +54,12 @@ export class Form<Data = any, Group extends { [K in keyof Group]: AbstractContro
   constructor(
     public group: FormGroup<Group> = new FormGroup({}) as any,
     private _options: {
-      init?: (form: Form, state: any) => any,
-      subscriptions?: (form: Form) => any,
+      init?: (form: Form<Data, Group>, state: any) => any,
+      subscriptions?: (form: Form<Data, Group>) => any,
       arrays?: {
         [key: string]: {
           group: FormGroup,
-          onAdd?: (group: FormGroup, form: Form, state: any) => any,
+          onAdd?: (group: FormGroup, form: Form<Data, Group>, state: any) => any,
           onMove?: (eachControl: FormControl, newIndex: number) => any,
         },
       },

@@ -52,7 +52,7 @@ class SystemUserController extends Controller
         Gate::authorize('create', SystemUser::class);
 
         $input = request()->post();
-        $validated = Validator::make($input, UserCreateRequest::rules())->validate();
+        $validated = Validator::make($input, UserCreateRequest::rules(['userTable' => 'system_users']))->validate();
 
         DB::beginTransaction();
 
