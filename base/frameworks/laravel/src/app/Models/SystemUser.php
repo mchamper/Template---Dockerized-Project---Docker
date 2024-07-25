@@ -62,6 +62,11 @@ class SystemUser extends Authenticatable implements HasMedia
     /**
      * Relations.
      */
+    public function status(): BelongsTo
+    {
+        return $this->belongsTo(AuthStatus::class);
+    }
+
     public function social_driver(): BelongsTo
     {
         return $this->belongsTo(AuthSocialDriver::class);

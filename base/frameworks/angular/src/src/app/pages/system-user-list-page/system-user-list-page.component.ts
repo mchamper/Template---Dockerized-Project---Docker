@@ -35,49 +35,50 @@ export class SystemUserListPageComponent {
   private _fb = inject(FormBuilder);
   private _systemUserHttpS = inject(SystemUserHttpService);
 
-  list: List<SystemUser>;
+  list = new List<SystemUser>({
+    persistOnUrl: true,
+    request: {
+      send: (): any => {
+        const filters: any = {
+          'filters.status_id|in': this.list.filters.getValue('main.statuses').join(','),
+          'filters.email|-like-': this.list.filters.getValue('main.email'),
+          'filters.created_at|betweenDates': betweenDatesMapper(this.list.filters.getValue('main.createdAt'), true),
+          'advFilters._groupA:or.email_verified_at|!null': this.list.filters.getValue('main.emailVerified'),
+          'advFilters._groupA:or.email_verified_at|null': this.list.filters.getValue('main.emailNotVerified'),
+        };
+
+        for (const [i, value] of (this.list.filters.getValue('main.name')?.split(' ') || []).entries()) {
+          filters[`advFilters._groupB${i}:or.first_name|-like-`] = value;
+          filters[`advFilters._groupB${i}:or.last_name|-like-`] = value;
+        }
+
+        const params = {
+          page: this.list.currentPage(),
+          limit: this.list.limit(),
+          sort: this.list.sort() || '-created_at',
+          with: 'status',
+          ...stringToObjectParser(filters, true),
+        };
+
+        return this._systemUserHttpS.getList(params);
+      },
+      watch: 'system_users',
+    },
+    filters: new Form(this._fb.group({
+      main: this._fb.group({
+        statuses: this._fb.control([]),
+        name: this._fb.control(''),
+        email: this._fb.control(''),
+        createdAt: this._fb.control([]),
+        emailVerified: this._fb.control(false),
+        emailNotVerified: this._fb.control(false),
+      }),
+    }), {
+      combos: `auth_statuses`,
+    }),
+  });
 
   constructor() {
-    this.list = new List({
-      persistOnUrl: true,
-      request: {
-        send: () => {
-          const filters: any = {
-            'filters.status|in': this.list.filters.getValue('main.statuses').join(','),
-            'filters.email|-like-': this.list.filters.getValue('main.email'),
-            'filters.created_at|betweenDates': betweenDatesMapper(this.list.filters.getValue('main.createdAt'), true),
-            'advFilters._groupA:or.email_verified_at|!null': this.list.filters.getValue('main.emailVerified'),
-            'advFilters._groupA:or.email_verified_at|null': this.list.filters.getValue('main.emailNotVerified'),
-          };
-
-          for (const [i, value] of (this.list.filters.getValue('main.name')?.split(' ') || []).entries()) {
-            filters[`advFilters._groupB${i}:or.first_name|-like-`] = value;
-            filters[`advFilters._groupB${i}:or.last_name|-like-`] = value;
-          }
-
-          const params = {
-            page: this.list.currentPage(),
-            limit: this.list.limit(),
-            sort: this.list.sort() || '-created_at',
-            ...stringToObjectParser(filters, true),
-          };
-
-          return this._systemUserHttpS.getList(params);
-        },
-        watch: 'system_users',
-      },
-      filters: new Form(this._fb.group({
-        main: this._fb.group({
-          statuses: [[]],
-          name: [null],
-          email: [null],
-          createdAt: [[]],
-          emailVerified: [false],
-          emailNotVerified: [false],
-        }),
-      }), {
-        combos: `system_user_statuses`,
-      }),
-    });
+    //
   }
 }

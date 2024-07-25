@@ -8,9 +8,12 @@ use App\Enums\SystemUserStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SystemUser\SystemUserCreateRequest;
 use App\Http\Requests\SystemUser\SystemUserUpdateRequest;
+use App\Http\Requests\User\UserCreateRequest;
+use App\Http\Requests\User\UserUpdateRequest;
 use App\Models\SystemUser;
 use App\Repositories\SystemUserRepository;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -46,10 +49,10 @@ class SystemUserController extends Controller
 
     public function create()
     {
-        $this->authorize('create', SystemUser::class);
+        Gate::authorize('create', SystemUser::class);
 
         $input = request()->post();
-        $validated = Validator::make($input, SystemUserCreateRequest::rules())->validate();
+        $validated = Validator::make($input, UserCreateRequest::rules())->validate();
 
         DB::beginTransaction();
 
@@ -80,10 +83,10 @@ class SystemUserController extends Controller
     {
         $systemUser = SystemUser::noRoot()->noAuth()->findOrFail($systemUserId);
 
-        $this->authorize('update', $systemUser);
+        Gate::authorize('update', $systemUser);
 
         $input = request()->post();
-        $validated = Validator::make($input, SystemUserUpdateRequest::rules())->validate();
+        $validated = Validator::make($input, UserUpdateRequest::rules())->validate();
 
         if (empty($validated['password'])) {
             $validated = collect($validated)->except(['password'])->toArray();
@@ -105,7 +108,7 @@ class SystemUserController extends Controller
     {
         $systemUser = SystemUser::noRoot()->noAuth()->findOrFail($systemUserId);
 
-        $this->authorize('delete', $systemUser);
+        Gate::authorize('delete', $systemUser);
 
         DB::beginTransaction();
 
@@ -124,11 +127,11 @@ class SystemUserController extends Controller
     {
         $systemUser = SystemUser::noRoot()->noAuth()->findOrFail($systemUserId);
 
-        $this->authorize('update', $systemUser);
+        Gate::authorize('update', $systemUser);
 
         DB::beginTransaction();
 
-        $systemUser->status = SystemUserStatusEnum::Active;
+        $systemUser->status_id = 1;
         $systemUser->saveOrFail();
 
         DB::commit();
@@ -142,11 +145,11 @@ class SystemUserController extends Controller
     {
         $systemUser = SystemUser::noRoot()->noAuth()->findOrFail($systemUserId);
 
-        $this->authorize('update', $systemUser);
+        Gate::authorize('update', $systemUser);
 
         DB::beginTransaction();
 
-        $systemUser->status = SystemUserStatusEnum::Inactive;
+        $systemUser->status_id = 2;
         $systemUser->saveOrFail();
 
         DB::commit();

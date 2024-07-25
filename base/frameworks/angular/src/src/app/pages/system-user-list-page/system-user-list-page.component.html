@@ -28,8 +28,8 @@
           <nz-form-control>
             <nz-form-label>Estados</nz-form-label>
             <nz-select formControlName="statuses" nzMode="multiple">
-              @for (status of list.filters.getCombo('system_user_statuses'); track status.name) {
-                <nz-option [nzValue]="status.name" [nzLabel]="status.data.label" />
+              @for (status of list.filters.getCombo('auth_statuses'); track status.id) {
+                <nz-option [nzValue]="status.id" [nzLabel]="status.name" />
               }
             </nz-select>
           </nz-form-control>
