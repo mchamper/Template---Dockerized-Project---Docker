@@ -1,0 +1,48 @@
+:host {
+  .sessions {
+    .list-group {
+      .list-group-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        min-height: var(--app-px-60);
+        text-align: left;
+        overflow: hidden;
+
+        &.selected {
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            display: block;
+            width: 5px;
+            height: 100%;
+            background-color: var(--bs-primary);
+          }
+
+          background-color: inherit;
+        }
+
+        span {
+          &:nth-child(1),
+          &:nth-child(3) {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+          }
+
+          &:nth-child(1) {
+            padding-right: 10px;
+          }
+
+          &:nth-child(3) {
+            width: 30px;
+            margin-left: auto;
+            padding-left: 10px;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
@@ -20,6 +20,7 @@ import { GoogleSigninButtonModule, SocialAuthService, SocialLoginModule } from '
 import { coreConfig } from '../../../configs/core.config';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 
 @Component({
   selector: 'app-auth-page',
@@ -38,6 +39,7 @@ import { filter } from 'rxjs';
     NzDividerModule,
     SocialLoginModule,
     GoogleSigninButtonModule,
+    NzIconModule,
   ],
   templateUrl: './auth-page.component.html',
   styleUrls: ['./auth-page.component.scss'],
@@ -57,11 +59,14 @@ export class AuthPageComponent {
   passwordResetHash = injectQueryParams('passwordResetHash');
   redirectTo = injectQueryParams('redirectTo');
 
+  addAnotherAccount = signal(false);
+
   formLoginWithGoogle = new Form(this._fb.group({
     token: this._fb.control('', { validators: [Validators.required] }),
   }), {
     request: {
       send: (): any => this._authUserHttpS.loginWithGoogle('systemUser', this.formLoginWithGoogle.group.value),
+      success: () => this.addAnotherAccount.set(false),
     },
     reset: true,
   });

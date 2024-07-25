@@ -37,11 +37,9 @@
                   <li nz-menu-item>
                     <a class="link-styless" routerLink="/cuenta">Cuenta</a>
                   </li>
-                  @if (authS.systemUser().sessions().length > 1) {
-                    <li nz-menu-item>
-                      <a class="link-styless" routerLink="/bienvenido">Cambiar cuenta</a>
-                    </li>
-                  }
+                  <li nz-menu-item>
+                    <a class="link-styless" routerLink="/bienvenido">Cambiar cuenta</a>
+                  </li>
                   <li nz-menu-item>
                     <button class="btn-styless text-danger" (click)="authS.systemUser().removeSession()">Cerrar sesión</button>
                   </li>

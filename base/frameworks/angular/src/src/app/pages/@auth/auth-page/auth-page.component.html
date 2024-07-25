@@ -1,48 +1,82 @@
 <div class="box text-start m-auto p-5 px-4 px-sm-5" style="max-width: 450px;">
-  @if (authS.systemUser().sessions().length) {
+  @if (!addAnotherAccount() && authS.systemUser().sessions().length) {
     <div class="text-center">
-      <p class="app-fs-16">
-        Bienvenido<br>
-        <strong class="app-fs-24">Elige una cuenta</strong>
-      </p>
-
-      <app-request [request]="sessionRefreshRequest" type="spinner">
-        <nz-list class="mt-4 text-start" nzBordered>
-          @for (session of authS.systemUser().sessions(); track session) {
-            <nz-list-item class="bg-gradient" [class.bg-secondary-subtle]="session.isActive">
-              <a class="link-styless w-100" (click)="!session.isActive ? selectSession($index) : null">
-                <div class="d-flex align-items-center w-100">
-                  <nz-avatar class="me-2" nzIcon="user" [nzSrc]="session.data?.picture" />
-
-                  <span class="lh-sm">
-                    <strong>{{ session.data?.firstName }} {{ session.data?.lastName }}</strong><br>
-                    <small class="text-black-50">{{ session.data?.email }}</small>
-                  </span>
-
-                  <!-- <strong class="ms-auto app-fs-12"
-                    [style.color]="session.data?.model!.data.typeEnum.color"
-                  >
-                    {{ session.data?.model!.data.typeEnum.label }}
-                  </strong> -->
-                </div>
-              </a>
-            </nz-list-item>
-          }
-        </nz-list>
-      </app-request>
-
-      <div class="d-grid gap-2 mt-5">
+      <div class="active-session mb-4">
         @if (authS.systemUser().activeSession()) {
-          <button class="btn btn-primary" (click)="enter()">Entrar</button>
-          <button class="btn btn-link text-danger" (click)="authS.systemUser().removeSession(false)">Salir</button>
+          <nz-avatar class="mb-3"
+            nzIcon="user"
+            [nzSize]="100"
+            [nzSrc]="authS.systemUser().activeSession()!.data!.picture"
+          />
+
+          <p class="app-fs-24 m-0">
+            ¡Bienvenido, <strong>{{ authS.systemUser().activeSession()!.data!.firstName }}</strong>!
+          </p>
         } @else {
-          <button class="btn btn-link text-danger" (click)="authS.systemUser().removeAllSessions(false)">Salir de todas las cuentas</button>
+          <p class="app-fs-24 m-0">
+            Elige una cuenta
+          </p>
         }
       </div>
+
+      <div class="sessions">
+        <app-request [request]="sessionRefreshRequest" type="spinner">
+          <div class="list-group">
+            @for (session of authS.systemUser().sessions(); track $index) {
+              <button type="button" class="list-group-item list-group-item-action"
+                [class.selected]="session.isActive"
+                (click)="!session.isActive ? selectSession($index) : undefined"
+              >
+                <span>
+                  <nz-avatar
+                    nzIcon="user"
+                    [nzSize]="40"
+                    [nzSrc]="session.data!.picture"
+                  />
+                </span>
+
+                <span class="text-truncate app-fs-14">
+                  <p class="text-truncate m-0"><strong>{{ session.data!.fullName }}</strong></p>
+                  <p class="text-truncate m-0 small text-black-50">{{ session.data!.email }}</p>
+                </span>
+
+                @switch (session.data!.model!.data.socialDriver?.id) {
+                  @case (1) {
+                    <span class="app-fs-28 text-app-google" nz-icon nzType="google"></span>
+                  }
+                }
+              </button>
+            }
+
+            @if (authS.systemUser().sessions().length < 3) {
+              <button type="button" class="list-group-item list-group-item-action"
+                (click)="addAnotherAccount.set(true)"
+              >
+                <span nz-icon nzType="plus"></span>
+                <span>Agregar otra cuenta</span>
+              </button>
+            }
+
+            <button type="button" class="list-group-item list-group-item-action text-danger"
+              (click)="authS.systemUser().removeAllSessions(false)"
+            >
+              <span nz-icon nzType="logout"></span>
+              <span>Salir de todas las cuentas</span>
+            </button>
+          </div>
+        </app-request>
+      </div>
+
+      @if (authS.systemUser().activeSession()) {
+        <div class="d-grid gap-2 mt-5">
+          <button class="btn btn-primary" (click)="enter()">Entrar</button>
+          <button class="btn btn-link text-danger" (click)="authS.systemUser().removeSession(false)">Cerrar sesión</button>
+        </div>
+      }
     </div>
   } @else {
     <nz-tabset [nzAnimated]="false">
-      @if (passwordResetHash()) {
+      @if (!addAnotherAccount() && passwordResetHash()) {
         <nz-tab nzTitle="Cambiar contraseña">
           <app-password-reset-update />
         </nz-tab>
@@ -60,7 +94,7 @@
         </div>
       </nz-tab>
 
-      @if (coreConfig.registerAllowed) {
+      @if (coreConfig.registerAllowed && !addAnotherAccount()) {
         <nz-tab nzTitle="Registro">
           <app-register />
 
@@ -74,9 +108,11 @@
         </nz-tab>
       }
 
-      <nz-tab nzTitle="¿Olvidaste tu contraseña?">
-        <app-password-reset-request />
-      </nz-tab>
+      @if (!addAnotherAccount()) {
+        <nz-tab nzTitle="¿Olvidaste tu contraseña?">
+          <app-password-reset-request />
+        </nz-tab>
+      }
     </nz-tabset>
   }
 </div>

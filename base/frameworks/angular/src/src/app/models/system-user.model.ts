@@ -12,7 +12,7 @@ export type TSystemUser = {
     originalUrl: string,
   },
   socialId: string,
-  socialDriver: {
+  socialDriver?: {
     id: number,
     name: string
   },
@@ -60,6 +60,7 @@ export class SystemUser extends AbstractModel<TSystemUser, 'backend'> implements
       name: this.data.fullName,
       firstName: this.data.firstName,
       lastName: this.data.lastName,
+      fullName: this.data.fullName,
       email: this.data.email,
       isVerified: !!this.data.emailVerifiedAt,
       picture: this.data.picture?.originalUrl || this.data.socialAvatar,

@@ -9,6 +9,7 @@ use App\Core\Models\Traits\HasRolesAndPermissions;
 use App\Models\Traits\Auth\AuthTrait;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -56,6 +57,14 @@ class SystemUser extends Authenticatable implements HasMedia
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Relations.
+     */
+    public function social_driver(): BelongsTo
+    {
+        return $this->belongsTo(AuthSocialDriver::class);
     }
 
     /**

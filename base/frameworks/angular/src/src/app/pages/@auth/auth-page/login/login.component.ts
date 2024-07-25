@@ -7,6 +7,7 @@ import { AuthUserHttpService } from '../../../../services/http/auth-user-http.se
 import { FormModule } from '../../../../core/features/form/form.module';
 import { authLoginFormMock } from '../../../../mocks/auth-login-form.mock';
 import { Form } from '../../../../core/features/form/form.class';
+import { AuthPageComponent } from '../auth-page.component';
 
 @Component({
   selector: 'app-login',
@@ -24,6 +25,7 @@ export class LoginComponent {
 
   private _fb = inject(FormBuilder);
   private _authUserHttpS = inject(AuthUserHttpService);
+  parent = inject(AuthPageComponent);
   authS = inject(AuthService);
 
   form = new Form(this._fb.group({
@@ -33,6 +35,7 @@ export class LoginComponent {
   }), {
     request: {
       send: (): any => this._authUserHttpS.login('systemUser', this.form.group.value),
+      success: () => this.parent.addAnotherAccount.set(false),
     },
     reset: true,
     mock: authLoginFormMock(),

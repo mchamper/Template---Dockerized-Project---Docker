@@ -43,7 +43,7 @@ class AuthController extends Controller
         DB::commit();
 
         return Response::json([
-            'user' => $user,
+            'user' => $user->load('social_driver'),
         ], 'Se le ha enviado un email de verificación a la dirección de correo ingresada.');
     }
 
@@ -74,7 +74,7 @@ class AuthController extends Controller
         DB::commit();
 
         return Response::json([
-            'user' => $user,
+            'user' => $user->load('social_driver'),
             'token' => $token->plainTextToken,
             'token_expires_at' => $expiresAt,
         ]);
@@ -146,7 +146,7 @@ class AuthController extends Controller
         DB::commit();
 
         return Response::json([
-            'user' => $user,
+            'user' => $user->load('social_driver'),
             'token' => $token->plainTextToken,
             'token_expires_at' => $expiresAt,
         ]);
@@ -169,7 +169,7 @@ class AuthController extends Controller
         DB::commit();
 
         return Response::json([
-            'user' => $systemUser,
+            'user' => $systemUser->load('social_driver'),
             'token' => $token->plainTextToken,
             'token_expires_at' => $expiresAt,
         ]);
@@ -180,7 +180,7 @@ class AuthController extends Controller
     public function me(string $userType)
     {
         return Response::json([
-            'user' => auth("api_{$userType}")->user(),
+            'user' => auth("api_{$userType}")->user()->load('social_driver'),
         ]);
     }
 
@@ -203,7 +203,7 @@ class AuthController extends Controller
         DB::commit();
 
         return Response::json([
-            'user' => $user,
+            'user' => $user->load('social_driver'),
         ], 'Su usuario ha sido actualizado con éxito.');
     }
 
