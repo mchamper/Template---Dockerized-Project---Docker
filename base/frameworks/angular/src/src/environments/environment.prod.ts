@@ -6,9 +6,7 @@ export const environment: TEnvironment = {
   mock: false,
   appUrl: 'https://example.com',
   backendUrl: 'https://backend.example.com',
-  backendAppClientKey: '',
-  backendAppClientSecret: '',
-  backendAppClientToken: '',
-  gtmId: '',
-  fbPixelId: '',
+  authGoogleClientId: '',
+  // gtmId: '',
+  // fbPixelId: '',
 };

@@ -11,13 +11,19 @@ export type TStoreOptions = {
 export abstract class AbstractStorageService {
 
   protected _ssrS = inject(SsrService);
-
-  private _version = 1;
+  protected _version = 1;
 
   /* -------------------- */
 
+  private async _warmUp() {
+    if (this._ssrS.isServer()) return;
+    await this.get('');
+  }
+
   async init() {
     if (this._ssrS.isServer()) return;
+
+    await this._warmUp();
 
     const storageVersion = await this.get('storageVersion') as number;
 

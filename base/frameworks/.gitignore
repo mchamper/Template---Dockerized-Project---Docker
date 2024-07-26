@@ -56,6 +56,8 @@ laravel/src/**
 !laravel/src/app/Providers/TelescopeServiceProvider.php
 !laravel/src/app/Repositories/
 !laravel/src/app/Repositories/**
+!laravel/src/app/RolesAndPermissions/
+!laravel/src/app/RolesAndPermissions/**
 !laravel/src/app/Services/
 !laravel/src/app/Services/**
 !laravel/src/bootstrap/

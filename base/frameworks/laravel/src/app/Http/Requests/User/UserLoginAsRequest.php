@@ -14,7 +14,7 @@ class UserLoginAsRequest extends BaseRequest
     public static function rules(?array $params = []): array
     {
         return [
-            'user_id' => ['bail', 'required', "exists:{$params['userTable']},id"],
+            'user_id' => ['bail', 'required', "exists:system_users,id"],
         ];
     }
 }

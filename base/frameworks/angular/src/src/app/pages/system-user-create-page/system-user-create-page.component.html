@@ -2,7 +2,7 @@
   Crear usuario
 </app-page-title>
 
-<div class="container-fluid">
+<div class="container">
   <div class="box">
     <app-form [form]="form" [formGroup]="form.group">
       <app-box-section-title [title]="'Información del usuario'" icon="info-circle" isFirst />
@@ -54,7 +54,7 @@
           </nz-form-item>
         </div>
 
-        @if (form.group.get('password_input_type')?.value === 'manual') {
+        @if (form.group.controls.password_input_type.value  === 'manual') {
           <div class="row">
             <nz-form-item class="col-60 col-lg-30 col-xl-15">
               <nz-form-control>

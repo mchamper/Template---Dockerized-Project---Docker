@@ -3,7 +3,7 @@
 </app-page-title>
 
 <div class="container-fluid">
-  <ch-account-verification />
+  <app-verification />
 
   @if (authS.systemUser().activeSession()!.isVerified()) {
     <div class="box">
@@ -16,7 +16,7 @@
               <nz-form-item class="col-60 col-lg-30 col-xl-15">
                 <nz-form-control>
                   <nz-form-label>Avatar</nz-form-label>
-                  <app-form-upload [control]="form.getControl('picture')" concept="system_user_picture" type="dropzone" />
+                  <app-form-upload [control]="form.group.controls.picture" concept="system_user_picture" type="dropzone" />
                   <input nz-input formControlName="picture">
                 </nz-form-control>
               </nz-form-item>
@@ -51,28 +51,40 @@
           <app-box-section-title [title]="'Cambiar contraseña'" icon="lock" />
 
           <div class="ps-4">
-            <div class="row">
-              <nz-form-item class="col-60 col-lg-30 col-xl-15">
-                <nz-form-control>
-                  <nz-form-label>Contraseña actual</nz-form-label>
-                  <input nz-input type="password" formControlName="password_current">
-                </nz-form-control>
-              </nz-form-item>
+            @if (!authS.systemUser().activeSession()?.data?.model?.data?.socialDriver) {
+              <div class="row">
+                <nz-form-item class="col-60 col-lg-30 col-xl-15">
+                  <nz-form-control>
+                    <nz-form-label>Contraseña actual</nz-form-label>
+                    <input nz-input type="password" formControlName="password_current">
+                  </nz-form-control>
+                </nz-form-item>
 
-              <nz-form-item class="col-60 col-lg-30 col-xl-15">
-                <nz-form-control>
-                  <nz-form-label>Nueva contraseña</nz-form-label>
-                  <input nz-input type="password" formControlName="password">
-                </nz-form-control>
-              </nz-form-item>
+                <nz-form-item class="col-60 col-lg-30 col-xl-15">
+                  <nz-form-control>
+                    <nz-form-label>Nueva contraseña</nz-form-label>
+                    <input nz-input type="password" formControlName="password">
+                  </nz-form-control>
+                </nz-form-item>
 
-              <nz-form-item class="col-60 col-lg-30 col-xl-15">
-                <nz-form-control>
-                  <nz-form-label>Confirmar nueva contraseña</nz-form-label>
-                  <input nz-input type="password" formControlName="password_confirmation">
-                </nz-form-control>
-              </nz-form-item>
-            </div>
+                <nz-form-item class="col-60 col-lg-30 col-xl-15">
+                  <nz-form-control>
+                    <nz-form-label>Confirmar nueva contraseña</nz-form-label>
+                    <input nz-input type="password" formControlName="password_confirmation">
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            } @else {
+              <nz-alert
+                nzBanner
+                nzType="info"
+                [nzMessage]="messageTpl"
+              >
+                <ng-template #messageTpl>
+                  No puedes cambiar la contraseña de tu cuenta porque te has registrado con <strong>{{ authS.systemUser().activeSession()?.data?.model?.data?.socialDriver?.name }}</strong>.
+                </ng-template>
+              </nz-alert>
+            }
           </div>
 
           <app-form-footer submitText="Guardar" submitPlacement="right" withInfo sticky />

@@ -1,0 +1,35 @@
+.box,
+nz-alert .ant-alert,
+.ant-popover .ant-popover-inner,
+.btn,
+.ant-modal-content,
+.ant-dropdown-menu,
+.ant-dropdown-menu-item,
+.ant-message-notice-content
+{
+  border-radius: var(--global-border-radius) !important;
+}
+
+.ant-modal-content .ant-modal-header
+{
+  border-radius: var(--global-border-radius) var(--global-border-radius) 0 0 !important;
+}
+
+/* -------------------- */
+
+.fullscreen {
+  app-page-title + .container,
+  app-page-title .container
+  {
+    max-width: 100%;
+  }
+}
+
+/* -------------------- */
+
+.interaction-disabled.show-layer {
+  border-radius: var(--global-border-radius) !important;
+  border: none !important;
+  backdrop-filter: none !important;
+  background: rgba(255, 255, 255, 0.5) !important;
+}

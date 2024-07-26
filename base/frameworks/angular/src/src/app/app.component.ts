@@ -7,9 +7,7 @@ import { taxonomies } from './app.taxonomies';
 import { UiState } from './states/ui.state';
 import { AuthService } from './services/auth.service';
 import { firstValueFrom } from 'rxjs';
-import { AuthAppClientHttpService } from './services/http/auth-app-client-http.service';
-import { environment } from '../environments/environment';
-import { AuthSystemUserHttpService } from './services/http/auth-system-user-http.service';
+import { AuthUserHttpService } from './services/http/auth-user-http.service';
 import moment from 'moment';
 import { routeSlideUpAnimation } from './core/utils/animations/route.animation';
 import { fadeOutAnimation } from './core/utils/animations/fade.animation';
@@ -37,8 +35,7 @@ export class AppComponent {
   private _translateS = inject(TranslateService);
   private _taxonomyS = inject(TaxonomyService);
   private _authS = inject(AuthService);
-  private _authAppClientHttpS = inject(AuthAppClientHttpService);
-  private _authSystemUserHttpS = inject(AuthSystemUserHttpService);
+  private _authUserHttpS = inject(AuthUserHttpService);
 
   routeS = inject(RouteService);
   state = inject(State);
@@ -61,21 +58,17 @@ export class AppComponent {
       const timeStart = moment();
 
       await Promise.all([
-        this.checkAuthAppClient(),
-      ]);
-
-      await Promise.all([
         this.checkAuthSystemUser(),
       ]);
 
       const timeFinish = moment();
       const timeElapsed = timeFinish.diff(timeStart);
 
-      this.state.app.setReady();
+      // this.state.app.setReady();
 
-      // setTimeout(() => {
-      //   this.state.app.setReady();
-      // }, (timeElapsed >= 2000 ? 0 : 2000 - timeElapsed));
+      setTimeout(() => {
+        this.state.app.setReady();
+      }, (timeElapsed >= 1500 ? 0 : 1500 - timeElapsed));
     } catch (err) {
       let errorMessage = this._translateS.instant('init.errors.default');
       errorMessage += typeof err === 'number' ? ` (${err})` : ` (??)`;
@@ -86,36 +79,10 @@ export class AppComponent {
 
   /* -------------------- */
 
-  async checkAuthAppClient(): Promise<void> {
-    try {
-      if (!this._authS.appClient().activeSession()) {
-        this._authS.appClient().addSession({
-          token: environment.backendAppClientToken,
-          refreshToken: '',
-        });
-      }
-
-      // if (this._authS.appClient().activeSession()) {
-      //   await firstValueFrom(this._authAppClientHttpS.me());
-      // }
-      // else {
-      //   await firstValueFrom(this._authAppClientHttpS.login({
-      //     key: environment.backendAppClientKey,
-      //     secret: environment.backendAppClientSecret,
-      //   }));
-      // }
-    } catch (err) {
-      return Promise.reject(10);
-    }
-
-    // return Promise.reject(10);
-    return Promise.resolve();
-  }
-
   async checkAuthSystemUser(): Promise<void> {
     try {
       if (this._authS.systemUser().activeSession()) {
-        await firstValueFrom(this._authSystemUserHttpS.me());
+        await firstValueFrom(this._authUserHttpS.me('systemUser'));
       }
     } catch (err) {
       // return Promise.reject(11);

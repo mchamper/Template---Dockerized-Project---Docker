@@ -1,7 +1,7 @@
 import { DestroyRef, Injector, ProviderToken, inject, signal } from "@angular/core";
 import { AbstractControl, FormArray, FormControl, FormGroup } from "@angular/forms";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { CombosHttpService } from "../../../services/http/combos-http.service";
+import { CombosHttpService } from "../../../services/http/general/combos-http.service";
 import { Request } from "../request/request.class";
 import { environment } from "../../../../environments/environment";
 import { debounceTime, distinctUntilChanged, skip, startWith } from "rxjs";
@@ -11,7 +11,7 @@ import { StorageService } from "../../../services/storage.service";
 import { md5 } from "../../utils/helpers/hash.helper";
 import { SsrService } from "../../services/ssr.service";
 
-export class Form<Data = any> {
+export class Form<Data = any, Group extends { [K in keyof Group]: AbstractControl<any, any>; } = any> {
 
   private _ssrS = this._inject(SsrService);
   private _storageS = this._inject(StorageService);
@@ -52,14 +52,14 @@ export class Form<Data = any> {
   isSettingData = signal(false);
 
   constructor(
-    public group: FormGroup = new FormGroup({}),
+    public group: FormGroup<Group> = new FormGroup({}) as any,
     private _options: {
-      init?: (form: Form, state: any) => any,
-      subscriptions?: (form: Form) => any,
+      init?: (form: Form<Data, Group>, state: any) => any,
+      subscriptions?: (form: Form<Data, Group>) => any,
       arrays?: {
         [key: string]: {
           group: FormGroup,
-          onAdd?: (group: FormGroup, form: Form, state: any) => any,
+          onAdd?: (group: FormGroup, form: Form<Data, Group>, state: any) => any,
           onMove?: (eachControl: FormControl, newIndex: number) => any,
         },
       },
@@ -374,7 +374,7 @@ export class Form<Data = any> {
       const fields: string[] = field.split('|');
 
       if (isArray(value)) {
-        return value.map(item => {
+        return value.map((item: any) => {
           if (item?.hasOwnProperty(fields[0])) return item?.[fields[0]];
           if (item?.hasOwnProperty(fields[1])) return item?.[fields[1]];
           return item;
@@ -558,7 +558,7 @@ export class Form<Data = any> {
     const formGroup = group || this.group;
 
     Object.keys(formGroup.controls).forEach((key: string) => {
-      const abstractControl = formGroup.get(key)!;
+      const abstractControl = (formGroup as any).get(key)!;
 
       if (abstractControl instanceof FormGroup || abstractControl instanceof FormArray) {
         this.validate(abstractControl);

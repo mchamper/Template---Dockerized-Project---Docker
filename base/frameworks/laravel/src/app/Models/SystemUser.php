@@ -9,10 +9,13 @@ use App\Core\Models\Traits\HasRolesAndPermissions;
 use App\Models\Traits\Auth\AuthTrait;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
+use Spatie\Permission\Models\Permission;
 
 class SystemUser extends Authenticatable implements HasMedia
 {
@@ -20,6 +23,7 @@ class SystemUser extends Authenticatable implements HasMedia
     use HasFactory;
     use Notifiable;
     use HasApiTokens;
+    use SoftDeletes;
     use AuthTrait;
     use HasRolesAndPermissions;
     use HasMedias;
@@ -56,6 +60,19 @@ class SystemUser extends Authenticatable implements HasMedia
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Relations.
+     */
+    public function status(): BelongsTo
+    {
+        return $this->belongsTo(AuthStatus::class);
+    }
+
+    public function social_driver(): BelongsTo
+    {
+        return $this->belongsTo(AuthSocialDriver::class);
     }
 
     /**

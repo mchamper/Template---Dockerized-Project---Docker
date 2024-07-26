@@ -8,6 +8,7 @@ use App\Core\Models\Traits\HasMedias;
 use App\Models\Traits\Auth\AuthTrait;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -19,6 +20,7 @@ class User extends Authenticatable implements HasMedia
     use HasFactory;
     use Notifiable;
     use HasApiTokens;
+    use SoftDeletes;
     use AuthTrait;
     use HasMedias;
 

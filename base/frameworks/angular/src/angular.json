@@ -58,7 +58,7 @@
               {
                 "glob": "**/*",
                 "input": "./node_modules/@ant-design/icons-angular/src/inline-svg/",
-                "output": "/public/ants-icons/"
+                "output": "/assets/"
               }
             ],
             "styles": [
@@ -108,10 +108,10 @@
               "extractLicenses": false,
               "sourceMap": true,
               "server": "src/main.server.ts",
-              "prerender": true,
-              "ssr": {
-                "entry": "server.ts"
-              }
+              // "prerender": true,
+              // "ssr": {
+              //   "entry": "server.ts"
+              // }
             }
           },
           "defaultConfiguration": "production"

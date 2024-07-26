@@ -7,9 +7,10 @@ import { FormModule } from '../../core/features/form/form.module';
 import { PageTitleComponent } from '../../components/layouts/page-title/page-title.component';
 import { Form } from '../../core/features/form/form.class';
 import { AuthService } from '../../services/auth.service';
-import { AuthSystemUserHttpService } from '../../services/http/auth-system-user-http.service';
-import { ChAccountVerificationComponent } from './ch-account-verification/ch-account-verification.component';
+import { AuthUserHttpService } from '../../services/http/auth-user-http.service';
+import { VerificationComponent } from './verification/verification.component';
 import { BoxSectionTitleComponent } from '../../components/layouts/box-section-title/box-section-title.component';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
 
 @Component({
   selector: 'app-account-page',
@@ -21,7 +22,8 @@ import { BoxSectionTitleComponent } from '../../components/layouts/box-section-t
     NzIconModule,
     PageTitleComponent,
     BoxSectionTitleComponent,
-    ChAccountVerificationComponent,
+    VerificationComponent,
+    NzAlertModule,
   ],
   templateUrl: './account-page.component.html',
   styleUrls: ['./account-page.component.scss'],
@@ -30,34 +32,32 @@ import { BoxSectionTitleComponent } from '../../components/layouts/box-section-t
 export class AccountPageComponent {
 
   private _fb = inject(FormBuilder);
-  private _authSystemUserHttpS = inject(AuthSystemUserHttpService);
+  private _authUserHttpS = inject(AuthUserHttpService);
   authS = inject(AuthService);
 
-  form: Form;
+  form = new Form(this._fb.group({
+    first_name: this._fb.control(this.authS.systemUser().activeSession()?.data?.firstName, {validators: [Validators.required] }),
+    last_name: this._fb.control(this.authS.systemUser().activeSession()?.data?.lastName, {validators: [Validators.required] }),
+    email: this._fb.control(this.authS.systemUser().activeSession()?.data?.email, {validators: [Validators.required, Validators.email] }),
+    picture: this._fb.control(this.authS.systemUser().activeSession()?.data?.model?.data.picture),
+    password_current: this._fb.control(''),
+    password: this._fb.control(''),
+    password_confirmation: this._fb.control(''),
+  }), {
+    request: {
+      send: (): any => this._authUserHttpS.update('systemUser', this.form.group.value),
+      success: (res) => this.form.persist({ ...res.body.user, password_current: null, password: null, password_confirmation: null }),
+      notify: true,
+    }
+  });
 
   constructor() {
-    this.form = new Form(this._fb.group({
-      first_name: [this.authS.systemUser().activeSession()?.data?.firstName, [Validators.required]],
-      last_name: [this.authS.systemUser().activeSession()?.data?.lastName, [Validators.required]],
-      email: [this.authS.systemUser().activeSession()?.data?.email, [Validators.required, Validators.email]],
-      picture: [this.authS.systemUser().activeSession()?.data?.model?.data.picture],
-      password_current: [null],
-      password: [null],
-      password_confirmation: [null],
-    }), {
-      request: {
-        send: () => this._authSystemUserHttpS.update(this.form.group.value),
-        success: (res) => this.form.persist({ ...res.body.data, password_current: null, password: null, password_confirmation: null }),
-        notify: true,
-      }
-    });
-
     effect(() => {
       if (this.authS.systemUser().activeSession()?.hasRole(['Root']) || !this.authS.systemUser().activeSession()?.isVerified()) {
         this.form.group.disable();
       } else {
         this.form.group.enable();
-        this.form.getControl('email').disable();
+        this.form.group.controls.email.disable();
       }
     }, { allowSignalWrites: true });
   }

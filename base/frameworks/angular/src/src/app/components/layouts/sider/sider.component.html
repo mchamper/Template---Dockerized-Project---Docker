@@ -20,7 +20,7 @@
           <li [class.ant-menu-item-selected]="routeS.urlIs('/usuarios')" nz-menu-item routerLink="/usuarios">Listado de usuarios</li>
         }
         @if (this.authS.systemUser().activeSession()?.can(['SystemUserCreate'])) {
-          <li [class.ant-menu-item-selected]="routeS.urlIs('/usuarios/crear')" nz-menu-item routerLink="/usuarios/crear">Nuevo usuario</li>
+          <li [class.ant-menu-item-selected]="routeS.urlIs('/usuarios/crear')" nz-menu-item routerLink="/usuarios/crear">Crear usuario</li>
         }
       </ul>
     </li>

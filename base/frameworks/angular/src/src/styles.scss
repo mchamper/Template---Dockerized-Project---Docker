@@ -20,6 +20,8 @@
 /* -------------------- */
 @import "theme/forms/forms.scss";
 /* -------------------- */
+@import "theme/defaults.scss";
+/* -------------------- */
 
 body {
   overflow-x: hidden;
@@ -27,4 +29,8 @@ body {
 
 .no-events {
   pointer-events: none !important;
+}
+
+asl-google-signin-button {
+  position: absolute;
 }

@@ -18,7 +18,7 @@ bash base/bin/docker/run.sh ${SERVICE} "
     ng2-currency-mask \
     ngx-webstorage \
     ngx-device-detector \
-    ngx-pixel \
+    ngx-pixel-eventid \
     angular-google-tag-manager \
     animate.css \
     simplebar \

@@ -9,7 +9,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { isArray } from 'lodash';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { UploadHttpService } from '../../../../../services/http/upload-http.service';
+import { UploadHttpService } from '../../../../../services/http/general/upload-http.service';
 import { THttpErrorResponse } from '../../../../types/http-error-response.type';
 import { camelizeParser } from '../../../../utils/parsers/camelize.parser';
 
@@ -35,7 +35,7 @@ export class FormUploadComponent implements OnInit {
 
   @Input({ required: true }) control!: FormControl;
   @Input({ required: true }) concept!: string;
-  @Input() type: 'avatar' | 'button' | 'input' | 'dropzone' = 'button';
+  @Input() type: 'button' | 'input' | 'dropzone' = 'button';
   @Input() listTipe: NzUploadListType = 'text';
   @Input() max: number = 10;
 
@@ -62,7 +62,7 @@ export class FormUploadComponent implements OnInit {
   ngOnInit(): void {
     this.multiple = isArray(this.control.value);
 
-    if (this.type === 'avatar' || (this.type === 'dropzone' && !this.multiple)) {
+    if (this.type === 'dropzone' && !this.multiple) {
       this.listTipe = 'picture-card';
     }
 

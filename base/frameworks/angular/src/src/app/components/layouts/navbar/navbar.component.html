@@ -1,8 +1,8 @@
 <nav class="navbar navbar-expand">
   <div class="container-fluid h-100">
     <a class="navbar-brand" routerLink="/" aria-label="Backoffice">
-      <!-- <img src="assets/img/logos/logo.svg" style="height: 2.5rem;"> -->
-      <strong class="d-block app-fs-20">Backoffice</strong>
+      <img src="/public/images/logos/301.png" style="height: 2.5rem;">
+      <!-- <strong class="d-block app-fs-20">Backoffice</strong> -->
     </a>
 
     <div class="collapse navbar-collapse h-100" id="navbarSupportedContent">
@@ -14,16 +14,34 @@
 
       <ul class="col-auto navbar-nav align-items-center">
         <!-- <li class="nav-item d-md-none">
-          <button class="nav-link btn-styless app-fs-24">
+          <button class="nav-link btn-styless app-fs-20">
             <span nz-icon nzType="search" nzTheme="outline"></span>
           </button>
         </li> -->
 
-        <!-- <li class="nav-item d-md-none">
-          <button class="nav-link btn-styless app-fs-24" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas">
-            <span nz-icon nzType="menu" nzTheme="outline"></span>
-          </button>
-        </li> -->
+        @if (authS.systemUser().activeSession()?.can(['RoleGet'])) {
+          <li class="nav-item">
+            <button class="nav-link btn-styless app-fs-20" nz-dropdown [nzDropdownMenu]="configMenu" nzPlacement="bottomRight">
+              <span nz-icon nzType="setting" nzTheme="outline"></span>
+            </button>
+            <nz-dropdown-menu #configMenu="nzDropdownMenu">
+              <ul nz-menu>
+                <li nz-menu-group nzTitle="Configuración">
+                  <ul>
+                    <li nz-menu-divider></li>
+                    @if (authS.systemUser().activeSession()?.can(['RoleGet'])) {
+                      <li nz-menu-item>
+                        <app-role-list-action layout="modal">
+                          Roles y permisos
+                        </app-role-list-action>
+                      </li>
+                    }
+                  </ul>
+                </li>
+              </ul>
+            </nz-dropdown-menu>
+          </li>
+        }
 
         <li class="nav-item">
           <button class="nav-link btn-styless" nz-dropdown [nzDropdownMenu]="accountMenu" nzPlacement="bottomRight">
@@ -37,11 +55,9 @@
                   <li nz-menu-item>
                     <a class="link-styless" routerLink="/cuenta">Cuenta</a>
                   </li>
-                  @if (authS.systemUser().sessions().length > 1) {
-                    <li nz-menu-item>
-                      <a class="link-styless" routerLink="/bienvenido">Cambiar cuenta</a>
-                    </li>
-                  }
+                  <li nz-menu-item>
+                    <a class="link-styless" routerLink="/bienvenido">Cambiar cuenta</a>
+                  </li>
                   <li nz-menu-item>
                     <button class="btn-styless text-danger" (click)="authS.systemUser().removeSession()">Cerrar sesión</button>
                   </li>

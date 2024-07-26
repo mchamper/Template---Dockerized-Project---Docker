@@ -1,0 +1,57 @@
+@if (form.request.isSuccess()) {
+  <nz-alert
+    nzBanner
+    nzType="success"
+    [nzMessage]="messageTpl"
+    [nzDescription]="descriptionTpl"
+  >
+    <ng-template #messageTpl>
+      <strong>Registro completo</strong>
+    </ng-template>
+
+    <ng-template #descriptionTpl>
+      Se le ha enviado un email de verificación a la dirección de correo ingresada. Por favor, confirme su dirección de correo para poder disfrutar de todos los servicios.
+    </ng-template>
+  </nz-alert>
+} @else {
+  <app-form [form]="form" [formGroup]="form.group">
+    <div class="row mb-3">
+      <nz-form-item>
+        <nz-form-control>
+          <nz-form-label>Nombre</nz-form-label>
+          <input nz-input formControlName="first_name">
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control>
+          <nz-form-label>Apellido</nz-form-label>
+          <input nz-input formControlName="last_name">
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control>
+          <nz-form-label>Email</nz-form-label>
+          <input nz-input formControlName="email">
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control>
+          <nz-form-label>Contraseña</nz-form-label>
+          <input nz-input type="password" formControlName="password">
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control>
+          <nz-form-label>Confirmar contraseña</nz-form-label>
+          <input nz-input type="password" formControlName="password_confirmation">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <app-form-footer submitText="Registrarme" submitPlacement="block" />
+  </app-form>
+}

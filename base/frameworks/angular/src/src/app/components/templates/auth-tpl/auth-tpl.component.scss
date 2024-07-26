@@ -1,14 +1,16 @@
 :host {
   display: grid;
   position: relative;
-  height: 100vh;
+  width: 100dvw;
+  height: 100dvh;
   grid-template-rows: 1fr;
-  grid-template-columns: 1fr;
+  grid-template-columns: 100%;
   grid-template-areas:
     'body'
     ;
 
   > main {
     grid-area: body;
+    display: block;
   }
 }

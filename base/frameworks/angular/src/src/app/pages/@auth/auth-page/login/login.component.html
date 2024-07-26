@@ -1,0 +1,25 @@
+<app-form [form]="form" [formGroup]="form.group">
+  <div class="row mb-3">
+    <nz-form-item>
+      <nz-form-control>
+        <nz-form-label>Email</nz-form-label>
+        <input nz-input formControlName="email">
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-control>
+        <nz-form-label>Contraseña</nz-form-label>
+        <input nz-input type="password" formControlName="password">
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-control>
+        <label nz-checkbox formControlName="remember_me">Recordarme</label>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <app-form-footer submitText="Ingresar" submitPlacement="block" />
+</app-form>

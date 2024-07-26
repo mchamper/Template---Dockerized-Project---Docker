@@ -15,6 +15,7 @@ export type TAuthGuardRawSession<DataModel = any> = {
     name?: string,
     firstName?: string,
     lastName?: string,
+    fullName?: string,
     phone?: string,
     email?: string,
     isVerified?: boolean,
@@ -55,7 +56,6 @@ export abstract class AbstractAuthService {
   private _storageS = inject(StorageService);
 
   public _guards: {
-    appClient?: TAuthGuard,
     guest?: TAuthGuard,
     systemUser?: TAuthGuard,
     user?: TAuthGuard,
@@ -89,9 +89,6 @@ export abstract class AbstractAuthService {
     return this._guards[guardName]!;
   }
 
-  appClient() {
-    return this.guard<any>('appClient');
-  }
   guest() {
     return this.guard<any>('guest');
   }
@@ -102,9 +99,6 @@ export abstract class AbstractAuthService {
     return this.guard<any>('systemUser');
   }
 
-  appClientId() {
-    return this.appClient()?.activeSession()?.data?.id;
-  }
   guestId() {
     return this.guest()?.activeSession()?.data?.id;
   }

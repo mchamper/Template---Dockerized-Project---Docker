@@ -22,9 +22,9 @@ class SystemUserRepository extends BaseRepository
             'email',
             'password',
             'social_id',
-            'social_driver',
+            'social_driver_id',
             'social_avatar',
-            'status',
+            'status_id',
         ], $input, $systemUser);
 
         $systemUser->saveOrFail();

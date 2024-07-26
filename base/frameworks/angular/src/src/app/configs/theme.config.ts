@@ -1,7 +1,7 @@
 export const themeConfig = {
   colors: {
-    primary: '#0d6efd',
-    secondary: '#61578C',
+    primary: '#7b419f',
+    secondary: '#292628',
     error: '#E32E2B',
   },
 };

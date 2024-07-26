@@ -25,32 +25,31 @@ import { NzPopoverModule } from 'ng-zorro-antd/popover';
 export class GlobalDeleteActionComponent extends AbstractActionComponent {
 
   private _fb = inject(FormBuilder);
-  private _injector = inject(Injector);
 
   @Input({ required: true }) id!: number;
   @Input({ required: true }) httpFn!: (id: number) => any;
   @Input() modalTitle: string = 'Borrar registro';
+  @Input() description: string = '';
   @Input() confirmText: string = 'eliminar';
   @Input() submitText: string = 'Borrar';
 
-  form!: Form;
+  form = new Form(this._fb.group({
+    confirmText: this._fb.control(''),
+  }), {
+    request: {
+      when: () => this.canDelete(),
+      send: () => this.httpFn(this.id),
+      success: () => {
+        this.close();
+        this.onSuccess$.emit();
+      },
+      notify: true,
+    },
+    reset: true,
+  });
 
   override onInit(): void {
-    this.form = new Form(this._fb.group({
-      confirmText: [''],
-    }), {
-      request: {
-        when: () => this.canDelete(),
-        send: () => this.httpFn(this.id),
-        success: () => {
-          this.close();
-          this.onSuccess$.emit();
-        },
-        notify: true,
-      },
-      reset: true,
-      injector: this._injector,
-    });
+    this.form.restore();
   }
 
   override onClose(): void {
@@ -60,6 +59,6 @@ export class GlobalDeleteActionComponent extends AbstractActionComponent {
   /* -------------------- */
 
   canDelete(): boolean {
-    return this.form.getValue('confirmText') === this.confirmText;
+    return this.form.group.controls.confirmText.value === this.confirmText;
   }
 }
