@@ -22,28 +22,30 @@
         <h4 class="mb-2 mt-4">Roles y permisos</h4>
         <nz-divider class="my-2 mb-4" />
 
-        <app-form class="d-block mb-4" [form]="formCreate" [formGroup]="formCreate.group">
-          <div class="row gx-2 align-items-center">
-            <nz-form-item class="col mb-0">
-              <nz-form-control>
-                <input nz-input formControlName="name">
-              </nz-form-control>
-            </nz-form-item>
+        @if (authS.systemUser().activeSession()?.can(['RoleCreate'])) {
+          <app-form class="d-block mb-4" [form]="formCreate" [formGroup]="formCreate.group">
+            <div class="row gx-2 align-items-center">
+              <nz-form-item class="col mb-0">
+                <nz-form-control>
+                  <input nz-input formControlName="name">
+                </nz-form-control>
+              </nz-form-item>
 
-            <nz-form-item class="col mb-0">
-              <nz-form-control>
-                <nz-select formControlName="guard_name">
-                  <nz-option nzValue="api_system-user" nzLabel="SystemUser" />
-                  <!-- <nz-option nzValue="api_external-user" nzLabel="ExternalUser" /> -->
-                </nz-select>
-              </nz-form-control>
-            </nz-form-item>
+              <nz-form-item class="col mb-0">
+                <nz-form-control>
+                  <nz-select formControlName="guard_name">
+                    <nz-option nzValue="api_system-user" nzLabel="SystemUser" />
+                    <!-- <nz-option nzValue="api_external-user" nzLabel="ExternalUser" /> -->
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
 
-            <div class="col-auto">
-              <app-form-footer submitText="Crear" />
+              <div class="col-auto">
+                <app-form-footer submitText="Crear" />
+              </div>
             </div>
-          </div>
-        </app-form>
+          </app-form>
+        }
 
         <app-list [list]="list" [columns]="[
           { width: 'auto', name: 'Nombre', rowTpl: rowNameTpl },

@@ -1,0 +1,38 @@
+<ng-template #contentTpl>
+  <ng-content />
+</ng-template>
+
+<!-- -------------------- -->
+
+@switch (layout) {
+  @case ('popover') {
+    <span
+      nz-popover
+      nzPopoverTrigger="click"
+      [nzPopoverContent]="popoverTpl"
+      (nzPopoverVisibleChange)="$event === true ? onInit() : null"
+    >
+      <ng-container *ngTemplateOutlet="contentTpl" />
+
+      <ng-template #popoverTpl>
+        <app-form [form]="form" [formGroup]="form.group">
+          <div class="row gx-2 align-items-center" [style.width]="'330px'">
+            <nz-form-item class="col mb-0">
+              <nz-form-control>
+                <nz-select formControlName="permissions" nzMode="multiple">
+                  @for (permission of form.getCombo(this.permissionComboName); track permission.id) {
+                    <nz-option [nzValue]="permission" [nzLabel]="permission.name" />
+                  }
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+
+            <div class="col-auto">
+              <app-form-footer submitText="Guardar" />
+            </div>
+          </div>
+        </app-form>
+      </ng-template>
+    </span>
+  }
+}

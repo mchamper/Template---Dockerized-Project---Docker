@@ -11,6 +11,7 @@ import { RoleHttpService } from '../../../services/http/role-http.service';
 import { Form } from '../../../core/features/form/form.class';
 import { ListModule } from '../../../core/features/list/list.module';
 import { RoleActionGroupComponent } from '../../action-groups/role-action-group/role-action-group.component';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-role-list-action',
@@ -32,6 +33,7 @@ export class RoleListActionComponent extends AbstractActionComponent<'modal'> {
 
   private _fb = inject(FormBuilder);
   private _roleHttpS = inject(RoleHttpService);
+  authS = inject(AuthService);
 
   formCreate = new Form(this._fb.group({
     name: this._fb.control('', { validators: [Validators.required]}),

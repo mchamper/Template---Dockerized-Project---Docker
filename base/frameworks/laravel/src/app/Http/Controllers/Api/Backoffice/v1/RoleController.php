@@ -6,6 +6,7 @@ use App\Core\Response\Response;
 use App\Core\RESTful\RESTful;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Role\RoleCreateRequest;
+use App\Http\Requests\Role\RoleSyncPermissionRequest;
 use App\Http\Requests\Role\RoleUpdateRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -24,6 +25,20 @@ class RoleController extends Controller
 
         return Response::json([
             'roles' => $roles,
+        ]);
+    }
+
+    public function show(int $roleId)
+    {
+        $roleQuery = Role::query();
+
+        $role = (new RESTful(
+            $roleQuery,
+            request()->query(),
+        ))->findOrFail($roleId);
+
+        return Response::json([
+            'role' => $role,
         ]);
     }
 
@@ -80,5 +95,26 @@ class RoleController extends Controller
         return Response::json([
             'role' => $role->load('users'),
         ], 'El rol ha sido eliminado con éxito.');
+    }
+
+    /* -------------------- */
+
+    public function syncPermissions(int $roleId)
+    {
+        $role = Role::where('name', '!=', 'Root')->findOrFail($roleId);
+
+        $input = request()->post();
+        $validated = Validator::make($input, RoleSyncPermissionRequest::rules())->validate();
+
+        DB::beginTransaction();
+
+        $role->syncPermissions($validated['permissions']);
+
+        DB::commit();
+
+        return Response::json([
+            'role' => $role,
+        ], 'El rol ha sido actualizado con éxito.');
+
     }
 }

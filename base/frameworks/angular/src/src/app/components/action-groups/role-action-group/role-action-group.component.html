@@ -10,6 +10,15 @@
           </a>
         </app-role-update-action>
       }
+      @if (canShow('sync-permissions')) {
+        <app-role-sync-permissions-action layout="popover" [role]="role"
+          (onSuccess$)="onSuccess$.emit({ action: 'sync-permissions' })"
+        >
+          <a class="app-fs-18 mx-1" nz-tooltip nzTooltipTitle="Sincronizar permisos">
+            <span class="text-primary" nz-icon nzType="safety" nzTheme="outline"></span>
+          </a>
+        </app-role-sync-permissions-action>
+      }
       @if (canShow('delete')) {
         <app-global-delete-action layout="popover"
           [modalTitle]="'Borrar rol ' + role!.name"

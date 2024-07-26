@@ -23,6 +23,15 @@ export class RoleHttpService {
     });
   }
 
+  getOne = (roleId: number, params?: any) => {
+    const queryParams = queryParamsParser(params);
+
+    return this._httpClient.get<THttpResponse>(`${environment.backendUrl}/api/backoffice/v1/roles/${roleId}?${queryParams}`, {
+      context: new HttpContext()
+        .set(GUARD, 'systemUser')
+    });
+  }
+
   create = (input: any) => {
     return this._httpClient.post<THttpResponse>(`${environment.backendUrl}/api/backoffice/v1/roles`, input, {
       context: new HttpContext()
@@ -39,6 +48,15 @@ export class RoleHttpService {
 
   delete = (roleId: number) => {
     return this._httpClient.delete<THttpResponse>(`${environment.backendUrl}/api/backoffice/v1/roles/${roleId}`, {
+      context: new HttpContext()
+        .set(GUARD, 'systemUser')
+    });
+  }
+
+  /* -------------------- */
+
+  syncPermissions = (roleId: number, input: any) => {
+    return this._httpClient.patch<THttpResponse>(`${environment.backendUrl}/api/backoffice/v1/roles/${roleId}/sync-permissions`, input, {
       context: new HttpContext()
         .set(GUARD, 'systemUser')
     });

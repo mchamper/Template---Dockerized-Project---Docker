@@ -9,6 +9,7 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { GlobalDeleteActionComponent } from '../../../core/components/actions/global-delete-action/global-delete-action.component';
 import { RoleUpdateActionComponent } from '../../actions/role-update-action/role-update-action.component';
+import { RoleSyncPermissionsActionComponent } from '../../actions/role-sync-permissions-action/role-sync-permissions-action.component';
 
 @Component({
   selector: 'app-role-action-group',
@@ -20,6 +21,7 @@ import { RoleUpdateActionComponent } from '../../actions/role-update-action/role
     NzToolTipModule,
     NzDropDownModule,
     RoleUpdateActionComponent,
+    RoleSyncPermissionsActionComponent,
     GlobalDeleteActionComponent,
   ],
   templateUrl: './role-action-group.component.html',
@@ -50,7 +52,7 @@ export class RoleActionGroupComponent extends AbstractActionGroupComponent<
       {
         name: 'sync-permissions',
         can: () => !!this.role.created_at
-          && !!this.authS.systemUser().activeSession()?.can(['RoleUpdate']),
+          && !!this.authS.systemUser().activeSession()?.can(['RoleSyncPermission']),
       },
       {
         name: 'sync-users',

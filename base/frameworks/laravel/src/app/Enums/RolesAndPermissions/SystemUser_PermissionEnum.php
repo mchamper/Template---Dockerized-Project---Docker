@@ -20,6 +20,8 @@ enum SystemUser_PermissionEnum
     case RoleCreate;
     case RoleUpdate;
     case RoleDelete;
+    case RoleSyncPermission;
+    case RoleSyncUser;
 
     /* -------------------- */
 
@@ -33,7 +35,7 @@ enum SystemUser_PermissionEnum
         return 'api_system-user';
     }
 
-    public function model(): Permission
+    public  function model(): Permission
     {
         return Permission::where('name', $this->name)->where('guard_name', self::guard())->first();
     }
