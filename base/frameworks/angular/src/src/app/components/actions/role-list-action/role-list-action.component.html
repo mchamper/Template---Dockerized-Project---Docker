@@ -16,7 +16,7 @@
       [nzContent]="modalContentTpl"
       [nzFooter]="null"
       [nzCentered]="false"
-      [nzWidth]="600"
+      [nzWidth]="modal.width"
     >
       <ng-template #modalContentTpl>
         <h4 class="mb-2 mt-4">Roles y permisos</h4>
@@ -34,7 +34,7 @@
               <nz-form-control>
                 <nz-select formControlName="guard_name">
                   <nz-option nzValue="api_system-user" nzLabel="SystemUser" />
-                  <nz-option nzValue="api_external-user" nzLabel="ExternalUser" />
+                  <!-- <nz-option nzValue="api_external-user" nzLabel="ExternalUser" /> -->
                 </nz-select>
               </nz-form-control>
             </nz-form-item>
