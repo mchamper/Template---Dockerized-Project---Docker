@@ -85,6 +85,10 @@
       <nz-tab nzTitle="Login">
         <app-login />
 
+        @if (addAnotherAccount()) {
+          <button class="btn btn-link text-primary mt-2 w-100" (click)="addAnotherAccount.set(false)">Volver</button>
+        }
+
         <nz-divider class="border-dark-subtle my-4" nzText="O" nzPlain />
 
         <div class="mx-auto" style="width: 240px; height: 40px;">
