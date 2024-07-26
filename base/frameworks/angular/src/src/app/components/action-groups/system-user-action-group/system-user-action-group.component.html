@@ -40,7 +40,10 @@
         </a>
       }
       @if (canShow('delete')) {
-        <app-global-delete-action layout="popover" [id]="systemUser!.data.id" [httpFn]="systemUserHttpS.delete" (onSuccess$)="onSuccess$.emit({ action: 'delete' })">
+        <app-global-delete-action layout="popover"
+          [modalTitle]="'Borrar usuario ' + systemUser!.data.fullName + ' (#' + systemUser!.data.id + ')'"
+          description="Los datos del usuario perdurarán en el sistema por 30 días. Una vez pasado este tiempo, el usuario y todos sus datos será eliminados de forma permanente y no podrán recuperarse."
+          [id]="systemUser!.data.id" [httpFn]="systemUserHttpS.delete" (onSuccess$)="onSuccess$.emit({ action: 'delete' })">
           <a class="app-fs-18 mx-1"
             nz-tooltip nzTooltipTitle="Borrar"
           >
@@ -90,7 +93,10 @@
               }
               @if (canShow('delete')) {
                 <li nz-menu-item>
-                  <app-global-delete-action layout="modal" [modalTitle]="'Borrar usuario ' + systemUser!.data.fullName + ' (#' + systemUser!.data.id + ')'" [id]="systemUser!.data.id" [httpFn]="systemUserHttpS.delete" (onSuccess$)="onSuccess$.emit({ action: 'delete' })">
+                  <app-global-delete-action layout="modal"
+                    [modalTitle]="'Borrar usuario ' + systemUser!.data.fullName + ' (#' + systemUser!.data.id + ')'"
+                    description="Los datos del usuario perdurarán en el sistema por 30 días. Una vez pasado este tiempo, el usuario y todos sus datos será eliminados de forma permanente y no podrán recuperarse."
+                    [id]="systemUser!.data.id" [httpFn]="systemUserHttpS.delete" (onSuccess$)="onSuccess$.emit({ action: 'delete' })">
                     <button class="btn-styless text-danger">Borrar</button>
                   </app-global-delete-action>
                 </li>

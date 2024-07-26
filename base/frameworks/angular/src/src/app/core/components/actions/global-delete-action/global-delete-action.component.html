@@ -17,7 +17,7 @@
     <nz-modal
       (nzOnCancel)="modal.close()"
       [nzVisible]="modal.isVisible()"
-      [nzTitle]="modalTitleTpl"
+
       [nzContent]="modalContentTpl"
       [nzFooter]="null"
       [nzCentered]="false"
@@ -28,6 +28,13 @@
       </ng-template>
 
       <ng-template #modalContentTpl>
+        <h4 class="mb-2 mt-4" [innerHTML]="modalTitle"></h4>
+        <nz-divider class="my-2 mb-4" />
+
+        @if (description) {
+          <div class="mb-3" [innerHTML]="description"></div>
+        }
+
         <app-form [form]="form" [formGroup]="form.group">
           <nz-alert class="mb-3" nzBanner nzType="info" [nzMessage]="alertMessageTpl" />
 
@@ -55,6 +62,10 @@
       <ng-container *ngTemplateOutlet="contentTpl" />
 
       <ng-template #popoverTpl>
+        @if (description) {
+          <div class="mb-3" [innerHTML]="description" [style.max-width]="'330px'"></div>
+        }
+
         <app-form [form]="form" [formGroup]="form.group">
           <nz-alert class="mb-2" nzBanner nzType="info" [nzMessage]="alertMessageTpl" />
 

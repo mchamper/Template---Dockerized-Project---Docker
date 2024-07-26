@@ -30,6 +30,7 @@ export class GlobalDeleteActionComponent extends AbstractActionComponent {
   @Input({ required: true }) id!: number;
   @Input({ required: true }) httpFn!: (id: number) => any;
   @Input() modalTitle: string = 'Borrar registro';
+  @Input() description: string = '';
   @Input() confirmText: string = 'eliminar';
   @Input() submitText: string = 'Borrar';
 
