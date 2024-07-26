@@ -3,9 +3,33 @@
     <div class="container text-center py-3">
       <img class="d-block mx-auto mb-3" src="/public/images/logos/301.png" style="height: 5rem;">
 
-      <router-outlet />
+      <div class="box p-0 mx-auto" style="max-width: 450px;">
+        <router-outlet />
+      </div>
 
-      <div class="small mt-3">{{ footerText }}</div>
+      <div class="small mt-3 text-black-50">{{ footerText }}</div>
     </div>
   </div>
 </main>
+
+<!-- <main>
+  <div class="d-flex align-items-center justify-content-center h-100">
+    <div class="container-fluid text-center h-100">
+      <div class="row align-items-center h-100">
+        <div class="col py-3">
+          <img class="d-block mx-auto" src="/public/images/logos/301.png" style="height: 15rem;">
+        </div>
+
+        <div class="col bg-white shadow py-3 h-100">
+          <div class="d-flex flex-column h-100">
+            <div class="p-0 m-auto w-100" style="max-width: 450px;">
+              <router-outlet />
+            </div>
+
+            <div class="small mt-auto text-black-50">{{ footerText }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main> -->
