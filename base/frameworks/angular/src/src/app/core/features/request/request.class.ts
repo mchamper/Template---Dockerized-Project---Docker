@@ -11,8 +11,8 @@ import { coreConfig } from "../../../configs/core.config";
 
 export class Request<Body = any, Params = any> {
 
-  private _nzNotificationS = this._inject(NzNotificationService);
-  private _nzMessageS = this._inject(NzMessageService);
+  private _nzNotificationS: NzNotificationService;
+  private _nzMessageS: NzMessageService;
 
   private _cancel$ = new EventEmitter();
 
@@ -27,7 +27,7 @@ export class Request<Body = any, Params = any> {
   hasValue = computed(() => isArray(this.body()) ? (this.body() as Body[]).length : !isNull(this.body()) && !isUndefined(this.body()));
   hasError = computed(() => !!this.error());
 
-  type = this._options.type || 'default';
+  type: RequestComponent['type'];
 
   constructor(
     private _options: {
@@ -55,10 +55,17 @@ export class Request<Body = any, Params = any> {
       notifySuccess: get(this._options, 'notifySuccess', false),
       notifyError: get(this._options, 'notifyError', true),
     };
+
+    this._nzNotificationS = this._inject(NzNotificationService);
+    this._nzMessageS = this._inject(NzMessageService);
+
+    /* -------------------- */
+
+    this.type = this._options.type || 'default';
   }
 
   private _inject<T = any>(token: ProviderToken<T>) {
-    return this._options.injector?.get(token) || inject(token);
+    return this._options?.injector?.get(token) || inject(token);
   }
 
   /* -------------------- */

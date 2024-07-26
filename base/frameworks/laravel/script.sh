@@ -27,6 +27,7 @@ bash base/bin/docker/run.sh ${SERVICE} "
   php artisan vendor:publish --provider=\"Spatie\Permission\PermissionServiceProvider\"
   php artisan vendor:publish --provider=\"Spatie\Tags\TagsServiceProvider\" --tag="tags-migrations"
   php artisan vendor:publish --provider=\"Spatie\LaravelData\LaravelDataServiceProvider\" --tag=\"data-config\"
+  php artisan install:api
   php artisan telescope:install
   php artisan horizon:install
 

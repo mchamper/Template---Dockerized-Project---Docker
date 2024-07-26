@@ -13,9 +13,9 @@ import { SsrService } from "../../services/ssr.service";
 
 export class Form<Data = any, Group extends { [K in keyof Group]: AbstractControl<any, any>; } = any> {
 
-  private _ssrS = this._inject(SsrService);
-  private _storageS = this._inject(StorageService);
-  private _combosHttpS = this._inject(CombosHttpService);
+  private _ssrS: SsrService;
+  private _storageS: StorageService;
+  private _combosHttpS: CombosHttpService;
 
   state = {
     init: signal<any>(null),
@@ -40,10 +40,10 @@ export class Form<Data = any, Group extends { [K in keyof Group]: AbstractContro
     value: signal<any>(null),
   };
 
-  request = new Request({ type: 'form', injector: this._options.injector });
-  dataRequest = new Request<Data>({ injector: this._options.injector });
-  combosRequest = new Request({ injector: this._options.injector });
-  actionRequest = new Request({ injector: this._options.injector });
+  request: Request;
+  dataRequest: Request<Data>;
+  combosRequest: Request;
+  actionRequest: Request;
 
   extraGroup = new FormGroup<any>({});
 
@@ -79,6 +79,17 @@ export class Form<Data = any, Group extends { [K in keyof Group]: AbstractContro
       ...this._options,
       autoSave: this._options.dataRequest ? false : this._options.autoSave,
     };
+
+    this._ssrS = this._inject(SsrService);
+    this._storageS = this._inject(StorageService);
+    this._combosHttpS = this._inject(CombosHttpService);
+
+    this.request = new Request({ type: 'form', injector: this._inject(Injector) });
+    this.dataRequest = new Request<Data>({ injector: this._inject(Injector) });
+    this.combosRequest = new Request({ injector: this._inject(Injector) });
+    this.actionRequest = new Request({ injector: this._inject(Injector) });
+
+    /* -------------------- */
 
     this.state.set(!environment.production ? this._options?.mock : null);
     this.reset(true, { emitEvent: false });

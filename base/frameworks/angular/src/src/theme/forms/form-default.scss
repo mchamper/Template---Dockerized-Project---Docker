@@ -67,7 +67,7 @@ form[nz-form].form-default, .form-items.form-default {
       nz-select-top-control {
         nz-select-item {
           @include input-value();
-          border-radius: var(--border-radius);
+          border-radius: var(--input-border-radius);
         }
       }
     }
@@ -76,7 +76,7 @@ form[nz-form].form-default, .form-items.form-default {
   nz-upload {
     .ant-upload-list-item {
       padding: 0;
-      border-radius: var(--border-radius);
+      border-radius: var(--input-border-radius);
       overflow: hidden;
     }
 
