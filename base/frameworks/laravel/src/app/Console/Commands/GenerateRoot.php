@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Enums\RoleEnum;
+use App\Enums\RolesAndPermissions\SystemUser_RoleEnum;
 use App\Models\SystemUser;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
@@ -46,7 +47,7 @@ class GenerateRoot extends Command
         $systemUser->password = $password;
         $systemUser->saveOrFail();
 
-        $systemUser->assignRole(RoleEnum::Root->name);
+        $systemUser->assignRole(SystemUser_RoleEnum::Root->name);
 
         $this->info("Root system user email: {$systemUser->email}");
         $this->info("Root system user password: {$password}");

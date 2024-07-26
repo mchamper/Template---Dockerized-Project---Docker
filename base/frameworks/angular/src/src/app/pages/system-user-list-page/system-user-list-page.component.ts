@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { AppModule } from '../../app.module';
 import { PageTitleComponent } from '../../components/layouts/page-title/page-title.component';
 import { ListModule } from '../../core/features/list/list.module';
 import { List } from '../../core/features/list/list.class';
@@ -18,7 +18,7 @@ import { SystemUserListComponent } from '../../components/lists/system-user-list
   selector: 'app-system-user-list-page',
   standalone: true,
   imports: [
-    CommonModule,
+    AppModule,
     PageTitleComponent,
     ListModule,
     FormModule,

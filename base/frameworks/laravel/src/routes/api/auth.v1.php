@@ -1,7 +1,7 @@
 <?php
 
 use App\Core\Response\Response;
-use App\Enums\PermissionEnum;
+use App\Enums\RolesAndPermissions\SystemUser_PermissionEnum;
 use App\Http\Controllers\Api\Auth\v1\AuthController;
 use App\Http\Controllers\Api\Auth\v1\AuthVerificationController;
 use App\Http\Controllers\Api\Auth\v1\AuthPasswordResetController;
@@ -30,7 +30,7 @@ Route::controller(AuthController::class)->group(function () {
     });
 
     Route::middleware('auth:api_system-user')->group(function () {
-        Route::post('/system-user/login-as', 'loginAs')->can(PermissionEnum::SystemUserLoginAs->name);
+        Route::post('/system-user/login-as', 'loginAs')->can(SystemUser_PermissionEnum::SystemUserLoginAs->name);
     });
 });
 

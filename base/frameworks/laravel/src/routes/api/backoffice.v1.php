@@ -1,8 +1,9 @@
 <?php
 
 use App\Core\Response\Response;
-use App\Enums\PermissionEnum;
+use App\Enums\RolesAndPermissions\SystemUser_PermissionEnum;
 use App\Http\Controllers\Api\Backoffice\v1\CombosController;
+use App\Http\Controllers\Api\Backoffice\v1\RoleController;
 use App\Http\Controllers\Api\Backoffice\v1\SearchController;
 use App\Http\Controllers\Api\Backoffice\v1\SystemUserController;
 use App\Http\Controllers\Api\Backoffice\v1\UploadController;
@@ -20,12 +21,19 @@ Route::middleware(['auth:api_system-user', 'verified'])->group(function () {
     Route::post('/upload', [UploadController::class, 'upload'])->middleware('throttle:upload');
 
     Route::controller(SystemUserController::class)->group(function () {
-        Route::get('/system-users', 'index')->can(PermissionEnum::SystemUserGet->name);
-        Route::get('/system-users/{systemUserId}', 'show')->can(PermissionEnum::SystemUserGet->name);
-        Route::post('/system-users', 'create')->can(PermissionEnum::SystemUserCreate->name);
-        Route::put('/system-users/{systemUserId}', 'update')->can(PermissionEnum::SystemUserUpdate->name);
-        Route::delete('/system-users/{systemUserId}', 'delete')->can(PermissionEnum::SystemUserDelete->name);
-        Route::patch('/system-users/{systemUserId}/activate', 'activate')->can(PermissionEnum::SystemUserActivate->name);
-        Route::patch('/system-users/{systemUserId}/deactivate', 'deactivate')->can(PermissionEnum::SystemUserDeactivate->name);
+        Route::get('/system-users', 'index')->can(SystemUser_PermissionEnum::SystemUserGet->name);
+        Route::get('/system-users/{systemUserId}', 'show')->can(SystemUser_PermissionEnum::SystemUserGet->name);
+        Route::post('/system-users', 'create')->can(SystemUser_PermissionEnum::SystemUserCreate->name);
+        Route::put('/system-users/{systemUserId}', 'update')->can(SystemUser_PermissionEnum::SystemUserUpdate->name);
+        Route::delete('/system-users/{systemUserId}', 'delete')->can(SystemUser_PermissionEnum::SystemUserDelete->name);
+        Route::patch('/system-users/{systemUserId}/activate', 'activate')->can(SystemUser_PermissionEnum::SystemUserActivate->name);
+        Route::patch('/system-users/{systemUserId}/deactivate', 'deactivate')->can(SystemUser_PermissionEnum::SystemUserDeactivate->name);
+    });
+
+    Route::controller(RoleController::class)->group(function () {
+        Route::get('/roles', 'index')->can(SystemUser_PermissionEnum::RoleGet->name);
+        Route::post('/roles', 'create')->can(SystemUser_PermissionEnum::RoleCreate->name);
+        Route::put('/roles/{roleId}', 'update')->can(SystemUser_PermissionEnum::RoleUpdate->name);
+        Route::delete('/roles/{roleId}', 'delete')->can(SystemUser_PermissionEnum::RoleDelete->name);
     });
 });

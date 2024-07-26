@@ -17,16 +17,11 @@
     <nz-modal
       (nzOnCancel)="modal.close()"
       [nzVisible]="modal.isVisible()"
-
       [nzContent]="modalContentTpl"
       [nzFooter]="null"
       [nzCentered]="false"
       [nzWidth]="modal.width"
     >
-      <ng-template #modalTitleTpl>
-        {{ modalTitle }}
-      </ng-template>
-
       <ng-template #modalContentTpl>
         <h4 class="mb-2 mt-4" [innerHTML]="modalTitle"></h4>
         <nz-divider class="my-2 mb-4" />
@@ -46,7 +41,7 @@
             </nz-form-item>
           </div>
 
-          <app-form-footer [submitText]="submitText" submitPlacement="right" withDivider [disabled]="!canDelete()" />
+          <app-form-footer [submitText]="submitText" submitPlacement="right" withDivider sticky [disabled]="!canDelete()" />
         </app-form>
       </ng-template>
     </nz-modal>

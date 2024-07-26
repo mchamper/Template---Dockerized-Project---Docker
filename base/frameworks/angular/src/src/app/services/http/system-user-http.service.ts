@@ -15,7 +15,7 @@ export class SystemUserHttpService {
 
   /* -------------------- */
 
-  getList = (params: any) => {
+  getList = (params?: any) => {
     const queryParams = queryParamsParser(params);
 
     return this._httpClient.get<THttpResponse>(`${environment.backendUrl}/api/backoffice/v1/system-users?${queryParams}`, {
@@ -28,7 +28,7 @@ export class SystemUserHttpService {
     });
   }
 
-  getOne = (systemUserId: number, params: any) => {
+  getOne = (systemUserId: number, params?: any) => {
     const queryParams = queryParamsParser(params);
 
     return this._httpClient.get<THttpResponse>(`${environment.backendUrl}/api/backoffice/v1/system-users/${systemUserId}?${queryParams}`, {

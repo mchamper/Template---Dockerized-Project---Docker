@@ -1,0 +1,26 @@
+<div class="d-inline-flex align-items-center">
+  @switch (layout) {
+    @case ('icon') {
+      @if (canShow('update')) {
+        <app-role-update-action layout="popover" [role]="role"
+          (onSuccess$)="onSuccess$.emit({ action: 'update' })"
+        >
+          <a class="app-fs-18 mx-1" nz-tooltip nzTooltipTitle="Editar">
+            <span class="text-primary" nz-icon nzType="edit" nzTheme="outline"></span>
+          </a>
+        </app-role-update-action>
+      }
+      @if (canShow('delete')) {
+        <app-global-delete-action layout="popover"
+          [modalTitle]="'Borrar rol ' + role!.name"
+          [id]="role!.id" [httpFn]="roleHttpS.delete"
+          (onSuccess$)="onSuccess$.emit({ action: 'delete' })"
+        >
+          <a class="app-fs-18 mx-1" nz-tooltip nzTooltipTitle="Borrar">
+            <span class="text-danger" nz-icon nzType="delete" nzTheme="outline"></span>
+          </a>
+        </app-global-delete-action>
+      }
+    }
+  }
+</div>

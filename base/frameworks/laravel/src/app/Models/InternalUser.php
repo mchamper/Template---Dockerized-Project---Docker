@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Core\Bases\BaseModelTrait;
-use App\Core\Models\Traits\HasRolesAndPermissions;
 use App\Models\Traits\Auth\AuthStatusTrait;
 use App\Models\Traits\Auth\AuthTokenTrait;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -22,7 +21,6 @@ class InternalUser extends Authenticatable
     use SoftDeletes;
     use AuthStatusTrait;
     use AuthTokenTrait;
-    use HasRolesAndPermissions;
 
     protected $appends = [
         'full_name',

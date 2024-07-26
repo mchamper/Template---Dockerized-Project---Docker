@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Enums\RoleEnum;
+use App\Enums\RolesAndPermissions\SystemUser_RoleEnum;
 use App\Models\SystemUser;
 use Illuminate\Auth\Access\Response;
 
@@ -13,11 +13,11 @@ class SystemUserPolicy
      */
     public function create(SystemUser $authSystemUser): Response
     {
-        if ($authSystemUser->hasRole(RoleEnum::Root->name)) {
+        if ($authSystemUser->hasRole(SystemUser_RoleEnum::Root->name)) {
             return Response::allow();
         }
 
-        return $authSystemUser->hasRole(RoleEnum::Admin->name)
+        return $authSystemUser->hasRole(SystemUser_RoleEnum::Admin->name)
             ? Response::allow()
             : Response::deny('No puedes crear usuarios.');
     }
@@ -27,12 +27,12 @@ class SystemUserPolicy
      */
     public function update(SystemUser $authSystemUser, SystemUser $systemUser): Response
     {
-        if ($authSystemUser->hasRole(RoleEnum::Root->name)) {
+        if ($authSystemUser->hasRole(SystemUser_RoleEnum::Root->name)) {
             return Response::allow();
         }
 
-        if ($authSystemUser->hasRole(RoleEnum::Admin->name)) {
-            return !$systemUser->hasRole(RoleEnum::Admin->name) || $authSystemUser->id === $systemUser->id
+        if ($authSystemUser->hasRole(SystemUser_RoleEnum::Admin->name)) {
+            return !$systemUser->hasRole(SystemUser_RoleEnum::Admin->name) || $authSystemUser->id === $systemUser->id
                 ? Response::allow()
                 : Response::deny('No puedes modificar un usuario administrador que no sea el tuyo.');
         }
@@ -47,12 +47,12 @@ class SystemUserPolicy
      */
     public function delete(SystemUser $authSystemUser, SystemUser $systemUser): Response
     {
-        if ($authSystemUser->hasRole(RoleEnum::Root->name)) {
+        if ($authSystemUser->hasRole(SystemUser_RoleEnum::Root->name)) {
             return Response::allow();
         }
 
-        if ($authSystemUser->hasRole(RoleEnum::Admin->name)) {
-            return !$systemUser->hasRole(RoleEnum::Admin->name)
+        if ($authSystemUser->hasRole(SystemUser_RoleEnum::Admin->name)) {
+            return !$systemUser->hasRole(SystemUser_RoleEnum::Admin->name)
                 ? Response::allow()
                 : Response::deny('No puedes eliminar un usuario administrador ni a ti mismo.');
         }

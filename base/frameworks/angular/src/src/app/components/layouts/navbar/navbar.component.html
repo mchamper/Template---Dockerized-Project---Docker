@@ -14,10 +14,34 @@
 
       <ul class="col-auto navbar-nav align-items-center">
         <!-- <li class="nav-item d-md-none">
-          <button class="nav-link btn-styless app-fs-24">
+          <button class="nav-link btn-styless app-fs-20">
             <span nz-icon nzType="search" nzTheme="outline"></span>
           </button>
         </li> -->
+
+        @if (authS.systemUser().activeSession()?.can(['RoleGet'])) {
+          <li class="nav-item">
+            <button class="nav-link btn-styless app-fs-20" nz-dropdown [nzDropdownMenu]="configMenu" nzPlacement="bottomRight">
+              <span nz-icon nzType="setting" nzTheme="outline"></span>
+            </button>
+            <nz-dropdown-menu #configMenu="nzDropdownMenu">
+              <ul nz-menu>
+                <li nz-menu-group nzTitle="Configuración">
+                  <ul>
+                    <li nz-menu-divider></li>
+                    @if (authS.systemUser().activeSession()?.can(['RoleGet'])) {
+                      <li nz-menu-item>
+                        <app-role-list-action layout="modal">
+                          Roles y permisos
+                        </app-role-list-action>
+                      </li>
+                    }
+                  </ul>
+                </li>
+              </ul>
+            </nz-dropdown-menu>
+          </li>
+        }
 
         <li class="nav-item">
           <button class="nav-link btn-styless" nz-dropdown [nzDropdownMenu]="accountMenu" nzPlacement="bottomRight">

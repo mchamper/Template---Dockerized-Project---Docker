@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Enums;
+namespace App\Enums\RolesAndPermissions;
 
 use App\Core\Bases\BaseEnum;
 use Spatie\Permission\Models\Permission;
 
-enum PermissionEnum
+enum SystemUser_PermissionEnum
 {
     use BaseEnum;
 
@@ -16,6 +16,10 @@ enum PermissionEnum
     case SystemUserLoginAs;
     case SystemUserActivate;
     case SystemUserDeactivate;
+    case RoleGet;
+    case RoleCreate;
+    case RoleUpdate;
+    case RoleDelete;
 
     /* -------------------- */
 
@@ -24,9 +28,13 @@ enum PermissionEnum
         return [];
     }
 
+    public static function guard(): string
+    {
+        return 'api_system-user';
+    }
+
     public function model(): Permission
     {
-        // return Permission::where('name', $this->name)->where('guard_name', 'web')->first();
-        return Permission::where('name', $this->name)->first();
+        return Permission::where('name', $this->name)->where('guard_name', self::guard())->first();
     }
 }

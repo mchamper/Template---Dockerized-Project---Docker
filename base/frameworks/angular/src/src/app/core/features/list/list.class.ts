@@ -62,7 +62,7 @@ export class List<Item = any> {
       this.filters = this._options.filters;
 
       this.filters.group.addControl('utils', this._fb.group({
-        moreFilters: [false],
+        moreFilters: this._fb.control(false),
       }));
 
       this.filters.set();

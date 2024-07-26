@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Enums\PermissionEnum;
-use App\Enums\RoleEnum;
+use App\Enums\RolesAndPermissions\SystemUser_PermissionEnum;
+use App\Enums\RolesAndPermissions\SystemUser_RoleEnum;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -21,19 +21,19 @@ class RolesAndPermissionsSeeder extends Seeder
         /* -------------------- */
 
         $configs = [
-            PermissionEnum::class => Permission::class,
-            RoleEnum::class => Role::class,
+            SystemUser_PermissionEnum::class => Permission::class,
+            SystemUser_RoleEnum::class => Role::class,
         ];
 
         foreach ($configs as $enum => $model) {
             $model::whereNot(function ($query) use ($enum) {
-                $query->whereIn('name', $enum::names())->where('guard_name', '*');
+                $query->whereIn('name', $enum::names())->where('guard_name', $enum::guard());
             })->whereNull('created_at')->delete();
 
-            collect($enum::names())->map(function ($item, $key) {
+            collect($enum::names())->map(function ($item, $key) use ($enum) {
                 return [
                     'name' => $item,
-                    'guard_name' => '*',
+                    'guard_name' => $enum::guard(),
                     'created_at' => null,
                     'updated_at' => null,
                 ];
@@ -42,14 +42,14 @@ class RolesAndPermissionsSeeder extends Seeder
 
         /* -------------------- */
 
-        RoleEnum::Root->model()
-            ->syncPermissions(collect(PermissionEnum::names())->diff([
+        SystemUser_RoleEnum::Root->model()
+            ->syncPermissions(collect(SystemUser_PermissionEnum::names())->diff([
                 //
             ]));
 
-        RoleEnum::Admin->model()
-            ->syncPermissions(collect(PermissionEnum::names())->diff([
-                PermissionEnum::SystemUserLoginAs->name,
+        SystemUser_RoleEnum::Admin->model()
+            ->syncPermissions(collect(SystemUser_PermissionEnum::names())->diff([
+                SystemUser_PermissionEnum::SystemUserLoginAs->name,
             ]));
     }
 }
