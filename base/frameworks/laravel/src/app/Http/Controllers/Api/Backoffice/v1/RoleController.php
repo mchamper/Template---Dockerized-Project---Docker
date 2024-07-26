@@ -7,6 +7,7 @@ use App\Core\RESTful\RESTful;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Role\RoleCreateRequest;
 use App\Http\Requests\Role\RoleSyncPermissionRequest;
+use App\Http\Requests\Role\RoleSyncUserRequest;
 use App\Http\Requests\Role\RoleUpdateRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -16,7 +17,7 @@ class RoleController extends Controller
 {
     public function index()
     {
-        $roleQuery = Role::query();
+        $roleQuery = Role::where('name', '!=', 'Root');
 
         $roles = (new RESTful(
             $roleQuery,
@@ -30,7 +31,7 @@ class RoleController extends Controller
 
     public function show(int $roleId)
     {
-        $roleQuery = Role::query();
+        $roleQuery = Role::where('name', '!=', 'Root');
 
         $role = (new RESTful(
             $roleQuery,
@@ -101,7 +102,7 @@ class RoleController extends Controller
 
     public function syncPermissions(int $roleId)
     {
-        $role = Role::where('name', '!=', 'Root')->findOrFail($roleId);
+        $role = Role::whereNotNull('created_at')->findOrFail($roleId);
 
         $input = request()->post();
         $validated = Validator::make($input, RoleSyncPermissionRequest::rules())->validate();
@@ -116,5 +117,28 @@ class RoleController extends Controller
             'role' => $role,
         ], 'El rol ha sido actualizado con éxito.');
 
+    }
+
+    public function syncUsers(int $roleId)
+    {
+        $role = Role::where('name', '!=', 'Root')->findOrFail($roleId);
+
+        match ($role->guard_name) {
+            'api_system-user' => $userTable = 'system_users',
+            'api_external-user' => $userTable = 'external_users',
+        };
+
+        $input = request()->post();
+        $validated = Validator::make($input, RoleSyncUserRequest::rules(['userTable' => $userTable]))->validate();
+
+        DB::beginTransaction();
+
+        $role->users()->sync(collect($validated['users'])->pluck('id'));
+
+        DB::commit();
+
+        return Response::json([
+            'role' => $role,
+        ], 'El rol ha sido actualizado con éxito.');
     }
 }

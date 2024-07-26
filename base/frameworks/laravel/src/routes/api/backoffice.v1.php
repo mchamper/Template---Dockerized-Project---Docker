@@ -37,5 +37,6 @@ Route::middleware(['auth:api_system-user', 'verified'])->group(function () {
         Route::put('/roles/{roleId}', 'update')->can(SystemUser_PermissionEnum::RoleUpdate->name);
         Route::delete('/roles/{roleId}', 'delete')->can(SystemUser_PermissionEnum::RoleDelete->name);
         Route::patch('/roles/{roleId}/sync-permissions', 'syncPermissions')->can(SystemUser_PermissionEnum::RoleSyncPermission->name);
+        Route::patch('/roles/{roleId}/sync-users', 'syncUsers')->can(SystemUser_PermissionEnum::RoleSyncUser->name);
     });
 });

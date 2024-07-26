@@ -19,6 +19,15 @@
           </a>
         </app-role-sync-permissions-action>
       }
+      @if (canShow('sync-users')) {
+        <app-role-sync-users-action layout="popover" [role]="role"
+          (onSuccess$)="onSuccess$.emit({ action: 'sync-users' })"
+        >
+          <a class="app-fs-18 mx-1" nz-tooltip nzTooltipTitle="Sincronizar usuarios">
+            <span class="text-primary" nz-icon nzType="user-add" nzTheme="outline"></span>
+          </a>
+        </app-role-sync-users-action>
+      }
       @if (canShow('delete')) {
         <app-global-delete-action layout="popover"
           [modalTitle]="'Borrar rol ' + role!.name"

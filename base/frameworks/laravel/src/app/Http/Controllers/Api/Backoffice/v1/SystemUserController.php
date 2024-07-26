@@ -127,7 +127,7 @@ class SystemUserController extends Controller
     {
         $systemUser = SystemUser::noRoot()->noAuth()->findOrFail($systemUserId);
 
-        Gate::authorize('update', $systemUser);
+        // Gate::authorize('update', $systemUser);
 
         DB::beginTransaction();
 
@@ -145,7 +145,7 @@ class SystemUserController extends Controller
     {
         $systemUser = SystemUser::noRoot()->noAuth()->findOrFail($systemUserId);
 
-        Gate::authorize('update', $systemUser);
+        // Gate::authorize('update', $systemUser);
 
         DB::beginTransaction();
 

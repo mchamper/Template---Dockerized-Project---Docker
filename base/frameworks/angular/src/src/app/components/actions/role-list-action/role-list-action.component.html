@@ -49,7 +49,7 @@
 
         <app-list [list]="list" [columns]="[
           { width: 'auto', name: 'Nombre', rowTpl: rowNameTpl },
-          { width: '100px', name: '', align: 'center', right: '0', rowTpl: rowActionsTpl },
+          { width: '120px', name: '', align: 'center', right: '0', rowTpl: rowActionsTpl },
         ]">
           <ng-template #rowNameTpl let-item>
             {{ item.name }}<br>

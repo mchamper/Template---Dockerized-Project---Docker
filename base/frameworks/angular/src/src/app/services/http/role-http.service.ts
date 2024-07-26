@@ -61,4 +61,11 @@ export class RoleHttpService {
         .set(GUARD, 'systemUser')
     });
   }
+
+  syncUsers = (roleId: number, input: any) => {
+    return this._httpClient.patch<THttpResponse>(`${environment.backendUrl}/api/backoffice/v1/roles/${roleId}/sync-users`, input, {
+      context: new HttpContext()
+        .set(GUARD, 'systemUser')
+    });
+  }
 }

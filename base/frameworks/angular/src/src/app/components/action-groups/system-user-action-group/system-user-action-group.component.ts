@@ -75,13 +75,13 @@ export class SystemUserActionGroupComponent extends AbstractActionGroupComponent
       {
         name: 'activate',
         can: () => !this.systemUser!.isActive()
-          && (this.authS.systemUser().activeSession()?.hasRole(['Root']) || this.systemUser!.data.rolesAndPermissions.roles.includes('Admin'))
+          // && (this.authS.systemUser().activeSession()?.hasRole(['Root']) || this.systemUser!.data.rolesAndPermissions.roles.includes('Admin'))
           && !!this.authS.systemUser().activeSession()?.can(['SystemUserActivate']),
       },
       {
         name: 'deactivate',
         can: () => this.systemUser!.isActive()
-          && (this.authS.systemUser().activeSession()?.hasRole(['Root']) || this.systemUser!.data.rolesAndPermissions.roles.includes('Admin'))
+          // && (this.authS.systemUser().activeSession()?.hasRole(['Root']) || this.systemUser!.data.rolesAndPermissions.roles.includes('Admin'))
           && !!this.authS.systemUser().activeSession()?.can(['SystemUserDeactivate']),
       },
     ];

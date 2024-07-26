@@ -24,3 +24,12 @@ nz-alert .ant-alert,
     max-width: 100%;
   }
 }
+
+/* -------------------- */
+
+.interaction-disabled.show-layer {
+  border-radius: var(--global-border-radius) !important;
+  border: none !important;
+  backdrop-filter: none !important;
+  background: rgba(255, 255, 255, 0.5) !important;
+}

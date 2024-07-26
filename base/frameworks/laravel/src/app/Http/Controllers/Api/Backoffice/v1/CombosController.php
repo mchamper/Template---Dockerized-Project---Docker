@@ -8,6 +8,7 @@ use App\Enums\RolesAndPermissions\SystemUser_PermissionEnum;
 use App\Enums\RolesAndPermissions\SystemUser_RoleEnum;
 use App\Http\Controllers\Controller;
 use App\Models\AuthStatus;
+use App\Models\SystemUser;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -36,6 +37,11 @@ class CombosController extends Controller
 
                 case 'auth_statuses': {
                     $combos[$concept] = AuthStatus::all();
+                    break;
+                }
+
+                case 'system_users': {
+                    $combos[$concept] = SystemUser::noRoot()->get();
                     break;
                 }
 
