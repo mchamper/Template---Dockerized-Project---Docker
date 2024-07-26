@@ -1,4 +1,4 @@
-import { DestroyRef, EventEmitter, Injector, ProviderToken, computed, inject, signal } from "@angular/core";
+import { DestroyRef, EventEmitter, Injector, ProviderToken, WritableSignal, computed, inject, signal } from "@angular/core";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { Router } from "@angular/router";
 import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
@@ -14,22 +14,22 @@ import { scrollTo } from "../../utils/helpers/scroll.helper";
 
 export class List<Item = any> {
 
-  private _fb = this._inject(FormBuilder);
-  private _router = this._inject(Router);
-  private _routeS = this._inject(RouteService);
+  private _fb: FormBuilder;
+  private _router: Router;
+  private _routeS: RouteService;
 
   data = signal<Item[]>([]);
   currentPage = signal(1);
   lastPage = signal(1);
   total = signal(0);
-  limit = signal(!isUndefined(this._options.limit) ? this._options.limit : 10);
+  limit: WritableSignal<number>;
   sort = signal('');
   selected = signal<any[]>([]);
   extras = signal<any>(null);
 
-  request = new Request({ injector: this._options.injector });
-  actionRequest = new Request({ injector: this._options.injector });
-  filters = new Form(undefined, { injector: this._options.injector });
+  request: Request;
+  actionRequest: Request;
+  filters: Form;
 
   change$ = new EventEmitter<{ name?: string, mustSubmit?: boolean } | undefined>();
   queryParamHash = computed(() => this._routeS.current.queryParams()[this._getQueryParamName()] || '');
@@ -53,6 +53,18 @@ export class List<Item = any> {
       ...this._options,
       scrollToTop: get(this._options, 'scrollToTop', true),
     };
+
+    this._fb = this._inject(FormBuilder);
+    this._router = this._inject(Router);
+    this._routeS = this._inject(RouteService);
+
+    this.request = new Request({ injector: this._inject(Injector) });
+    this.actionRequest = new Request({ injector: this._inject(Injector) });
+    this.filters = new Form(undefined, { injector: this._inject(Injector) });
+
+    this.limit = signal(!isUndefined(this._options.limit) ? this._options.limit : 10);
+
+    /* -------------------- */
 
     if (this._options.filters) {
       if (!this._options.filters.group.get('main') || !(this._options.filters.group.get('main') instanceof FormGroup)) {
