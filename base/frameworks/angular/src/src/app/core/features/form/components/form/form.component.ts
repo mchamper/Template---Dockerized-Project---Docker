@@ -6,6 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RequestComponent } from '../../../request/components/request/request.component';
 import { FormFooterComponent } from '../form-footer/form-footer.component';
 import { environment } from '../../../../../../environments/environment';
+import { coreConfig } from '../../../../../configs/core.config';
 
 @Component({
   selector: 'app-form',
@@ -25,9 +26,9 @@ export class FormComponent {
 
   @Input({ required: true }) form!: Form;
   @Input({ transform: booleanAttribute }) debug = false;
-  @Input({ transform: booleanAttribute }) floatingLabel = false;
+  @Input({ transform: booleanAttribute }) floatingLabel = coreConfig.forms.floatingLabel;
   @Input({ transform: booleanAttribute }) forceSubmitOnEnter = false;
-  @Input() type: 'default' | 'oneline' = 'default';
+  @Input() type: 'default' | 'oneline' = coreConfig.forms.type;
 
   get showDebug(): boolean {
     return !environment.production && this.debug;

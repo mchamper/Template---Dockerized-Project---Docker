@@ -2,13 +2,12 @@
 
 namespace App\Core\Models\Traits;
 
+use Illuminate\Support\Str;
 use Spatie\Permission\Traits\HasRoles;
 
 trait HasRolesAndPermissions
 {
     use HasRoles;
-
-    protected $guard_name = '*';
 
     public function initializeHasRolesAndPermissions()
     {
@@ -31,4 +30,6 @@ trait HasRolesAndPermissions
             'permissions' => $model->getAllPermissions()->map(fn ($item) => $item['name']),
         ];
     }
+
+    protected function getDefaultGuardName(): string { return 'api_' . Str::kebab(class_basename($this)); }
 }

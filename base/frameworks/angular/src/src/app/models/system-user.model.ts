@@ -8,14 +8,18 @@ export type TSystemUser = {
   fullName: string,
   email: string,
   emailVerifiedAt?: Moment,
-  picture: any,
+  picture?: {
+    originalUrl: string,
+  },
   socialId: string,
-  socialDriver: 'Google' | 'Facebook',
+  socialDriver?: {
+    id: number,
+    name: string
+  },
   socialAvatar: string,
-  status: 'Active' | 'Inactive',
-  statusEnum: {
-    color: string,
-    label: string
+  status: {
+    id: number,
+    name: string
   },
   rolesAndPermissions: {
     roles: string[],
@@ -29,7 +33,7 @@ export type TSystemUser = {
 export class SystemUser extends AbstractModel<TSystemUser, 'backend'> implements TAuthModel {
 
   isActive(): boolean {
-    return this.data.status === 'Active';
+    return this.data.status.id === 1;
   }
 
   /* -------------------- */
@@ -56,9 +60,10 @@ export class SystemUser extends AbstractModel<TSystemUser, 'backend'> implements
       name: this.data.fullName,
       firstName: this.data.firstName,
       lastName: this.data.lastName,
+      fullName: this.data.fullName,
       email: this.data.email,
       isVerified: !!this.data.emailVerifiedAt,
-      picture: this.data.picture?.originalUrl,
+      picture: this.data.picture?.originalUrl || this.data.socialAvatar,
       roles: this.data.rolesAndPermissions.roles,
       permissions: this.data.rolesAndPermissions.permissions,
       model: this,

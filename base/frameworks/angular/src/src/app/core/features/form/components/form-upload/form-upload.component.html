@@ -17,14 +17,14 @@
     showRemoveIcon: !control.disabled,
   }"
 >
-  <ng-container *ngIf="type === 'avatar'">
+  <!-- <ng-container *ngIf="type === 'avatar'">
     <span class="upload-icon" nz-icon nzType="plus"></span>
     <div class="ant-upload-text ms-1">Subir</div>
-  </ng-container>
+  </ng-container> -->
 
   <ng-container *ngIf="type === 'button'">
-    <button type="button" class="btn btn-outline-primary">
-      <span nz-icon nzType="upload"></span>
+    <button type="button" class="btn btn-outline-primary w-100">
+      <span class="me-1" nz-icon nzType="upload"></span>
       Subir
     </button>
   </ng-container>

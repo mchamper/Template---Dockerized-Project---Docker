@@ -1,8 +1,8 @@
 <app-page-title>
-  Editar usuario #{{ systemUserId }}
+  Editar usuario #{{ systemUserId() }}
 </app-page-title>
 
-<div class="container-fluid">
+<div class="container">
   <div class="box">
     <app-form [form]="form" [formGroup]="form.group">
       <app-box-section-title [title]="'Información del usuario'" icon="info-circle" isFirst />
@@ -35,30 +35,42 @@
       <app-box-section-title [title]="'Cambiar contraseña'" icon="lock" />
 
       <div class="ps-4">
-        <div class="row">
-          <nz-form-item class="col-60 col-lg-30 col-xl-15">
-            <nz-form-control>
-              <nz-form-label>Su contraseña</nz-form-label>
-              <input nz-input type="password" formControlName="password_current">
-            </nz-form-control>
-          </nz-form-item>
+        @if (!form.dataRequest.body()?.data?.socialDriver) {
+          <div class="row">
+            <nz-form-item class="col-60 col-lg-30 col-xl-15">
+              <nz-form-control>
+                <nz-form-label>Su contraseña</nz-form-label>
+                <input nz-input type="password" formControlName="password_current">
+              </nz-form-control>
+            </nz-form-item>
 
-          <nz-form-item class="col-60 col-lg-30 col-xl-15">
-            <nz-form-control>
-              <nz-form-label>Nueva contraseña</nz-form-label>
-              <input nz-input type="password" formControlName="password">
-            </nz-form-control>
-          </nz-form-item>
+            <nz-form-item class="col-60 col-lg-30 col-xl-15">
+              <nz-form-control>
+                <nz-form-label>Nueva contraseña</nz-form-label>
+                <input nz-input type="password" formControlName="password">
+              </nz-form-control>
+            </nz-form-item>
 
-          <nz-form-item class="col-60 col-lg-30 col-xl-15">
-            <nz-form-control>
-              <nz-form-label>Confirmar nueva contraseña</nz-form-label>
-              <input nz-input type="password" formControlName="password_confirmation">
-            </nz-form-control>
-          </nz-form-item>
+            <nz-form-item class="col-60 col-lg-30 col-xl-15">
+              <nz-form-control>
+                <nz-form-label>Confirmar nueva contraseña</nz-form-label>
+                <input nz-input type="password" formControlName="password_confirmation">
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        } @else {
+          <nz-alert
+            nzBanner
+            nzType="info"
+            [nzMessage]="messageTpl"
+          >
+            <ng-template #messageTpl>
+              No puedes cambiar la contraseña de este usuario porque se ha registrado con <strong>{{ form.dataRequest.body()?.data?.socialDriver?.name }}</strong>.
+            </ng-template>
+          </nz-alert>
+        }
+
         </div>
-      </div>
-
       <app-form-footer submitText="Guardar" submitPlacement="right" withInfo sticky />
     </app-form>
   </div>

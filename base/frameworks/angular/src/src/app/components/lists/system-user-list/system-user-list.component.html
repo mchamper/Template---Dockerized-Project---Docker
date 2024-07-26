@@ -11,6 +11,11 @@
 
   <ng-template #rowNameTpl let-item>
     {{ item.data.fullName }}
+
+    @if (item.data.rolesAndPermissions.roles.length) {
+      <br>
+      <span class="small text-black-50">{{ item.data.rolesAndPermissions.roles.join(', ') }}</span>
+    }
   </ng-template>
 
   <ng-template #rowEmailTpl let-item>
@@ -30,9 +35,9 @@
   </ng-template>
 
   <ng-template #rowStatusTpl let-item>
-    <nz-tag [nzColor]="item.data.statusEnum.color">
-      {{ item.data.statusEnum.label }}
-    </nz-tag>
+    @switch (item.data.status.id) {
+      @case (1) { <nz-tag nzColor="green">{{ item.data.status.name }}</nz-tag> }
+    }
   </ng-template>
 
   <ng-template #rowActionsTpl let-item>

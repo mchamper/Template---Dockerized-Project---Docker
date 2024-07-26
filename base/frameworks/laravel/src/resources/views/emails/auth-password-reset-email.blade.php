@@ -7,10 +7,10 @@ Haz click en el siguiente link para cambiar tu contraseña en tu cuenta:
 Cambiar contraseña
 </x-mail::button>
 
-Si el link no funciona, copia y pega el siguiente texto en una pestaña de tu navegador:
+{{-- Si el link no funciona, copia y pega el siguiente texto en una pestaña de tu navegador:
 
 <code style="word-wrap: break-word">
 <small>{{ $url }}</small>
-</code>
+</code> --}}
 
 </x-mail::message>

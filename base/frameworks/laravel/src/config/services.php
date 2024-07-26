@@ -38,9 +38,18 @@ return [
     /* -------------------- */
 
     'google' => [
-        'client_id' => env('GOOGLE_CLIENT_ID'),
-        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-        'redirect' => '',
+        'clients' => [
+            'website' => [
+                'id' => env('GOOGLE_CLIENT_WEBSITE_ID'),
+                'secret' => env('GOOGLE_CLIENT_WEBSITE_SECRET'),
+                'redirect' => env('GOOGLE_CLIENT_WEBSITE_REDIRECT'),
+            ],
+            'backoffice' => [
+                'id' => env('GOOGLE_CLIENT_BACKOFFICE_ID'),
+                'secret' => env('GOOGLE_CLIENT_BACKOFFICE_SECRET'),
+                'redirect' => env('GOOGLE_CLIENT_BACKOFFICE_REDIRECT'),
+            ],
+        ],
         'application_credentials' => env('GOOGLE_APPLICATION_CREDENTIALS'),
     ],
 

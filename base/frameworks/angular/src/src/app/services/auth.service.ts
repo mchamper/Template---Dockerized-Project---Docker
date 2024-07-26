@@ -2,7 +2,7 @@ import { Injectable, Injector, inject } from '@angular/core';
 import { SystemUser } from '../models/system-user.model';
 import { AbstractAuthService } from '../core/services/abstract-auth.service';
 import { firstValueFrom } from 'rxjs';
-import { AuthSystemUserHttpService } from './http/auth-system-user-http.service';
+import { AuthUserHttpService } from './http/auth-user-http.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,6 @@ export class AuthService extends AbstractAuthService {
 
   async init(): Promise<void> {
     await this._init([
-      { guard: 'appClient' },
       { guard: 'systemUser', modelClass: SystemUser },
     ]);
 

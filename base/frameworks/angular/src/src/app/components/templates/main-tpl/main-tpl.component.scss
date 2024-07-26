@@ -1,3 +1,7 @@
+@import "../../../../../node_modules/bootstrap/scss/functions";
+@import "../../../../../node_modules/bootstrap/scss/variables";
+@import "../../../../../node_modules/bootstrap/scss/mixins/breakpoints";
+
 :host {
   --app-sidebar-width: 250px;
 
@@ -31,6 +35,16 @@
 
       &.hide {
         width: 80px;
+      }
+
+      @include media-breakpoint-down(sm) {
+        position: absolute;
+        height: 100%;
+        z-index: 1090;
+
+        &.hide {
+          width: 0;
+        }
       }
     }
 

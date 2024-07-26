@@ -43,7 +43,7 @@ class AuthController extends Controller
         DB::commit();
 
         return Response::json([
-            'user' => $user,
+            'user' => $user->load('social_driver'),
         ], 'Se le ha enviado un email de verificación a la dirección de correo ingresada.');
     }
 
@@ -53,8 +53,8 @@ class AuthController extends Controller
         $validated = UserLoginRequest::validate($input);
 
         match ($userType) {
-            'user' => $user = User::whereEmail($validated['email'])->first(),
-            'system-user' => $user = SystemUser::whereEmail($validated['email'])->first(),
+            'user' => $user = User::withTrashed()->whereEmail($validated['email'])->first(),
+            'system-user' => $user = SystemUser::withTrashed()->whereEmail($validated['email'])->first(),
         };
 
         if (!$user || !Hash::check($validated['password'], $user->password)) {
@@ -70,11 +70,12 @@ class AuthController extends Controller
         DB::beginTransaction();
 
         $token = $user->createDefaultToken(expiresAt: $expiresAt);
+        $user->restore();
 
         DB::commit();
 
         return Response::json([
-            'user' => $user,
+            'user' => $user->load('social_driver'),
             'token' => $token->plainTextToken,
             'token_expires_at' => $expiresAt,
         ]);
@@ -87,8 +88,13 @@ class AuthController extends Controller
 
         Sleep::for(300)->milliseconds();
 
+        match ($userType) {
+            'user' => $googleClientId = config('services.google.clients.website.id'),
+            'system-user' => $googleClientId = config('services.google.clients.backoffice.id'),
+        };
+
         $googleClient = new Google\Client([
-            'client_id' => config('services.google.client_id'),
+            'client_id' => $googleClientId,
         ]);
 
         if (!$payload = $googleClient->verifyIdToken($validated['token'])) {
@@ -106,8 +112,8 @@ class AuthController extends Controller
         $socialUserRaw = $socialUser->getRaw();
 
         match ($userType) {
-            'user' => $user = User::whereEmail($socialUser->getEmail())->whereSocialDriverId(1)->first(),
-            'system-user' => $user = SystemUser::whereEmail($socialUser->getEmail())->whereSocialDriverId(1)->first(),
+            'user' => $user = User::withTrashed()->whereEmail($socialUser->getEmail())->whereSocialDriverId(1)->first(),
+            'system-user' => $user = SystemUser::withTrashed()->whereEmail($socialUser->getEmail())->whereSocialDriverId(1)->first(),
         };
 
         $input = [];
@@ -137,11 +143,12 @@ class AuthController extends Controller
         $user->saveOrFail();
 
         $token = $user->createDefaultToken(expiresAt: $expiresAt);
+        $user->restore();
 
         DB::commit();
 
         return Response::json([
-            'user' => $user,
+            'user' => $user->load('social_driver'),
             'token' => $token->plainTextToken,
             'token_expires_at' => $expiresAt,
         ]);
@@ -164,7 +171,7 @@ class AuthController extends Controller
         DB::commit();
 
         return Response::json([
-            'user' => $systemUser,
+            'user' => $systemUser->load('social_driver'),
             'token' => $token->plainTextToken,
             'token_expires_at' => $expiresAt,
         ]);
@@ -175,7 +182,7 @@ class AuthController extends Controller
     public function me(string $userType)
     {
         return Response::json([
-            'user' => auth("api_{$userType}")->user(),
+            'user' => auth("api_{$userType}")->user()->load('social_driver'),
         ]);
     }
 
@@ -198,7 +205,7 @@ class AuthController extends Controller
         DB::commit();
 
         return Response::json([
-            'user' => $user,
+            'user' => $user->load('social_driver'),
         ], 'Su usuario ha sido actualizado con éxito.');
     }
 

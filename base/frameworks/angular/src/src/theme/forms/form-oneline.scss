@@ -1,12 +1,15 @@
 form[nz-form].form-oneline, .form-items.form-oneline {
-  // --default-input-height: var(--app-px-34);
+  --default-input-height: var(--app-px-40);
 
-  // --label-font-size: var(--app-px-16);
-  // --input-font-size: var(--app-px-16);
+  --label-font-size: var(--app-px-14);
+  --input-font-size: var(--app-px-14);
+
+  &.floating-label {
+    --default-input-height: var(--app-px-50);
+  }
 
   @mixin input-value {
-    @include app-ff-primary-eb();
-    color: var(--bs-primary) !important;
+    // color: var(--bs-primary) !important;
   }
 
   @mixin input-styles {
@@ -16,38 +19,35 @@ form[nz-form].form-oneline, .form-items.form-oneline {
     padding-left: 0 !important;
     padding-right: 0 !important;
     box-shadow: none !important;
+
+    &.cdk-focused, &.ant-picker-focused, &:focus {
+      @include input-focused-styles();
+    }
+  }
+
+  @mixin input-focused-styles {
+    // box-shadow: 0 0 0 1px var(--bs-primary) !important;
   }
 
   /* -------------------- */
 
   nz-form-label {
     left: 0 !important;
+    padding: 0;
   }
-  label {
-    @include app-ff-primary-eb();
-    color: var(--bs-secondary);
-  }
+  // label {
+  //   font-weight: bold;
+  //   color: var(--bs-primary);
+  // }
 
   /* -------------------- */
 
-  [nz-input]:not(.input-in-group),
-  nz-input-group,
-  nz-input-group input[nz-input],
-  nz-input-number input,
-  nz-select:not(.ant-select-multiple) nz-select-item,
-  nz-select:not(.ant-select-multiple) nz-select-search input,
-  nz-date-picker input,
-  nz-range-picker input
+  #{$item-value-selectors}
   {
     @include input-value();
   }
 
-  [nz-input]:not(.input-in-group),
-  nz-input-group,
-  nz-input-number,
-  nz-select nz-select-top-control,
-  nz-date-picker,
-  nz-range-picker
+  #{$item-selectors}
   {
     @include input-styles();
   }
@@ -61,14 +61,30 @@ form[nz-form].form-oneline, .form-items.form-oneline {
   }
 
   nz-select {
+    &.ant-select-open {
+      nz-select-top-control {
+        @include input-focused-styles();
+      }
+    }
+
     &.ant-select-multiple {
       nz-select-top-control {
         nz-select-item {
           @include input-value();
-          background: white;
-          border-radius: 50rem;
-          border-color: rgba(0,0,0,0.125);
         }
+      }
+    }
+  }
+
+  nz-upload {
+    .ant-upload-list-item {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    &.button {
+      .ant-upload {
+        width: 100%;
       }
     }
   }

@@ -1,0 +1,72 @@
+<ng-template #contentTpl>
+  <ng-content />
+</ng-template>
+
+<!-- -------------------- -->
+
+@switch (layout) {
+  @case ('modal') {
+    <span (click)="modal.open()">
+      <ng-container *ngTemplateOutlet="contentTpl" />
+    </span>
+
+    <nz-modal
+      (nzOnCancel)="modal.close()"
+      [nzVisible]="modal.isVisible()"
+      [nzContent]="modalContentTpl"
+      [nzFooter]="null"
+      [nzCentered]="false"
+      [nzWidth]="modal.width"
+    >
+      <ng-template #modalContentTpl>
+        <h4 class="mb-2 mt-4">Roles y permisos</h4>
+        <nz-divider class="my-2 mb-4" />
+
+        @if (authS.systemUser().activeSession()?.can(['RoleCreate'])) {
+          <app-form class="d-block mb-4" [form]="formCreate" [formGroup]="formCreate.group">
+            <div class="row gx-2 align-items-center">
+              <nz-form-item class="col mb-0">
+                <nz-form-control>
+                  <input nz-input formControlName="name">
+                </nz-form-control>
+              </nz-form-item>
+
+              <nz-form-item class="col mb-0">
+                <nz-form-control>
+                  <nz-select formControlName="guard_name">
+                    <nz-option nzValue="api_system-user" nzLabel="SystemUser" />
+                    <!-- <nz-option nzValue="api_external-user" nzLabel="ExternalUser" /> -->
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+
+              <div class="col-auto">
+                <app-form-footer submitText="Crear" />
+              </div>
+            </div>
+          </app-form>
+        }
+
+        <app-list [list]="list" [columns]="[
+          { width: 'auto', name: 'Nombre', rowTpl: rowNameTpl },
+          { width: '120px', name: '', align: 'center', right: '0', rowTpl: rowActionsTpl },
+        ]">
+          <ng-template #rowNameTpl let-item>
+            {{ item.name }}<br>
+
+            <span class="small text-black-50">
+              @switch (item.guard_name) {
+                @case ('api_system-user') { SystemUser }
+                @case ('api_external-user') { ExternalUser }
+              }
+            </span>
+          </ng-template>
+
+          <ng-template #rowActionsTpl let-item>
+            <app-role-action-group layout="icon" [role]="item" [request]="list.actionRequest" (onSuccess$)="list.refresh()" />
+          </ng-template>
+        </app-list>
+      </ng-template>
+    </nz-modal>
+  }
+}

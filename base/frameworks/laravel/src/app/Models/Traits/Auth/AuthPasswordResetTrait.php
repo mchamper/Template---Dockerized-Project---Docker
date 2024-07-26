@@ -44,7 +44,7 @@ trait AuthPasswordResetTrait
             'email' => 'bail|required|email',
         ])->validate();
 
-        if (!$user = static::where('email', $validated['email'])->first()) {
+        if (!$user = static::whereNull('social_driver_id')->where('email', $validated['email'])->first()) {
             ErrorEnum::NotUserFoundWithEmail->throw();
         }
 

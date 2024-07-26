@@ -4,10 +4,10 @@
 // 2. Include any default variable overrides here
 $body-bg: #F5F5F5;
 // $body-color: #0F0054;
-// $primary: #972640;
-// $secondary: #FA6E95;
+$primary: #7b419f;
+$secondary: #292628;
 
-$font-family-base: "Roboto", sans-serif;
+// $font-family-base: "Roboto", sans-serif;
 $font-size-base: 1rem;
 $line-height-base: 1.25;
 
@@ -44,7 +44,7 @@ $grid-breakpoints: (
   lg: 992px,
   xl: 1200px,
   xxl: 1400px,
-  xxxl: 1600px,
+  // xxxl: 1600px,
 );
 
 $container-max-widths: (
@@ -53,7 +53,7 @@ $container-max-widths: (
   lg: 960px,
   xl: 1140px,
   xxl: 1320px,
-  xxxl: 1520px,
+  // xxxl: 1520px,
 );
 
 // 5. Include remainder of required parts

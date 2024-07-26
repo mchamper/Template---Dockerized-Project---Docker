@@ -10,6 +10,7 @@ use App\Models\Traits\Auth\AuthVerificationTrait;
 use App\Models\Traits\Auth\AuthStatusTrait;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -21,6 +22,7 @@ class ExternalUser extends Authenticatable implements HasMedia
     use HasFactory;
     use Notifiable;
     use HasApiTokens;
+    use SoftDeletes;
     use AuthStatusTrait;
     use AuthVerificationTrait;
     use AuthTokenTrait;

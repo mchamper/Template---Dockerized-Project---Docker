@@ -12,7 +12,7 @@ import { SystemUser } from '../../../models/system-user.model';
 import { Request } from '../../../core/features/request/request.class';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
-import { AuthSystemUserHttpService } from '../../../services/http/auth-system-user-http.service';
+import { AuthUserHttpService } from '../../../services/http/auth-user-http.service';
 
 @Component({
   selector: 'app-system-user-action-group',
@@ -42,7 +42,7 @@ export class SystemUserActionGroupComponent extends AbstractActionGroupComponent
 
   private _router = inject(Router);
   authS = inject(AuthService);
-  authSystemUserHttpS = inject(AuthSystemUserHttpService);
+  authUserHttpS = inject(AuthUserHttpService);
   systemUserHttpS = inject(SystemUserHttpService);
 
   @Input() systemUser?: SystemUser;
@@ -75,13 +75,13 @@ export class SystemUserActionGroupComponent extends AbstractActionGroupComponent
       {
         name: 'activate',
         can: () => !this.systemUser!.isActive()
-          && (this.authS.systemUser().activeSession()?.hasRole(['Root']) || this.systemUser!.data.rolesAndPermissions.roles.includes('Admin'))
+          // && (this.authS.systemUser().activeSession()?.hasRole(['Root']) || this.systemUser!.data.rolesAndPermissions.roles.includes('Admin'))
           && !!this.authS.systemUser().activeSession()?.can(['SystemUserActivate']),
       },
       {
         name: 'deactivate',
         can: () => this.systemUser!.isActive()
-          && (this.authS.systemUser().activeSession()?.hasRole(['Root']) || this.systemUser!.data.rolesAndPermissions.roles.includes('Admin'))
+          // && (this.authS.systemUser().activeSession()?.hasRole(['Root']) || this.systemUser!.data.rolesAndPermissions.roles.includes('Admin'))
           && !!this.authS.systemUser().activeSession()?.can(['SystemUserDeactivate']),
       },
     ];
@@ -90,7 +90,7 @@ export class SystemUserActionGroupComponent extends AbstractActionGroupComponent
   ngOnInit() {
     this.loginAsRequest = new Request({
       bind: this.request,
-      send: () => this.authSystemUserHttpS.loginAs({ system_user_id: this.systemUser!.data.id }),
+      send: () => this.authUserHttpS.loginAs('systemUser', { user_id: this.systemUser!.data.id }),
       success: () => this._router.navigateByUrl('/bienvenido'),
       injector: this._injector,
     });
