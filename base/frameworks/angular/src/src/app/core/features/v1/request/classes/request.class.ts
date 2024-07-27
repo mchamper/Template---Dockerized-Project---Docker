@@ -1,4 +1,4 @@
-import { computed, DestroyRef, EventEmitter, inject, Injector, ProviderToken, signal } from "@angular/core";
+import { computed, EventEmitter, signal } from "@angular/core";
 import { NzMessageService } from "ng-zorro-antd/message";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { firstValueFrom, Observable, of, takeUntil, tap } from "rxjs";
@@ -11,7 +11,47 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { coreConfig } from "../../../../../configs/core.config";
 import { AbstractFeature } from "../../../abstract-feature.class";
 
-export class Request<GBody = any, GParams = any> extends AbstractFeature {
+export const createRequest = <
+  GBody = unknown
+>() => <
+  GParams = { [key: string]: unknown },
+>(
+  config: Request<GBody, GParams>['_config'],
+  options?: Request['_options'],
+) => new Request<GBody, GParams>(config, options);
+
+export const createDefaultRequest = <
+  GBody = unknown
+>() => <
+  GParams = { [key: string]: unknown },
+>(
+  config?: Omit<Request<GBody, GParams>['_config'], 'send'>,
+  options?: Request['_options'],
+) => new Request<GBody, GParams>({ ...config, send: () => of()}, options);
+
+/* -------------------- */
+
+export class Request<
+  GBody = unknown,
+  GParams = { [key: string]: unknown },
+> extends AbstractFeature {
+
+  protected _config: {
+    send: (...args: any) => Observable<THttpResponse<GBody>>,
+    when?: () => boolean,
+    before?: () => void,
+    after?: () => void,
+    success?: (res: THttpResponse) => void,
+    error?: (err: THttpErrorResponse) => void,
+    watch?: string,
+    bind?: Request,
+    cancelable?: boolean,
+    notify?: boolean,
+    notifySuccess?: boolean | [title: string, message: string],
+    notifyError?: boolean | [title: string, message: string],
+    type?: RequestComponent['type'],
+    params?: GParams,
+  };
 
   private _nzNotificationS = this._inject(NzNotificationService);
   private _nzMessageS = this._inject(NzMessageService);
@@ -35,31 +75,16 @@ export class Request<GBody = any, GParams = any> extends AbstractFeature {
   hasError = computed(() => !!this.error());
 
   constructor(
-    private _config: {
-      send: (...params: any) => Observable<THttpResponse<GBody>>,
-      when?: () => boolean,
-      before?: () => void,
-      after?: () => void,
-      success?: (res: THttpResponse) => void,
-      error?: (err: THttpErrorResponse) => void,
-      watch?: string,
-      bind?: Request,
-      cancelable?: boolean,
-      notify?: boolean,
-      notifySuccess?: boolean | [title: string, message: string],
-      notifyError?: boolean | [title: string, message: string],
-      type?: RequestComponent['type'],
-      params?: GParams,
-    },
+    config: Request<GBody, GParams>['_config'],
     options?: AbstractFeature['_options'],
   ) {
     super(options);
 
     this._config = {
-      ...this._config,
-      notify: get(this._config, 'notify', false),
-      notifySuccess: get(this._config, 'notifySuccess', false),
-      notifyError: get(this._config, 'notifyError', true),
+      ...config,
+      notify: get(config, 'notify', false),
+      notifySuccess: get(config, 'notifySuccess', false),
+      notifyError: get(config, 'notifyError', true),
     };
   }
 
@@ -83,6 +108,8 @@ export class Request<GBody = any, GParams = any> extends AbstractFeature {
     if (mustReset) {
       this.reset();
     }
+
+    logger('Request cancelled.');
   };
 
   reset = () => {
@@ -93,6 +120,8 @@ export class Request<GBody = any, GParams = any> extends AbstractFeature {
     if (this._config.bind) {
       this._config.bind.reset();
     }
+
+    logger('Request reset.');
   };
 
   start = () => {
@@ -103,6 +132,8 @@ export class Request<GBody = any, GParams = any> extends AbstractFeature {
     if (this._config.bind) {
       this._config.bind.start();
     }
+
+    logger('Request started.');
   };
 
   complete = (value?: GBody) => {
@@ -115,6 +146,8 @@ export class Request<GBody = any, GParams = any> extends AbstractFeature {
     if (this._config.bind) {
       this._config.bind.complete();
     }
+
+    logger('Request completed.');
   };
 
   /* -------------------- */
@@ -135,14 +168,14 @@ export class Request<GBody = any, GParams = any> extends AbstractFeature {
 
   /* -------------------- */
 
-  send = (...params: any): Observable<THttpResponse> => {
+  send = (...args: any): Observable<THttpResponse> => {
     if (!this._config.cancelable && this.isLoading()) {
-      logger(`Request is not cancelable and it's loading.`);
+      logger(`Attempt to send prevented: request is not cancelable and it's loading.`);
       return of();
     }
 
     if (this._config.when && !this._config.when()) {
-      logger(`Request "when" option result is false.`);
+      logger(`Attempt to send prevented: request "when" option result is false.`);
       return of();
     }
 
@@ -152,12 +185,14 @@ export class Request<GBody = any, GParams = any> extends AbstractFeature {
 
     this.start();
 
-    return this._config.send(...params)
+    return this._config.send(...args)
       .pipe(
         takeUntilDestroyed(),
         takeUntil(this._cancel$),
         tap({
           next: (httpRes: THttpResponse) => {
+            logger(`Request succeed.`);
+
             this.res.set(httpRes);
 
             this.notify('success');
@@ -166,9 +201,15 @@ export class Request<GBody = any, GParams = any> extends AbstractFeature {
               this._config.success(httpRes);
             }
 
+            if (this._config.after) {
+              this._config.after();
+            }
+
             this.complete();
           },
           error: (httpError: THttpErrorResponse) => {
+            logger(`Request failed.`);
+
             this.error.set(httpError);
 
             this.notify('error');
@@ -177,23 +218,22 @@ export class Request<GBody = any, GParams = any> extends AbstractFeature {
               this._config.error(httpError);
             }
 
-            this.complete();
-          },
-          finalize: () => {
             if (this._config.after) {
               this._config.after();
             }
-          }
+
+            this.complete();
+          },
         }),
       );
   };
 
-  run = (...params: any) => {
-    return this.send(...params).subscribe();
+  run = (...args: any) => {
+    return this.send(...args).subscribe();
   }
 
-  promise = (...params: any) => {
-    return firstValueFrom(this.send(...params));
+  promise = (...args: any) => {
+    return firstValueFrom(this.send(...args));
   }
 
   /* -------------------- */
@@ -245,18 +285,3 @@ export class Request<GBody = any, GParams = any> extends AbstractFeature {
   }
 }
 
-/* -------------------- */
-/* -------------------- */
-/* -------------------- */
-
-export const createRequest = <GBody = any, GParams = any>(
-  config: Request['_config'],
-) => {
-  return new Request<GBody, GParams>(config);
-};
-
-export const createDefaultRequest = <GBody = any, GParams = any>(
-  config?: Omit<Request['_config'], 'send'> & { send?: Request['_config'] },
-) => {
-  return new Request<GBody, GParams>({ ...config, send: () => of()});
-};

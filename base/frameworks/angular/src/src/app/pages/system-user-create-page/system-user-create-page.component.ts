@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormModule } from '../../core/features/form/form.module';
 import { Form } from '../../core/features/form/form.class';
+import { createDefaultForm, createForm, Form as FormV1 } from '../../core/features/v1/form/classes/form.class';
 import { AuthService } from '../../services/auth.service';
 import { SystemUserHttpService } from '../../services/http/system-user-http.service';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
@@ -11,6 +12,10 @@ import { Router } from '@angular/router';
 import { PageTitleComponent } from '../../components/layouts/page-title/page-title.component';
 import { escape } from 'lodash';
 import { BoxSectionTitleComponent } from '../../components/layouts/box-section-title/box-section-title.component';
+import { createDefaultRequest, createRequest, Request } from '../../core/features/v1/request/classes/request.class';
+import { logger } from '../../core/utils/helpers/logger.helper';
+import { poll } from 'ngxtension/poll';
+import { SystemUser } from '../../models/system-user.model';
 
 @Component({
   selector: 'app-system-user-create-page',
@@ -91,7 +96,7 @@ export class SystemUserCreatePageComponent {
         this._router.navigate(['/usuarios']);
       }
     },
-  });;
+  });
 
   constructor() {
     //

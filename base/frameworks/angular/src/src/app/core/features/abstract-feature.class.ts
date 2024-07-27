@@ -1,6 +1,8 @@
 import { DestroyRef, inject, Injector, ProviderToken } from "@angular/core";
 
-export class AbstractFeature {
+export abstract class AbstractFeature {
+
+  protected abstract _config: unknown;
 
   constructor(
     protected _options?: {
