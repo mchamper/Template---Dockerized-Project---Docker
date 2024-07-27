@@ -48,11 +48,11 @@ export const appConfig: ApplicationConfig = {
       }),
       withComponentInputBinding()
     ),
-    provideClientHydration(
-      withHttpTransferCacheOptions({
-        includePostRequests: false,
-      })
-    ),
+    // provideClientHydration(
+    //   withHttpTransferCacheOptions({
+    //     includePostRequests: false,
+    //   })
+    // ),
     provideAnimations(),
     provideHttpClient(
       withFetch(),

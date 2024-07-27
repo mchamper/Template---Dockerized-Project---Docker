@@ -166,6 +166,8 @@ export class Request<Body = any, Params = any> {
           if (this._options.success) {
             this._options.success(httpRes);
           }
+
+          this.complete();
         },
         error: (httpError: THttpErrorResponse) => {
           this.error.set(httpError);
@@ -175,10 +177,10 @@ export class Request<Body = any, Params = any> {
           if (this._options.error) {
             this._options.error(httpError);
           }
+
+          this.complete();
         },
         finalize: () => {
-          this.complete();
-
           if (this._options.after) {
             this._options.after();
           }
