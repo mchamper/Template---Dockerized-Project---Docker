@@ -39,7 +39,7 @@ export class Request<
 
   constructor(
     protected _config: {
-      send: (...args: any) => Observable<THttpResponse<GBody>>,
+      send: (...args: any[]) => Observable<THttpResponse<GBody>>,
       when?: () => boolean,
       before?: () => void,
       after?: () => void,
@@ -146,7 +146,7 @@ export class Request<
 
   /* -------------------- */
 
-  send = (...args: any): Observable<THttpResponse> => {
+  send = (...args: any[]): Observable<THttpResponse> => {
     if (!this._config.cancelable && this.isLoading()) {
       logger(`Attempt to send prevented: request is not cancelable and it's loading.`);
       return of();
@@ -206,11 +206,11 @@ export class Request<
       );
   };
 
-  run = (...args: any) => {
+  run = (...args: any[]) => {
     return this.send(...args).subscribe();
   }
 
-  promise = (...args: any) => {
+  promise = (...args: any[]) => {
     return firstValueFrom(this.send(...args));
   }
 

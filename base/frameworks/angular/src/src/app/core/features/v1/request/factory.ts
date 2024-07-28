@@ -1,5 +1,5 @@
 import { of } from "rxjs";
-import { Request } from "./request.class";
+import { Request } from "./classes/request.class";
 
 export const createRequest = <
   GBody = unknown,

@@ -1,6 +1,6 @@
-import { Request } from "../../request/classes/request.class";
-import { _Form, Form } from "./form.class";
 import { FormControl, FormGroup } from "@angular/forms";
+import { Request } from "../request/classes/request.class";
+import { _Form, Form } from "./classes/form.class";
 
 export const createForm = <
   GFormGroup extends FormGroup = FormGroup,
