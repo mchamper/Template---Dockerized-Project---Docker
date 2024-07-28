@@ -4,7 +4,7 @@
 
 <div class="container">
   <div class="box">
-    <app-form [form]="form" [formGroup]="form.group">
+    <app-form [form]="form" [formGroup]="exampleForm.group">
       <app-box-section-title [title]="'Información del usuario'" icon="info-circle" isFirst />
 
       <div class="ps-4">
@@ -72,6 +72,9 @@
           </div>
         }
       </div>
+
+      <pre>Group value: {{ exampleForm.group.value | json }}</pre>
+      <pre>State value: {{ exampleForm.state.live() | json }}</pre>
 
       <app-form-footer submitText="Crear" submitPlacement="right" withInfo sticky />
     </app-form>

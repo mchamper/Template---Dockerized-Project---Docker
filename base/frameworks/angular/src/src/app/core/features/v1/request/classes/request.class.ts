@@ -12,8 +12,8 @@ import { coreConfig } from "../../../../../configs/core.config";
 import { AbstractFeature } from "../../../abstract-feature.class";
 
 export class Request<
-  GBody = unknown,
-  GParams = { [key: string]: unknown },
+  GBody = any,
+  GParams = { [key: string]: any },
 > extends AbstractFeature {
 
   private _nzNotificationS = this._inject(NzNotificationService);

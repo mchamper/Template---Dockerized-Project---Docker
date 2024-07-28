@@ -1,17 +1,19 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormModule } from '../../core/features/form/form.module';
 import { Form } from '../../core/features/form/form.class';
 import { AuthService } from '../../services/auth.service';
 import { SystemUserHttpService } from '../../services/http/system-user-http.service';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { systemUserCreateFormMock } from '../../mocks/system-user-create-form.mock';
 import { Router } from '@angular/router';
 import { PageTitleComponent } from '../../components/layouts/page-title/page-title.component';
 import { escape } from 'lodash';
 import { BoxSectionTitleComponent } from '../../components/layouts/box-section-title/box-section-title.component';
-import { createDefaultForm } from '../../core/features/v1/form/factory';
+import { createDefaultForm, createForm } from '../../core/features/v1/form/factory';
+import { createDefaultRequest } from '../../core/features/v1/request/factory';
+import { SystemUser } from '../../models/system-user.model';
 
 @Component({
   selector: 'app-system-user-create-page',
@@ -38,7 +40,7 @@ export class SystemUserCreatePageComponent {
     first_name: this._fb.control('', { validators: [Validators.required] }),
     last_name: this._fb.control('', { validators: [Validators.required] }),
     email: this._fb.control('', { validators: [Validators.required, Validators.email] }),
-    password_input_type: this._fb.control<'random' | 'manual'>('random', { validators: [Validators.required] }),
+    password_input_type: this._fb.nonNullable.control<'random' | 'manual'>('random', { validators: [Validators.required] }),
     password: this._fb.control('', { validators: [Validators.required] }),
     password_confirmation: this._fb.control('', { validators: [Validators.required] }),
     require_email_verification: this._fb.control(false, { validators: [Validators.required] }),
@@ -94,9 +96,29 @@ export class SystemUserCreatePageComponent {
     },
   });
 
-  exampleForm = createDefaultForm();
+  exampleRequest = createDefaultRequest<SystemUser>();
+
+  exampleForm = createForm({
+    group: this._fb.group({
+      first_name: this._fb.control('', { validators: [Validators.required] }),
+      last_name: this._fb.control('', { validators: [Validators.required] }),
+      email: this._fb.control('', { validators: [Validators.required, Validators.email] }),
+      password_input_type: this._fb.nonNullable.control<'random' | 'manual'>('random', { validators: [Validators.required] }),
+      password: this._fb.control('', { validators: [Validators.required] }),
+      password_confirmation: this._fb.control('', { validators: [Validators.required] }),
+      require_email_verification: this._fb.nonNullable.control(false, { validators: [Validators.required] }),
+    }),
+    request: createDefaultRequest<SystemUser>(),
+  });
+
+  exampleForm2 = createDefaultForm({
+    request: createDefaultRequest<SystemUser>(),
+  })
 
   constructor() {
-    // this.exampleForm.dataRequest?.body
+    this.exampleRequest.body()
+
+    this.exampleForm.group.value
+    this.exampleForm.request?.body()
   }
 }

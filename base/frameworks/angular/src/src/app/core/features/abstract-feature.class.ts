@@ -10,7 +10,7 @@ export abstract class AbstractFeature {
     }
   ) { }
 
-  get destroyRef() {
+  protected get _destroyRef() {
     return this._inject(DestroyRef);
   }
 
