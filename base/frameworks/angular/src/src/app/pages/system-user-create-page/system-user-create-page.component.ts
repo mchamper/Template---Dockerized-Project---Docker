@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { PageTitleComponent } from '../../components/layouts/page-title/page-title.component';
 import { escape } from 'lodash';
 import { BoxSectionTitleComponent } from '../../components/layouts/box-section-title/box-section-title.component';
+import { createDefaultForm } from '../../core/features/v1/form/classes/factory';
 
 @Component({
   selector: 'app-system-user-create-page',
@@ -93,7 +94,9 @@ export class SystemUserCreatePageComponent {
     },
   });
 
+  exampleForm = createDefaultForm();
+
   constructor() {
-    //
+    // this.exampleForm.dataRequest?.body
   }
 }
