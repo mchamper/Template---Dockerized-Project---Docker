@@ -11,47 +11,10 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { coreConfig } from "../../../../../configs/core.config";
 import { AbstractFeature } from "../../../abstract-feature.class";
 
-export const createRequest = <
-  GBody = unknown
->() => <
-  GParams = { [key: string]: unknown },
->(
-  config: Request<GBody, GParams>['_config'],
-  options?: Request['_options'],
-) => new Request<GBody, GParams>(config, options);
-
-export const createDefaultRequest = <
-  GBody = unknown
->() => <
-  GParams = { [key: string]: unknown },
->(
-  config?: Omit<Request<GBody, GParams>['_config'], 'send'>,
-  options?: Request['_options'],
-) => new Request<GBody, GParams>({ ...config, send: () => of()}, options);
-
-/* -------------------- */
-
 export class Request<
   GBody = unknown,
   GParams = { [key: string]: unknown },
 > extends AbstractFeature {
-
-  protected _config: {
-    send: (...args: any) => Observable<THttpResponse<GBody>>,
-    when?: () => boolean,
-    before?: () => void,
-    after?: () => void,
-    success?: (res: THttpResponse) => void,
-    error?: (err: THttpErrorResponse) => void,
-    watch?: string,
-    bind?: Request,
-    cancelable?: boolean,
-    notify?: boolean,
-    notifySuccess?: boolean | [title: string, message: string],
-    notifyError?: boolean | [title: string, message: string],
-    type?: RequestComponent['type'],
-    params?: GParams,
-  };
 
   private _nzNotificationS = this._inject(NzNotificationService);
   private _nzMessageS = this._inject(NzMessageService);
@@ -75,16 +38,31 @@ export class Request<
   hasError = computed(() => !!this.error());
 
   constructor(
-    config: Request<GBody, GParams>['_config'],
+    protected _config: {
+      send: (...args: any) => Observable<THttpResponse<GBody>>,
+      when?: () => boolean,
+      before?: () => void,
+      after?: () => void,
+      success?: (res: THttpResponse) => void,
+      error?: (err: THttpErrorResponse) => void,
+      watch?: string,
+      bind?: Request,
+      cancelable?: boolean,
+      notify?: boolean,
+      notifySuccess?: boolean | [title: string, message: string],
+      notifyError?: boolean | [title: string, message: string],
+      type?: RequestComponent['type'],
+      params?: GParams,
+    },
     options?: AbstractFeature['_options'],
   ) {
     super(options);
 
     this._config = {
-      ...config,
-      notify: get(config, 'notify', false),
-      notifySuccess: get(config, 'notifySuccess', false),
-      notifyError: get(config, 'notifyError', true),
+      ...this._config,
+      notify: get(this._config, 'notify', false),
+      notifySuccess: get(this._config, 'notifySuccess', false),
+      notifyError: get(this._config, 'notifyError', true),
     };
   }
 
