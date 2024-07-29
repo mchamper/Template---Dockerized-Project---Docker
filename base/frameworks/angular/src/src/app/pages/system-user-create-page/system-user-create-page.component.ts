@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, Injector } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormModule } from '../../core/features/form/form.module';
 import { Form } from '../../core/features/form/form.class';
@@ -14,6 +14,7 @@ import { BoxSectionTitleComponent } from '../../components/layouts/box-section-t
 import { createDefaultForm, createForm } from '../../core/features/v1/form/factory';
 import { createDefaultRequest } from '../../core/features/v1/request/factory';
 import { SystemUser } from '../../models/system-user.model';
+import { Form as FormV1 } from '../../core/features/v1/form/classes/form.class';
 
 @Component({
   selector: 'app-system-user-create-page',
@@ -96,29 +97,21 @@ export class SystemUserCreatePageComponent {
     },
   });
 
-  exampleRequest = createDefaultRequest<SystemUser>();
-
-  exampleForm = createForm({
+  exampleForm = new FormV1({
     group: this._fb.group({
       first_name: this._fb.control('', { validators: [Validators.required] }),
       last_name: this._fb.control('', { validators: [Validators.required] }),
       email: this._fb.control('', { validators: [Validators.required, Validators.email] }),
       password_input_type: this._fb.nonNullable.control<'random' | 'manual'>('random', { validators: [Validators.required] }),
-      password: this._fb.control('', { validators: [Validators.required] }),
-      password_confirmation: this._fb.control('', { validators: [Validators.required] }),
+      password: this._fb.control(''),
+      password_confirmation: this._fb.control(''),
       require_email_verification: this._fb.nonNullable.control(false, { validators: [Validators.required] }),
     }),
+    save: true,
     request: createDefaultRequest<SystemUser>(),
   });
 
-  exampleForm2 = createDefaultForm({
-    request: createDefaultRequest<SystemUser>(),
-  })
-
   constructor() {
-    this.exampleRequest.body()
-
-    this.exampleForm.group.value
-    this.exampleForm.request?.body()
+    //
   }
 }

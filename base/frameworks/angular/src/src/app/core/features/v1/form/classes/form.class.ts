@@ -4,9 +4,13 @@ import { StorageService } from "../../../../../services/storage.service";
 import { CombosHttpService } from "../../../../../services/http/general/combos-http.service";
 import { FormGroup } from "@angular/forms";
 import { Request } from "../../request/classes/request.class";
-import { signal, Signal } from "@angular/core";
+import { effect, signal, Signal } from "@angular/core";
 import { signalSlice } from "ngxtension/signal-slice";
 import { createDefaultRequest } from "../../request/factory";
+import { md5 } from "../../../../utils/helpers/hash.helper";
+import { toObservable } from "@angular/core/rxjs-interop";
+import { debounceTime } from "rxjs";
+import { distinctUntilDeeplyChanged } from "../../../../rxjs/distincs-until-deeply-changed";
 
 
 export class Form<
@@ -14,13 +18,19 @@ export class Form<
   GRequest extends Request = Request,
   GDataRequest extends Request = Request,
   GParams = { [key: string]: unknown },
-> extends AbstractFeature {
+> extends AbstractFeature<
+  {
+    request?: GRequest,
+    dataRequest?: GDataRequest,
+  }
+> {
 
   private _ssrS = this._inject(SsrService);
   private _storageS = this._inject(StorageService);
   private _combosHttpS = this._inject(CombosHttpService);
 
-  state: {
+  state!: {
+    status: Signal<GFormGroup['status']>,
     live: Signal<GFormGroup['value']>,
     init: Signal<GFormGroup['value']>,
     current: Signal<GFormGroup['value']>,
@@ -34,6 +44,9 @@ export class Form<
       group: GFormGroup,
       request?: GRequest,
       dataRequest?: GDataRequest,
+      save?: boolean;
+      reset?: boolean;
+      persist?: boolean;
       params?: GParams,
     },
     options?: AbstractFeature['_options'],
@@ -46,14 +59,8 @@ export class Form<
 
     /* -------------------- */
 
-    this.state = {
-      live: signalSlice({
-        initialState: this.group.value,
-        sources: [this.group.valueChanges]
-      }),
-      init: signal(this.group.value),
-      current: signal(this.group.value),
-    }
+    this._createState();
+    this._createRequests();
   }
 
   get group() {
@@ -70,5 +77,43 @@ export class Form<
 
   get dataRequest() {
     return this._config.dataRequest;
+  }
+
+  /* -------------------- */
+
+  private async _createState() {
+    this.state = {
+      status: signalSlice({
+        initialState: this.group.status,
+        sources: [this.group.statusChanges],
+      }),
+      live: signalSlice({
+        initialState: this.group.value,
+        sources: [this.group.valueChanges],
+      }),
+      init: signal(this.group.value),
+      current: signal(this.group.value),
+    }
+
+    if (this._config.save) {
+      const hash = md5(this.state.init());
+      const key = `form.state.${hash}`;
+
+      toObservable(this.state.live, { injector: this._injector })
+        .pipe(debounceTime(300), distinctUntilDeeplyChanged())
+        .subscribe((value) => {
+          this._storageS.set(key, value, { base64: true });
+        });
+
+      const value = await this._storageS.get(key, { base64: true });
+
+      if (value) {
+        this.group.setValue(value);
+      }
+    }
+  }
+
+  private _createRequests() {
+
   }
 }

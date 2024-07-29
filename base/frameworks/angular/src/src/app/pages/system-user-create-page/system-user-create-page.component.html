@@ -73,8 +73,12 @@
         }
       </div>
 
-      <pre>Group value: {{ exampleForm.group.value | json }}</pre>
-      <pre>State value: {{ exampleForm.state.live() | json }}</pre>
+      <div class="row">
+        <!-- <pre class="col">Group value: {{ exampleForm.group.value | json }}</pre> -->
+        <!-- <pre class="col">State live value: {{ exampleForm.state.live() | json }}</pre> -->
+        <!-- <pre class="col">State status value: {{ exampleForm.state.status() | json }}</pre> -->
+        <!-- <pre class="col">Group status value: {{ exampleForm.group.status | json }}</pre> -->
+      </div>
 
       <app-form-footer submitText="Crear" submitPlacement="right" withInfo sticky />
     </app-form>
