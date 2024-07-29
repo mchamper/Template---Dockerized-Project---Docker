@@ -8,7 +8,7 @@ import { effect, signal, Signal } from "@angular/core";
 import { signalSlice } from "ngxtension/signal-slice";
 import { createDefaultRequest } from "../../request/factory";
 import { md5 } from "../../../../utils/helpers/hash.helper";
-import { toObservable } from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
 import { debounceTime } from "rxjs";
 import { distinctUntilDeeplyChanged } from "../../../../rxjs/distincs-until-deeply-changed";
 
@@ -100,7 +100,11 @@ export class Form<
       const key = `form.state.${hash}`;
 
       toObservable(this.state.live, { injector: this._injector })
-        .pipe(debounceTime(300), distinctUntilDeeplyChanged())
+        .pipe(
+          takeUntilDestroyed(this._destroyRef),
+          debounceTime(300),
+          distinctUntilDeeplyChanged(),
+        )
         .subscribe((value) => {
           this._storageS.set(key, value, { base64: true });
         });
