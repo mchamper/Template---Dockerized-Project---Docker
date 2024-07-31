@@ -12,15 +12,15 @@ export class UiState extends AbstractState {
 
   /* -------------------- */
 
-  fullscreen = this._store(toggleDataFactory(false), 'ui.fullscreen', {
-    get: (schema) => schema.value(),
-    set: (schema, value) => schema.value.set(value),
+  fullscreen = this._storageS.store(toggleDataFactory(false), 'ui.fullscreen', {
+    get: (entity) => entity.value(),
+    set: (entity, value) => entity.value.set(value),
   })
 
   sidebar = {
-    isVisible: this._store(toggleDataFactory(true), 'ui.sidebar.isVisible', {
-      get: (schema) => schema.value(),
-      set: (schema, value) => schema.value.set(value),
+    isVisible: this._storageS.store(toggleDataFactory(true), 'ui.sidebar.isVisible', {
+      get: (entity) => entity.value(),
+      set: (entity, value) => entity.value.set(value),
     })
   };
 

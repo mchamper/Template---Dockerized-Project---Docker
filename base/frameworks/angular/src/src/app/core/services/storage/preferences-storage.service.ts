@@ -2,21 +2,22 @@
 // import { defaultTo } from 'lodash';
 // import { base64Decode, base64Encode } from '../../utils/helpers/hash.helper';
 // import { Preferences } from '@capacitor/preferences';
-// import { AbstractStorageService, TStoreOptions } from './abstract-storage.service';
+// import { AbstractStorageService } from './abstract-storage.service';
+// import { coreConfig } from '../../../configs/core.config';
 
 // @Injectable({
 //   providedIn: 'root'
 // })
 // export class PreferencesStorageService extends AbstractStorageService {
 
-//   override async get(key: string, options?: TStoreOptions): Promise<any> {
+//   override async get(key: string): Promise<any> {
 //     if (this._ssrS.isServer()) return;
 
 //     let value = (await Preferences.get({ key }))?.value;
 
 //     if (value) {
 //       try {
-//         value = options?.base64
+//         value = coreConfig.storage.base64
 //           ? base64Decode(value)
 //           : JSON.parse(value);
 //       } catch (err) {
@@ -27,10 +28,10 @@
 //     return Promise.resolve(defaultTo(value, null));
 //   }
 
-//   override async set(key: string, value: any, options?: TStoreOptions): Promise<void> {
+//   override async set(key: string, value: any): Promise<void> {
 //     if (this._ssrS.isServer()) return;
 
-//     value = options?.base64
+//     value = coreConfig.storage.base64
 //       ? base64Encode(value)
 //       : JSON.stringify(value);
 
