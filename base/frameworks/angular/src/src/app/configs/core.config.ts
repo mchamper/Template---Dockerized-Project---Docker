@@ -10,4 +10,7 @@ export const coreConfig: TCoreConfig = {
     floatingLabel: false,
     type: 'default',
   },
+  storage: {
+    base64: true,
+  },
 };

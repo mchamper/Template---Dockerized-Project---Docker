@@ -10,4 +10,7 @@ export type TCoreConfig = {
     floatingLabel: boolean,
     type: FormComponent['type'],
   },
+  storage: {
+    base64: boolean,
+  },
 };

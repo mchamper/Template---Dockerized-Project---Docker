@@ -2,7 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { LocalStorageService } from 'ngx-webstorage';
 import { defaultTo } from 'lodash';
 import { base64Decode, base64Encode } from '../../utils/helpers/hash.helper';
-import { AbstractStorageService, TStoreOptions } from './abstract-storage.service';
+import { AbstractStorageService } from './abstract-storage.service';
+import { coreConfig } from '../../../configs/core.config';
 
 @Injectable({
   providedIn: 'root'
@@ -13,14 +14,14 @@ export class WebStorageService extends AbstractStorageService {
 
   /* -------------------- */
 
-  override async get(key: string, options?: TStoreOptions): Promise<any> {
+  override async get(key: string): Promise<any> {
     if (this._ssrS.isServer()) return;
 
     let value = this._localStorage.retrieve(key);
 
     if (value) {
       try {
-        value = options?.base64
+        value = coreConfig.storage.base64
           ? base64Decode(value)
           : JSON.parse(value);
       } catch (err) {
@@ -31,10 +32,10 @@ export class WebStorageService extends AbstractStorageService {
     return Promise.resolve(defaultTo(value, null));
   }
 
-  override async set(key: string, value: any, options?: TStoreOptions): Promise<void> {
+  override async set(key: string, value: any): Promise<void> {
     if (this._ssrS.isServer()) return;
 
-    value = options?.base64
+    value = coreConfig.storage.base64
       ? base64Encode(value)
       : JSON.stringify(value);
 
