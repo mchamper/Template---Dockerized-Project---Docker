@@ -20,14 +20,14 @@ export class AuthUserVerificationHttpService {
   request = (userType: TAuthGuardName) => {
     return this._httpClient.post<THttpResponse>(`${environment.backendUrl}/api/auth/v1/${kebabCase(userType)}/verification/request`, null, {
       context: new HttpContext()
-        .set(GUARD, 'systemUser')
+        .set(GUARD, userType)
     });
   }
 
   verify = (userType: TAuthGuardName, hash: string) => {
     return this._httpClient.patch<THttpResponse>(`${environment.backendUrl}/api/auth/v1/${kebabCase(userType)}/verification/verify?hash=${hash}`, null, {
       context: new HttpContext()
-        .set(GUARD, 'systemUser')
+        .set(GUARD, userType)
         .set(ON_SUCCESS, res => this._authS.guard(userType).updateSession({ data: { isVerified: true } }))
     });
   }
