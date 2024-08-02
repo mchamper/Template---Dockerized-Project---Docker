@@ -8,6 +8,7 @@ import { UiState } from '../states/ui.state';
 import { DOCUMENT } from '@angular/common';
 import { LangService } from './lang.service';
 import { kebabCase } from 'lodash';
+import { CacheService } from '../core/services/cache.service';
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +31,7 @@ export class InitService {
       this._state = this._injector.get(State);
       this._uiState = this._injector.get(UiState);
 
+      await this._injector.get(CacheService).init();
       await this._injector.get(AuthService).init();
       await this._injector.get(LangService).init();
 
