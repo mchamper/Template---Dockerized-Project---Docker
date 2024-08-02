@@ -97,7 +97,7 @@ export class Form<
 
     if (this._config.save) {
       const hash = md5(this.state.init());
-      const key = `form.state.${hash}`;
+      const key = `form.${hash}.state`;
 
       toObservable(this.state.live, { injector: this._injector })
         .pipe(
@@ -106,10 +106,10 @@ export class Form<
           distinctUntilDeeplyChanged(),
         )
         .subscribe((value) => {
-          this._storageS.set(key, value, { base64: true });
+          this._storageS.set(key, value);
         });
 
-      const value = await this._storageS.get(key, { base64: true });
+      const value = await this._storageS.get(key);
 
       if (value) {
         this.group.setValue(value);
