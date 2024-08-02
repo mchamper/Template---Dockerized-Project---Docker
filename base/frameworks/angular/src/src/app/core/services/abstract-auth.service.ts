@@ -223,7 +223,7 @@ export abstract class AbstractAuthService {
 
           return session;
         }));
-      }, { injector: this._injector });
+      }, { injector: this._injector, allowSignalWrites: true });
     }
 
     return {
