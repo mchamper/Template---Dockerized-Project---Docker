@@ -83,22 +83,22 @@ abstract class BaseRepository
                 continue;
             }
 
-            $repo = $config[0];
-            $repoModel = $config[1];
-            $relation = $config[2];
+            $relationInput = $input[$key];
             $relatedModel = $model->$key()->first();
 
-            if (empty($input[$key])) {
+            $repo = $config[0];
+            $relatedModelRelation = $config[1];
+
+            if (empty($relationInput)) {
                 if ($relatedModel) {
-                    $input[$key][$relation] = null;
-                    $repo::save($input[$key], $relatedModel);
+                    $repo::save([$key => null], $relatedModel);
                 }
 
                 continue;
             }
 
-            $input[$key][$relation] = ['id' => $model->id];
-            $repo::save($input[$key], $repoModel::find($input[$key]['id'] ?? null));
+            $relationInput[$relatedModelRelation] = ['id' => $model->id];
+            $repo::save($relationInput, $relatedModel);
         }
     }
 
