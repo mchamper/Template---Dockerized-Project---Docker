@@ -5,11 +5,12 @@ import { CombosHttpService } from "../../../services/http/general/combos-http.se
 import { Request } from "../request/request.class";
 import { environment } from "../../../../environments/environment";
 import { debounceTime, distinctUntilChanged, skip, startWith } from "rxjs";
-import { cloneDeep, entries, isArray } from "lodash";
+import { cloneDeep, entries, get, isArray, set } from "lodash";
 import { logger } from "../../utils/helpers/logger.helper";
 import { StorageService } from "../../../services/storage.service";
 import { md5 } from "../../utils/helpers/hash.helper";
 import { SsrService } from "../../services/ssr.service";
+import { cast } from "../../utils/helpers/cast.helper";
 
 export class Form<GFormGroup extends FormGroup = any, Data = any> {
 
@@ -62,6 +63,9 @@ export class Form<GFormGroup extends FormGroup = any, Data = any> {
           onAdd?: (group: FormGroup, form: Form<GFormGroup, Data>, state: any) => any,
           onMove?: (eachControl: FormControl, newIndex: number) => any,
         },
+      },
+      casts?: {
+        [key: string]: (value: any) => any
       },
       request?: Request['_options'],
       dataRequest?: Request['_options'],
@@ -276,10 +280,11 @@ export class Form<GFormGroup extends FormGroup = any, Data = any> {
   persist(value: any = {}) {
     this.state.persist({
       ...this.group.getRawValue(),
-      ...value
+      ...(this._options.casts ? cast(value, this._options.casts) : value),
     });
 
-    this.restore();
+    // this.restore();
+    this.reset();
   }
 
   set(value: any = {}) {
@@ -287,7 +292,7 @@ export class Form<GFormGroup extends FormGroup = any, Data = any> {
 
     this.state.set({
       ...this.group.getRawValue(),
-      ...value
+      ...(this._options.casts ? cast(value, this._options.casts) : value),
     });
 
     this.restore();
@@ -569,7 +574,7 @@ export class Form<GFormGroup extends FormGroup = any, Data = any> {
     const formGroup = group || this.group;
 
     Object.keys(formGroup.controls).forEach((key: string) => {
-      const abstractControl = (formGroup as any).get(key)!;
+      const abstractControl = (formGroup.get as any)(key)!;
 
       if (abstractControl instanceof FormGroup || abstractControl instanceof FormArray) {
         this.validate(abstractControl);
