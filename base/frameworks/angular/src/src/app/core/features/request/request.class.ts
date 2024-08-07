@@ -4,7 +4,7 @@ import { THttpErrorResponse } from "../../types/http-error-response.type";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { NzMessageService } from "ng-zorro-antd/message";
 import { Observable, firstValueFrom, of, takeUntil, tap } from "rxjs";
-import { get, isArray, isNull, isUndefined, set } from "lodash";
+import { cloneDeep, get, isArray, isNull, isUndefined, merge, set } from "lodash";
 import { logger } from "../../utils/helpers/logger.helper";
 import { RequestComponent } from "./components/request/request.component";
 import { coreConfig } from "../../../configs/core.config";
@@ -128,6 +128,21 @@ export class Request<Body = any, Params = any> {
     if (runSuccess && this._options.success) {
       this._options.success(this.res()!);
     }
+  }
+
+  updateBody = (newBody: Partial<Body>) => {
+    this.res.update(value => {
+      if (!value) {
+        return value;
+      }
+
+      return {
+        ...value,
+        body: {
+          ...merge(cloneDeep(value?.body), newBody)
+        },
+      };
+    });
   }
 
   /* -------------------- */
