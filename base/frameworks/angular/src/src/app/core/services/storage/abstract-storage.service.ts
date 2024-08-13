@@ -26,7 +26,12 @@ export abstract class AbstractStorageService {
   /* -------------------- */
 
   async init() {
-    if (this._ssrS.isServer()) return;
+    if (this._ssrS.isServer()) {
+      this._data = signal({});
+      this.state.setReady();
+
+      return;
+    };
 
     await this._get(''); // Warm up
 
@@ -84,7 +89,8 @@ export abstract class AbstractStorageService {
   protected _encodeValue(value: any) {
     value = coreConfig.storage.base64
       ? base64EncodeTimes(value, typeof coreConfig.storage.base64 === 'number' ? coreConfig.storage.base64 : 1)
-      : JSON.stringify(value);
+      // : JSON.stringify(value);
+      : value;
 
     return value;
   }
@@ -94,7 +100,8 @@ export abstract class AbstractStorageService {
       try {
         value = coreConfig.storage.base64
           ? base64DecodeTimes(value, typeof coreConfig.storage.base64 === 'number' ? coreConfig.storage.base64 : 1)
-          : JSON.parse(value);
+          // : JSON.parse(value);
+          : value;
       } catch (err) {
         value = null;
       }
