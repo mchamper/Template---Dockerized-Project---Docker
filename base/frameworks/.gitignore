@@ -60,6 +60,8 @@ laravel/src/**
 !laravel/src/app/RolesAndPermissions/**
 !laravel/src/app/Services/
 !laravel/src/app/Services/**
+!laravel/src/app/ThirdParty/
+!laravel/src/app/ThirdParty/**
 !laravel/src/bootstrap/
 !laravel/src/bootstrap/app.php
 !laravel/src/config/
@@ -86,4 +88,5 @@ laravel/src/**
 !laravel/src/routes/api/
 !laravel/src/routes/api/**
 !laravel/src/routes/frontend.php
+!laravel/src/routes/media.php
 !laravel/src/.editorconfig

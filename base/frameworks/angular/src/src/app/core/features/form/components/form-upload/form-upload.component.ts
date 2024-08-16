@@ -97,7 +97,7 @@ export class FormUploadComponent implements OnInit {
       uid: value.uuid,
       name: value.fileName,
       status: 'done',
-      url: value.originalUrl,
+      url: value.privateUrl || value.originalUrl,
       thumbUrl: value.previewUrl,
       response: { ...value },
     }

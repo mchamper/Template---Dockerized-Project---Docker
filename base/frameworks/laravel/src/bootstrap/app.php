@@ -29,6 +29,9 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function () {
+            Route::prefix('')
+                ->group(base_path('routes/media.php'));
+
             Route::middleware('api')
                 ->prefix('api/auth/v1')
                 ->group(base_path('routes/api/auth.v1.php'));
