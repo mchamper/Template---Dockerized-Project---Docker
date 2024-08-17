@@ -5,8 +5,7 @@ export type TCoreConfig = {
   registerAllowed: boolean,
   requestNotifyService: 'message' | 'notification',
   storage: {
-    base64: boolean,
-    keys: 'single' | 'multiple',
+    base64: boolean | number,
   },
   http: {
     delay: number,

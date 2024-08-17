@@ -2,6 +2,7 @@
 
 namespace App\Core\Bases;
 
+use App\Core\Response\ErrorException;
 use App\Models\Media;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
@@ -189,18 +190,13 @@ abstract class BaseRepository
         $keys = (array) $keys;
 
         foreach ($keys as $key) {
-            // if (is_numeric($key)) {
-            //     $key = $isMulti;
-            //     $isMulti = false;
-            // }
-
-            $isMultiple = $model->medias[$key] === 'multiple';
-
             if (!array_key_exists($key, $input)) {
                 continue;
             }
 
             $collectionName = $key;
+            $mediaConfig = $model->getMediasConfig()[$collectionName];
+            $isMultiple = $mediaConfig['type'] === 'multiple';
 
             if ($isMultiple) {
                 $ids = $model->getMedia($collectionName)->pluck('id')->toArray();
@@ -215,7 +211,7 @@ abstract class BaseRepository
                         continue;
                     }
 
-                    $media = Media::noTrash()->findOrFail($value['id']);
+                    $media = Media::findOrFail($value['id']);
 
                     if ($media->model_type === 'App\Models\MediaTmp') {
                         $media->move($model, $collectionName);
@@ -237,9 +233,13 @@ abstract class BaseRepository
                     continue;
                 }
 
-                $media = Media::noTrash()->findOrFail($input[$key]['id']);
+                $media = Media::findOrFail($input[$key]['id']);
 
                 if ($media->model_type === 'App\Models\MediaTmp') {
+                    if ($media->collection_name !== $mediaConfig['tmp_concept']) {
+                        throw new ErrorException('File concept mismatch.');
+                    }
+
                     $media->move($model, $collectionName);
                 }
                 else if ($media->model_type === $model::class && $media->model_id !== $model->id) {

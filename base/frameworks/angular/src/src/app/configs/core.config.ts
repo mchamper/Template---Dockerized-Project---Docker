@@ -5,8 +5,7 @@ export const coreConfig: TCoreConfig = {
   registerAllowed: true,
   requestNotifyService: 'message',
   storage: {
-    base64: true,
-    keys: 'single',
+    base64: environment.production ? 3 : false,
   },
   http: {
     delay: 0,
