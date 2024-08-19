@@ -214,6 +214,10 @@ abstract class BaseRepository
                     $media = Media::findOrFail($value['id']);
 
                     if ($media->model_type === 'App\Models\MediaTmp') {
+                        if ($media->collection_name !== $mediaConfig['tmp_concept']) {
+                            throw new ErrorException('File concept mismatch.');
+                        }
+
                         $media->move($model, $collectionName);
                     }
                     else if ($media->model_type === $model::class && $media->model_id !== $model->id) {
