@@ -28,6 +28,7 @@ import { GoogleLoginProvider, SocialAuthServiceConfig } from '@abacritt/angularx
 // import { PixelModule } from 'ngx-pixel-eventid';
 /* -------------------- */
 import { InitService } from './services/init.service';
+import { cacheInterceptor } from './core/interceptors/caching.interceptor';
 
 /* -------------------- */
 
@@ -57,6 +58,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withFetch(),
       withInterceptors([
+        cacheInterceptor,
         requestInterceptor,
         successInterceptor,
         errorInterceptor,

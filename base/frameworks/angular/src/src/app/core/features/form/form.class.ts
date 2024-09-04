@@ -5,13 +5,14 @@ import { CombosHttpService } from "../../../services/http/general/combos-http.se
 import { Request } from "../request/request.class";
 import { environment } from "../../../../environments/environment";
 import { debounceTime, distinctUntilChanged, skip, startWith } from "rxjs";
-import { cloneDeep, entries, isArray } from "lodash";
+import { cloneDeep, entries, get, isArray, set } from "lodash";
 import { logger } from "../../utils/helpers/logger.helper";
 import { StorageService } from "../../../services/storage.service";
 import { md5 } from "../../utils/helpers/hash.helper";
 import { SsrService } from "../../services/ssr.service";
+import { cast } from "../../utils/helpers/cast.helper";
 
-export class Form<Data = any, Group extends { [K in keyof Group]: AbstractControl<any, any>; } = any> {
+export class Form<GFormGroup extends FormGroup = any, Data = any> {
 
   private _ssrS: SsrService;
   private _storageS: StorageService;
@@ -52,16 +53,19 @@ export class Form<Data = any, Group extends { [K in keyof Group]: AbstractContro
   isSettingData = signal(false);
 
   constructor(
-    public group: FormGroup<Group> = new FormGroup({}) as any,
+    public group: GFormGroup = new FormGroup({}) as any,
     private _options: {
-      init?: (form: Form<Data, Group>, state: any) => any,
-      subscriptions?: (form: Form<Data, Group>) => any,
+      init?: (form: Form<GFormGroup, Data>, state: any) => any,
+      subscriptions?: (form: Form<GFormGroup, Data>) => any,
       arrays?: {
         [key: string]: {
           group: FormGroup,
-          onAdd?: (group: FormGroup, form: Form<Data, Group>, state: any) => any,
+          onAdd?: (group: FormGroup, form: Form<GFormGroup, Data>, state: any) => any,
           onMove?: (eachControl: FormControl, newIndex: number) => any,
         },
+      },
+      casts?: {
+        [key: string]: (value: any) => any
       },
       request?: Request['_options'],
       dataRequest?: Request['_options'],
@@ -202,7 +206,7 @@ export class Form<Data = any, Group extends { [K in keyof Group]: AbstractContro
     if (!this._options.autoSave) return;
 
     this.autoSaveState.key.set(`form.${md5(this.state.init())}`);
-    this.autoSaveState.value.set(this._storageS.get(this.autoSaveState.key(), { base64: true }));
+    this.autoSaveState.value.set(this._storageS.get(this.autoSaveState.key()));
   }
 
   private async _startAutoSave() {
@@ -226,7 +230,7 @@ export class Form<Data = any, Group extends { [K in keyof Group]: AbstractContro
       debounceTime(300),
     ).subscribe(async () => {
       this.autoSaveState.value.set(this.group.getRawValue());
-      await this._storageS.set(this.autoSaveState.key(), this.autoSaveState.value(), { base64: true });
+      await this._storageS.set(this.autoSaveState.key(), this.autoSaveState.value());
     });
   }
 
@@ -276,10 +280,11 @@ export class Form<Data = any, Group extends { [K in keyof Group]: AbstractContro
   persist(value: any = {}) {
     this.state.persist({
       ...this.group.getRawValue(),
-      ...value
+      ...(this._options.casts ? cast(value, this._options.casts) : value),
     });
 
-    this.restore();
+    // this.restore();
+    this.reset();
   }
 
   set(value: any = {}) {
@@ -287,7 +292,7 @@ export class Form<Data = any, Group extends { [K in keyof Group]: AbstractContro
 
     this.state.set({
       ...this.group.getRawValue(),
-      ...value
+      ...(this._options.casts ? cast(value, this._options.casts) : value),
     });
 
     this.restore();
@@ -569,7 +574,7 @@ export class Form<Data = any, Group extends { [K in keyof Group]: AbstractContro
     const formGroup = group || this.group;
 
     Object.keys(formGroup.controls).forEach((key: string) => {
-      const abstractControl = (formGroup as any).get(key)!;
+      const abstractControl = (formGroup.get as any)(key)!;
 
       if (abstractControl instanceof FormGroup || abstractControl instanceof FormArray) {
         this.validate(abstractControl);

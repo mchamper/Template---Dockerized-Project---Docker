@@ -16,6 +16,10 @@ export function requestInterceptor(req: HttpRequest<unknown>, next: HttpHandlerF
   headers = headers.set('Accept', 'application/json');
   headers = headers.set('Accept-Language', state.lang());
 
+  for (let key in coreConfig.http.headers) {
+    headers = headers.set(key, coreConfig.http.headers[key]);
+  }
+
   if (guardContext && authS.guard(guardContext).activeSession()?.token) {
     headers = headers.set('Authorization', `Bearer ${authS.guard(guardContext).activeSession()!.token}`);
   }

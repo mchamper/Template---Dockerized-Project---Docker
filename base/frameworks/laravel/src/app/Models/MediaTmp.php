@@ -12,20 +12,27 @@ class MediaTmp extends Model implements HasMedia
     use HasFactory;
     use InteractsWithMedia;
 
+    public $concepts = [];
+
     /**
      * Media collections.
      */
     public function registerMediaCollections(): void
     {
-        $disk = config('media-library.disk_name') . '_tmp';
+        $this->_registerTmpCollections(new User());
+        $this->_registerTmpCollections(new SystemUser());
+        $this->_registerTmpCollections(new ExternalUser());
+    }
 
-        $this->addMediaCollection('tmp_system_user_picture')
-            ->acceptsMimeTypes(['image/jpeg', 'image/png'])
-            ->useDisk($disk);
+    private function _registerTmpCollections(HasMedia $model)
+    {
+        if ($model->getMediasConfig()) {
+            foreach ($model->getMediasConfig() as $options) {
+                $this->concepts[$options['tmp_concept']] = $options;
 
-
-        $this->addMediaCollection('tmp_system_user_photos')
-            ->acceptsMimeTypes(['image/jpeg', 'image/png'])
-            ->useDisk($disk);
+                $this->addMediaCollection($options['tmp_concept'])
+                    ->useDisk($options['disk']);
+            }
+        }
     }
 }

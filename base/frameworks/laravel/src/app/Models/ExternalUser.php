@@ -39,8 +39,14 @@ class ExternalUser extends Authenticatable implements HasMedia
     ];
 
     protected $medias = [
-        'picture' => 'single',
-        'photos' => 'multiple',
+        'picture' => [
+            'visibility' => 'public',
+            'type' => 'single',
+        ],
+        'photos' => [
+            'visibility' => 'private',
+            'type' => 'multiple',
+        ],
     ];
 
     protected $appends = [

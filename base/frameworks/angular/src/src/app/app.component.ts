@@ -42,8 +42,6 @@ export class AppComponent {
   uiState = inject(UiState);
 
   constructor() {
-    this._authS.initEffects();
-
     this._taxonomyS.init(taxonomies, {
       initGoogleTagManager: false,
     });
@@ -55,6 +53,7 @@ export class AppComponent {
     /* -------------------- */
 
     try {
+      const timeToDelay = 0;
       const timeStart = moment();
 
       await Promise.all([
@@ -68,8 +67,10 @@ export class AppComponent {
 
       setTimeout(() => {
         this.state.app.setReady();
-      }, (timeElapsed >= 1500 ? 0 : 1500 - timeElapsed));
+      }, (timeElapsed >= timeToDelay ? 0 : timeToDelay - timeElapsed) + 0);
     } catch (err) {
+      console.error(err);
+
       let errorMessage = this._translateS.instant('init.errors.default');
       errorMessage += typeof err === 'number' ? ` (${err})` : ` (??)`;
 

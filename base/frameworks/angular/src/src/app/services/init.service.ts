@@ -8,18 +8,18 @@ import { UiState } from '../states/ui.state';
 import { DOCUMENT } from '@angular/common';
 import { LangService } from './lang.service';
 import { kebabCase } from 'lodash';
+import { CacheService } from '../core/services/cache.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InitService {
 
+  private _injector = inject(Injector);
   private _translateS = inject(TranslateService);
   private _storageS = inject(StorageService);
-  private _langS = inject(LangService);
-  private _authS = inject(AuthService);
   private _dom = inject(DOCUMENT);
-  private _injector = inject(Injector);
+
   private _state!: State;
   private _uiState!: UiState;
 
@@ -27,12 +27,13 @@ export class InitService {
     console.log(`Version: ${versionName}`);
 
     try {
-      await this._storageS.init(),
-      await this._langS.init();
-      await this._authS.init();
-
+      await this._storageS.init();
       this._state = this._injector.get(State);
       this._uiState = this._injector.get(UiState);
+
+      await this._injector.get(CacheService).init();
+      await this._injector.get(AuthService).init();
+      await this._injector.get(LangService).init();
 
       await Promise.all([
         this.resolveDeviceInfo(),
@@ -40,10 +41,7 @@ export class InitService {
 
       return Promise.resolve();
     } catch (err) {
-      let errorMessage = this._translateS.instant('init.errors.default');
-      errorMessage += typeof err === 'number' ? ` (${err})` : ` (${JSON.stringify(err)})`;
-
-      return Promise.reject(errorMessage);
+      return Promise.reject(err);
     }
   }
 

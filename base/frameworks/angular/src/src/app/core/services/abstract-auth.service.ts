@@ -1,4 +1,4 @@
-import { Injectable, Signal, WritableSignal, computed, effect, inject, signal } from '@angular/core';
+import { Injectable, Injector, Signal, WritableSignal, computed, effect, inject, signal } from '@angular/core';
 import { AppService } from './app.service';
 import { AbstractModel } from '../models/abstract.model';
 import moment, { Moment } from 'moment';
@@ -52,10 +52,12 @@ type TAuthGuard<DataModel = any> = {
 })
 export abstract class AbstractAuthService {
 
+  protected _injector = inject(Injector);
   private _appS = inject(AppService);
   private _storageS = inject(StorageService);
 
-  public _guards: {
+  private _guards: {
+    appClient?: TAuthGuard,
     guest?: TAuthGuard,
     systemUser?: TAuthGuard,
     user?: TAuthGuard,
@@ -69,6 +71,8 @@ export abstract class AbstractAuthService {
         ? this._guards[config] = await this._createGuard(config)
         : this._guards[config.guard] = await this._createGuard(config.guard, config.modelClass);
     }
+
+    this.initEffects();
   }
 
   /* -------------------- */
@@ -88,7 +92,7 @@ export abstract class AbstractAuthService {
   guard<DataModel = any>(guardName: TAuthGuardName): TAuthGuard<DataModel> {
     return this._guards[guardName]!;
   }
-
+  /* -------------------- */
   guest() {
     return this.guard<any>('guest');
   }
@@ -98,7 +102,7 @@ export abstract class AbstractAuthService {
   systemUser() {
     return this.guard<any>('systemUser');
   }
-
+  /* -------------------- */
   guestId() {
     return this.guest()?.activeSession()?.data?.id;
   }
@@ -107,6 +111,16 @@ export abstract class AbstractAuthService {
   }
   systemUserId() {
     return this.systemUser()?.activeSession()?.data?.id;
+  }
+  /* -------------------- */
+  guestCheck() {
+    return !!this.guest()?.activeSession();
+  }
+  userCheck() {
+    return !!this.user()?.activeSession();
+  }
+  systemUserCheck() {
+    return !!this.systemUser()?.activeSession();
   }
 
   /* -------------------- */
@@ -209,7 +223,7 @@ export abstract class AbstractAuthService {
 
           return session;
         }));
-      });
+      }, { injector: this._injector, allowSignalWrites: true });
     }
 
     return {

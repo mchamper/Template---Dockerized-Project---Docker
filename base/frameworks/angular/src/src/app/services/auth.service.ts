@@ -9,8 +9,6 @@ import { AuthUserHttpService } from './http/auth-user-http.service';
 })
 export class AuthService extends AbstractAuthService {
 
-  private _injector = inject(Injector);
-
   async init(): Promise<void> {
     await this._init([
       { guard: 'systemUser', modelClass: SystemUser },

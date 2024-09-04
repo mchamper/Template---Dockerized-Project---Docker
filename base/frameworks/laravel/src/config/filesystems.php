@@ -66,11 +66,11 @@ return [
             'throw' => false,
         ],
 
-        'media_tmp' => [
+        'media_private' => [
             'driver' => 'local',
-            'root' => storage_path('app/public/media-tmp'),
-            'url' => env('APP_URL').'/storage/media-tmp',
-            'visibility' => 'public',
+            'root' => storage_path('app/private/media'),
+            'url' => env('APP_URL').'/private-storage/media',
+            'visibility' => 'private',
             'throw' => false,
         ],
 
@@ -86,12 +86,12 @@ return [
             'throw' => false,
         ],
 
-        's3_media_tmp' => [
+        's3_media_private' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
             'region' => env('AWS_DEFAULT_REGION'),
-            'bucket' => env('AWS_BUCKET_STORAGE_TMP'),
+            'bucket' => env('AWS_BUCKET_PRIVATE_STORAGE'),
             'url' => env('AWS_URL'),
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
