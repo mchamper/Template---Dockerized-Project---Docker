@@ -12,6 +12,7 @@ export class ScrollService {
 
   scrollTop = signal(0);
   lastScrollTop = signal(0);
+  hasScrolled = signal(false);
 
   isScrollingUp = computed(() => this.scrollTop() < this.lastScrollTop());
   isScrollingDown = computed(() => this.scrollTop() > this.lastScrollTop());
@@ -24,6 +25,7 @@ export class ScrollService {
 
       this.lastScrollTop.set(this.scrollTop());
       this.scrollTop.set(scrollTop);
+      this.hasScrolled.set(true);
     });
   }
 }
