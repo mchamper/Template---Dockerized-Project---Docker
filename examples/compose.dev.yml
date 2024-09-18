@@ -146,8 +146,10 @@ services:
       args:
         PHP_VERSION: "8.2.8-fpm"
         COMPOSER_VERSION: --2
-    command: /bin/sh -c "php artisan queue:work --tries=3; tail -f /dev/null"
+    user: root
+    command: /bin/sh -c "supervisord -c /etc/supervisord.conf; tail -f /dev/null"
     volumes:
+      - ./base/dockerfiles/php/supervisor/conf.d/laravel-queues.conf:/etc/supervisord.conf
       - ${SRC_BACKEND}:/docker/src
   backend-websocket-server:
     build:
