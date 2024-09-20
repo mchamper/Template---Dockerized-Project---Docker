@@ -92,7 +92,7 @@ abstract class BaseRepository
 
             if (empty($relationInput)) {
                 if ($relatedModel) {
-                    $repo::save([$key => null], $relatedModel);
+                    $repo::save([$relatedModelRelation => null], $relatedModel);
                 }
 
                 continue;
@@ -112,24 +112,26 @@ abstract class BaseRepository
                 continue;
             }
 
-            $repo = $config[0];
-            $repoModel = $config[1];
-            $repoModelRelation = $config[2];
-            $mustDelete = $config[3] ?? false;
+            $relationInput = $input[$key];
             $relatedModels = $model->$key()->get();
 
+            $repo = $config[0];
+            $relatedModelRelation = $config[1];
+            $mustDelete = $config[2] ?? true;
+
+
             $ids = $relatedModels->pluck('id')->toArray();
-            $idsForDetach = array_diff($ids, collect($input[$key])->pluck('id')->toArray());
+            $idsForDetach = array_diff($ids, collect($relationInput)->pluck('id')->toArray());
 
             foreach ($idsForDetach as $id) {
                 $mustDelete
-                    ? $repoModel::findOrFail($id)->delete()
-                    : $repo::save([$repoModelRelation => null], $repoModel::findOrFail($id));
+                    ? $relatedModels->where('id', $id)->first()?->delete()
+                    : $repo::save([$relatedModelRelation => null], $relatedModels->where('id', $id)->first());
             }
 
-            foreach ($input[$key] as $value) {
-                $value[$repoModelRelation] = ['id' => $model->id];
-                $repo::save($value, $repoModel::find($value['id'] ?? null));
+            foreach ($relationInput as $value) {
+                $value[$relatedModelRelation] = ['id' => $model->id];
+                $repo::save($value, $relatedModels->where('id', $value['id'])->first() ?? null);
             }
         }
     }
