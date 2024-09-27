@@ -31,9 +31,11 @@ trait AuthPasswordResetTrait
             'exp' => Carbon::now()->addHours(1),
         ]);
 
-        $url = config('app.backoffice_url')
-            . '/bienvenido?passwordResetHash='
-            . $hash;
+        $callbackUrl = method_exists($this, 'passwordResetCallbackUrl')
+            ? $this->passwordResetCallbackUrl()
+            : config('app.backoffice_url') . '/bienvenido';
+
+        $url = "{$callbackUrl}?passwordResetHash={$hash}";
 
         Mail::to($this->email)->send(new AuthPasswordResetEmail($url));
     }
@@ -44,7 +46,7 @@ trait AuthPasswordResetTrait
             'email' => 'bail|required|email',
         ])->validate();
 
-        if (!$user = static::whereNull('social_driver_id')->where('email', $validated['email'])->first()) {
+        if (!$user = static::where('email', $validated['email'])->whereNotNull('password')->first()) {
             ErrorEnum::NotUserFoundWithEmail->throw();
         }
 
