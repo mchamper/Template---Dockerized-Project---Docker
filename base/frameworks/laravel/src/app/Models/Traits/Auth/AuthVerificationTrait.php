@@ -36,11 +36,12 @@ trait AuthVerificationTrait
                 . '/api/auth/v1/external-user/verification/verify?hash='
                 . $hash;
         } else {
-            $url = config('app.backoffice_url')
-                . '/cuenta?verificationHash='
-                . $hash;
-        }
+            $callbackUrl = method_exists($this, 'verificationCallbackUrl')
+                ? $this->verificationCallbackUrl()
+                : config('app.backoffice_url') . '/cuenta';
 
+            $url = "{$callbackUrl}?verificationHash={$hash}";
+        }
 
         Mail::to($this->email)->send(new AuthVerificationEmail($url));
     }
