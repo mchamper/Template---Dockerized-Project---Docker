@@ -33,7 +33,7 @@ abstract class BaseRequest
 
     public static function rulesWithPrefix(string $prefix, ?array $params = [], )
     {
-        return Arr::prependKeysWith(static::rules($params), "$prefix.");
+        return Arr::prependKeysWith(static::rules(array_merge($params, ['_prefix' => "$prefix."])), "$prefix.");
     }
 
     public static function rulesFrom($input, ?array $params = [])
@@ -59,6 +59,6 @@ abstract class BaseRequest
 
     public static function validate($input, ?array $params = [])
     {
-        return Validator::make($input, static::rules($params))->validate();
+        return Validator::make($input, static::rules(array_merge($params, ['_input' => $input])))->validate();
     }
 }
