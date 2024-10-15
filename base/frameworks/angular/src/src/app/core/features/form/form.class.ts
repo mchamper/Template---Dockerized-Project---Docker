@@ -59,7 +59,8 @@ export class Form<GFormGroup extends FormGroup = any, Data = any> {
       subscriptions?: (form: Form<GFormGroup, Data>) => any,
       arrays?: {
         [key: string]: {
-          group: FormGroup,
+          // group: FormGroup,
+          group: () => FormGroup,
           onAdd?: (group: FormGroup, form: Form<GFormGroup, Data>, state: any) => any,
           onMove?: (eachControl: FormControl, newIndex: number) => any,
         },
@@ -476,7 +477,7 @@ export class Form<GFormGroup extends FormGroup = any, Data = any> {
       control = this.group.get(groupArrayName) as FormArray;
     }
 
-    const group = cloneDeep(this._options.arrays[groupArrayName].group);
+    const group = this._options.arrays[groupArrayName].group();
 
     if (this._options.arrays[groupArrayName].onAdd) {
       (this._options.arrays[groupArrayName].onAdd as Function)(group, this, this._options.autoSave && this.autoSaveState.value()
@@ -570,14 +571,14 @@ export class Form<GFormGroup extends FormGroup = any, Data = any> {
 
   /* -------------------- */
 
-  validate(group?: FormGroup | FormArray): void {
+  validate(group?: FormGroup | FormArray, keyPrefix: string = ''): void {
     const formGroup = group || this.group;
 
     Object.keys(formGroup.controls).forEach((key: string) => {
       const abstractControl = (formGroup.get as any)(key)!;
 
       if (abstractControl instanceof FormGroup || abstractControl instanceof FormArray) {
-        this.validate(abstractControl);
+        this.validate(abstractControl, `${keyPrefix}${key}.`);
       } else {
         if (!abstractControl.getError('apiError')) {
           // const isPreviouslyDisabled = abstractControl.disabled;
@@ -593,7 +594,13 @@ export class Form<GFormGroup extends FormGroup = any, Data = any> {
           //   abstractControl.disable({ onlySelf: true, emitEvent: false });
           // }
         }
+
+        if (abstractControl.invalid) {
+          logger(`Form field "${keyPrefix}${key}":`, { valid: abstractControl.valid, errors: abstractControl.errors });
+        }
       }
     });
+
+    formGroup.updateValueAndValidity({ onlySelf: true });
   }
 }
