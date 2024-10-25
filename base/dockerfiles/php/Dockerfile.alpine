@@ -77,6 +77,19 @@ RUN apk add --update --no-cache \
   && docker-php-ext-configure pgsql --with-pgsql=/usr/local/pgsql \
   && docker-php-ext-install pdo_pgsql pgsql
 
+# Install Microsoft SQL driver
+RUN curl -O https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/msodbcsql18_18.4.1.1-1_amd64.apk
+RUN curl -O https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/mssql-tools18_18.4.1.1-1_amd64.apk
+
+RUN apk add --update --no-cache --allow-untrusted --virtual .phpize-deps $PHPIZE_DEPS \
+  msodbcsql18_18.4.1.1-1_amd64.apk \
+  mssql-tools18_18.4.1.1-1_amd64.apk \
+  unixodbc-dev \
+  && pecl install sqlsrv pdo_sqlsrv swoole \
+  && docker-php-ext-enable --ini-name 30-sqlsrv.ini sqlsrv \
+  && docker-php-ext-enable --ini-name 35-pdo_sqlsrv.ini pdo_sqlsrv \
+  && docker-php-ext-enable --ini-name 40-swoole.ini swoole
+
 # Install php memcached
 RUN apk add --update --no-cache \
   libmemcached \
