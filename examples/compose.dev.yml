@@ -205,6 +205,20 @@ services:
   #     - ./database-exports/:/docker/exports/
   #     - database:/var/lib/postgresql/data
 
+  # database:
+  #   build:
+  #     context: ./base/dockerfiles/mssql
+  #     args:
+  #       MSSQL_VERSION: "2022-latest"
+  #   environment:
+  #     ACCEPT_EULA: "Y"
+  #     MSSQL_SA_PASSWORD: "yourStrong(!)Password"
+  #   ports:
+  #     - ${PORT}0021:1433
+  #   volumes:
+  #     - ./database-exports/:/docker/exports/
+  #     - database:/var/opt/mssql
+
   0-utils:
     build:
       context: ./base/dockerfiles/alpine
