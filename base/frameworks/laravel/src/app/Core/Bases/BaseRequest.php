@@ -33,7 +33,8 @@ abstract class BaseRequest
 
     public static function rulesWithPrefix(string $prefix, ?array $params = [], )
     {
-        return Arr::prependKeysWith(static::rules(array_merge($params, ['_prefix' => "$prefix."])), "$prefix.");
+        $fullPrefix = !empty($params['_prefix']) ? $params['_prefix'] . $prefix : $prefix;
+        return Arr::prependKeysWith(static::rules(array_merge($params, ['_prefix' => "$fullPrefix."])), "$prefix.");
     }
 
     public static function rulesFrom($input, ?array $params = [])
