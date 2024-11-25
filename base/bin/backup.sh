@@ -19,12 +19,14 @@ mkdir -p "${BACKUP_PATH}/credentials"
 mkdir -p "${BACKUP_PATH}/database-exports"
 mkdir -p "${BACKUP_PATH}/environments"
 mkdir -p "${BACKUP_PATH}/logs"
+mkdir -p "${BACKUP_PATH}/resources"
 
 cp -a examples/credentials/.aws/. "${BACKUP_PATH}/examples/credentials/.aws"
 cp -a credentials/. "${BACKUP_PATH}/credentials"
 cp -a database-exports/. "${BACKUP_PATH}/database-exports"
 cp -a environments/. "${BACKUP_PATH}/environments"
 cp -a logs/. "${BACKUP_PATH}/logs"
+cp -a resources/. "${BACKUP_PATH}/resources"
 
 cd "${BACKUP_PATH}/.."
 if [[ -f "${ZIP_NAME}" ]]; then rm "${ZIP_NAME}"; fi
