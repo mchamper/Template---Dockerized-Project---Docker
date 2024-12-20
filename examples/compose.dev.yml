@@ -219,6 +219,17 @@ services:
   #     - ./database-exports/:/docker/exports/
   #     - database:/var/opt/mssql
 
+  ## -------------------- ##
+
+  0-cloudflared:
+    build:
+      context: ./base/dockerfiles/cloudflared
+      args:
+        CLOUDFLARED_TOKEN: ${CLOUDFLARED_TOKEN}
+    command: /bin/sh -c "tail -f /dev/null"
+    volumes:
+      - ./credentials/.ssh/cloudflared/:/home/docker/.ssh/
+
   0-utils:
     build:
       context: ./base/dockerfiles/alpine
