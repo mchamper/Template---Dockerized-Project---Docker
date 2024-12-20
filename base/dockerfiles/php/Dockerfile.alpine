@@ -77,6 +77,11 @@ RUN apk add --update --no-cache \
   && docker-php-ext-configure pgsql --with-pgsql=/usr/local/pgsql \
   && docker-php-ext-install pdo_pgsql pgsql
 
+# Install xdebug
+RUN apk add --no-cache $PHPIZE_DEPS \
+  && pecl install xdebug \
+  && docker-php-ext-enable xdebug
+
 # Install Microsoft SQL driver
 RUN curl -O https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/msodbcsql18_18.4.1.1-1_amd64.apk
 RUN curl -O https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/mssql-tools18_18.4.1.1-1_amd64.apk
@@ -85,10 +90,9 @@ RUN apk add --update --no-cache --allow-untrusted --virtual .phpize-deps $PHPIZE
   msodbcsql18_18.4.1.1-1_amd64.apk \
   mssql-tools18_18.4.1.1-1_amd64.apk \
   unixodbc-dev \
-  && pecl install sqlsrv pdo_sqlsrv swoole \
+  && pecl install sqlsrv pdo_sqlsrv \
   && docker-php-ext-enable --ini-name 30-sqlsrv.ini sqlsrv \
-  && docker-php-ext-enable --ini-name 35-pdo_sqlsrv.ini pdo_sqlsrv \
-  && docker-php-ext-enable --ini-name 40-swoole.ini swoole
+  && docker-php-ext-enable --ini-name 35-pdo_sqlsrv.ini pdo_sqlsrv
 
 # Install php memcached
 RUN apk add --update --no-cache \
@@ -107,10 +111,5 @@ RUN composer self-update ${COMPOSER_VERSION}
 
 # PHP ini options
 COPY php.ini /usr/local/etc/php/conf.d/local.ini
-
-# Install aws cli
-RUN pip install --upgrade awscli
-RUN pip install --upgrade awsebcli
-RUN pip install --upgrade botocore
 
 USER docker

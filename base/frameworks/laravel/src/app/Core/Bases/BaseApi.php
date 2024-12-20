@@ -9,6 +9,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -27,6 +28,7 @@ abstract class BaseApi
         protected int $_retryCode = 0,
         protected int $_retries = 1,
         protected bool $_reauthorizeOnFirstError = true,
+        protected bool $_log = false,
     ) { }
 
     /* -------------------- */
@@ -55,17 +57,30 @@ abstract class BaseApi
 
     protected function _send(string $method, string $endpoint, array $options = [], string $responseType = 'json'): mixed
     {
+        $options = array_merge_recursive($this->_httpClientDefaultOptions, $options);
+
         $res = $this->_httpClient->send(
             $this->_makeRequest($method, $endpoint),
-            array_merge_recursive($this->_httpClientDefaultOptions, $options),
+            $options,
         )->getBody()->getContents();
 
-        switch ($responseType) {
-            case 'xml': return $this->_res($this->_parseResponseFromXml($res));
-            case 'raw': return $res;
+        $parsedRes = match ($responseType) {
+            'xml' => $this->_res($this->_parseResponseFromXml($res)),
+            'raw' => $res,
+            default => $this->_res($this->_parseResponseFromJson($res)),
+        };
 
-            default: return $this->_res($this->_parseResponseFromJson($res));
+        if ($this->_log) {
+            Log::channel('api')->debug(class_basename($this), [
+                'method' => $method,
+                'endpoint' => $endpoint,
+                'options' => $options,
+                'responseType' => $responseType,
+                'res' => $parsedRes
+            ]);
         }
+
+        return $parsedRes;
     }
 
     private function _parseResponseFromJson($res): mixed
@@ -132,6 +147,8 @@ abstract class BaseApi
         if ($return) {
             return $newException;
         }
+
+        Log::error($message, [$newException->body]);
 
         throw $newException;
     }
