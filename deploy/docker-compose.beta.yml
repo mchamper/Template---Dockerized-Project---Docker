@@ -1,0 +1,112 @@
+services:
+
+  webapp-beta:
+    build:
+      context: ../../
+      dockerfile: ./docker/deploy/dockerfiles/webapp/Dockerfile
+      args:
+        BUILD_CMD: "build:beta"
+    networks:
+      - beta-network
+    restart: unless-stopped
+
+  backoffice-beta:
+    build:
+      context: ../../
+      dockerfile: ./docker/deploy/dockerfiles/backoffice/Dockerfile
+      args:
+        BUILD_CMD: "build:beta"
+    networks:
+      - beta-network
+    restart: unless-stopped
+
+  backend-beta:
+    build:
+      context: ../../
+      dockerfile: ./docker/deploy/dockerfiles/backend/Dockerfile
+      args:
+        ENVIRONMENT_FILE: "beta"
+    volumes:
+      - backend-public-beta:/var/www/html/public
+      - backend-storage-app-beta:/var/www/html/storage/app
+      - backend-storage-logs-beta:/var/www/html/storage/logs
+    networks:
+      - beta-network
+    restart: unless-stopped
+
+  backend-server-beta:
+    image: nginx:alpine
+    links:
+      - backend-beta:php
+    volumes:
+      - backend-public-beta:/var/www/html/public
+      - backend-storage-app-beta:/var/www/html/storage/app
+      - backend-storage-logs-beta:/var/www/html/storage/logs
+      - ./dockerfiles/backend/nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - beta-network
+    restart: unless-stopped
+
+  backend-cronjob-server-beta:
+    build:
+      context: ../../
+      dockerfile: ./docker/deploy/dockerfiles/backend/Dockerfile
+      args:
+        ENVIRONMENT_FILE: "beta"
+    user: root
+    command: crond -f
+    volumes:
+      - backend-storage-app-beta:/var/www/html/storage/app
+      - backend-storage-logs-beta:/var/www/html/storage/logs
+    networks:
+      - beta-network
+    restart: unless-stopped
+
+  backend-queue-default-server-beta:
+    build:
+      context: ../../
+      dockerfile: ./docker/deploy/dockerfiles/backend/Dockerfile
+      args:
+        ENVIRONMENT_FILE: "beta"
+    command: php artisan queue:work --queue=default --sleep=1 --tries=3 --max-time=3600 --timeout=60
+    volumes:
+      - backend-storage-app-beta:/var/www/html/storage/app
+      - backend-storage-logs-beta:/var/www/html/storage/logs
+    networks:
+      - beta-network
+    restart: unless-stopped
+
+  mail-server-beta:
+    image: axllent/mailpit:latest
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    expose:
+      - 8025
+      - 1025
+    networks:
+      - beta-network
+    restart: unless-stopped
+
+  database-beta:
+    image: mariadb:11.0.2
+    env_file:
+      - ../environments/database/beta/.env
+    expose:
+      - 3306
+    volumes:
+      - database-beta:/var/lib/mysql
+    networks:
+      - beta-network
+    restart: unless-stopped
+
+networks:
+  beta-network:
+    external: true
+
+volumes:
+  backend-public-beta:
+  backend-storage-app-beta:
+  backend-storage-logs-beta:
+  database-beta:
