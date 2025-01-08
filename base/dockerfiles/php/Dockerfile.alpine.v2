@@ -2,7 +2,7 @@ ARG PHP_VERSION=latest
 
 FROM maxmindinc/geoipupdate:latest AS geoipupdate
 
-FROM php:${PHP_VERSION}-alpine
+FROM php:${PHP_VERSION}-fpm-alpine
 
 WORKDIR /docker/src
 
