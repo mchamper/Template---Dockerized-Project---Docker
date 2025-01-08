@@ -60,8 +60,12 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp && \
   xml \
   exif \
   zip \
+  opcache \
   pcntl && \
   docker-php-ext-enable opcache
+
+# Copiar archivos de configuración de php
+COPY php.ini /usr/local/etc/php/conf.d/000_php.ini
 
 # Instalar y configurar Xdebug
 ARG XDEBUG_CLIENT_HOST=host.docker.internal
@@ -72,6 +76,11 @@ RUN pecl install xdebug && \
   echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/xdebug.ini && \
   echo "xdebug.client_host=${XDEBUG_CLIENT_HOST}" >> /usr/local/etc/php/conf.d/xdebug.ini && \
   echo "xdebug.client_port=9003" >> /usr/local/etc/php/conf.d/xdebug.ini
+
+# Configurar cronjobs
+RUN touch /var/log/cron.log && chown docker:docker /var/log/cron.log
+RUN echo "* * * * * php /var/www/html/artisan schedule:run >> /var/log/cron.log 2>&1" > /etc/crontabs/docker
+RUN crontab /etc/crontabs/docker
 
 # Instalar y configurar Microsoft SQL Server driver
 RUN curl -L https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/msodbcsql18_18.4.1.1-1_amd64.apk -o msodbcsql18.apk && \
@@ -86,9 +95,8 @@ RUN pecl install memcached && \
   docker-php-ext-enable memcached
 
 # Instalar Composer
-ARG COMPOSER_VERSION=--2
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer self-update ${COMPOSER_VERSION}
+ARG COMPOSER_VERSION=latest
+COPY --from=composer:${COMPOSER_VERSION} /usr/bin/composer /usr/bin/composer
 
 # Instalar y configurar GeoIPupdate
 ARG GEOIPUPDATE_ACCOUNT_ID=
@@ -103,8 +111,8 @@ RUN echo "AccountID ${GEOIPUPDATE_ACCOUNT_ID}" > /usr/local/etc/GeoIP.conf && \
   /usr/bin/geoipupdate && \
   chown -R docker:docker ${GEOIPUPDATE_DIRECTORY}
 
-# Copiar archivos de configuración de php
-COPY php.ini /usr/local/etc/php/conf.d/000_php.ini
+# Exponer el puerto de PHP-FPM
+EXPOSE 9000
 
 # Cambiar al usuario no privilegiado
 USER docker
