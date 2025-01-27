@@ -1,36 +1,38 @@
 ARG NGINX_VERSION=latest
+
 FROM nginx:${NGINX_VERSION}-alpine
 
 WORKDIR /docker/src
-ENV PATH="/root/.local/bin:${PATH}"
 
-##############################
-##############################
+# Crear un usuario y grupo no privilegiado
+RUN addgroup -g 1000 docker && \
+  adduser -G docker -u 1000 -D -s /bin/sh docker && \
+  chown -R docker:docker /docker/src
 
-# Install Alpine common dependencies
+# Instalar dependencias básicas de Alpine
 RUN apk add --update --no-cache \
+  linux-headers \
   bash \
+  curl \
   git \
   zip \
   unzip \
+  g++ \
+  make \
   openssh \
   openssl \
   putty \
   rsync \
   groff \
-  ffmpeg \
-  supervisor \
-  && rm -rf /var/cache/apk/* && rm -rf /tmp/*
+  supervisor
 
-# Create ssl certificate
+# Crear certificado ssl self-signed
 RUN mkdir -p /certs \
-  && openssl req -x509 -nodes -days 720 -newkey rsa:2048 \
-  -keyout /certs/server.key -out /certs/server.crt \
-  -subj "/C=AR/ST=Docker/L=Docker/O=Docker/OU=Docker/CN=Docker"
+  && openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+    -keyout /certs/server.key -out /certs/server.crt \
+    -subj "/CN=Docker"
 
-##############################
-##############################
-
+# Configuración de nginx
 ARG NGINX_CONF=html
 ARG NGINX_ROOT=/docker/src
 ARG NGINX_REMOTE_ADDR="\$remote_addr"

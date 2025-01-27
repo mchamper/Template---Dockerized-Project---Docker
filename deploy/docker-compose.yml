@@ -1,0 +1,25 @@
+services:
+
+  nginx-proxy-manager:
+    image: 'jc21/nginx-proxy-manager:latest'
+    ports:
+      - 80:80 # HTTP
+      - 81:81 # Interfaz gráfica
+      - 443:443 # HTTPS
+    volumes:
+      - nginx-proxy-manager-data:/data
+      - nginx-proxy-manager-letsencrypt:/etc/letsencrypt
+    networks:
+      - beta-network
+      - prod-network
+    restart: always
+
+networks:
+  beta-network:
+    external: true
+  prod-network:
+    external: true
+
+volumes:
+  nginx-proxy-manager-data:
+  nginx-proxy-manager-letsencrypt:
