@@ -1,0 +1,81 @@
+services:
+
+  npm:
+    image: 'jc21/nginx-proxy-manager:latest'
+    ports:
+      - ${PORT}0000:80 # HTTP
+      - ${PORT}0001:81 # Interfaz gráfica
+      - ${PORT}0002:443 # HTTPS
+    volumes:
+      - npm-data:/data
+      - npm-letsencrypt:/etc/letsencrypt
+
+  angular:
+    build:
+      context: ./base/dockerfiles/node
+      dockerfile: Dockerfile.alpine
+      args:
+        NODE_VERSION: "20"
+        NPM_VERSION: "11"
+        ANGULAR_VERSION: "19"
+    command: /bin/sh -c "npm start -- --host 0.0.0.0 -c local; tail -f /dev/null"
+    ports:
+      - ${PORT}0001:4200
+    volumes:
+      - ${SRC_ANGULAR}:/docker/src
+
+  laravel:
+    build:
+      context: ./base/dockerfiles/php
+      dockerfile: Dockerfile.alpine.v2
+      args:
+        PHP_VERSION: "8.3.12"
+        COMPOSER_VERSION: "2.6"
+    volumes:
+      - ${SRC_LARAVEL}:/docker/src
+
+  laravel-nginx:
+    build:
+      context: ./base/dockerfiles/nginx
+      dockerfile: Dockerfile.alpine
+      args:
+        NGINX_VERSION: "1.27.3"
+        NGINX_CONF: php
+        NGINX_ROOT: /docker/src/public
+    links:
+      - laravel:php
+    ports:
+      - ${PORT}0011:80
+      - ${PORT}0111:443
+    volumes:
+      - ${SRC_BACKEND_LARAVEL}:/docker/src
+
+  mailpit:
+    build:
+      context: ./base/dockerfiles/mailpit
+      dockerfile: Dockerfile
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    ports:
+      - ${PORT}0015:8025
+      - ${PORT}0115:1025
+
+  database-mariadb:
+    build:
+      context: ./base/dockerfiles/mariadb
+      args:
+        MARIADB_VERSION: "11.6.2"
+    env_file:
+    - ./environments/database/local/.env
+    expose:
+      - 3306
+    volumes:
+      - ./database-dumps/:/docker/dumps/
+      - database-mariadb:/var/lib/mysql
+
+volumes:
+  npm-data:
+  npm-letsencrypt:
+  database-mariadb:

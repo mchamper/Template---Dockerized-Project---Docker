@@ -1,8 +1,1 @@
 /.env
-
-/compose.*.yml
-/install.sh
-/build.sh
-/start.sh
-/stop.sh
-/bin/core/*
